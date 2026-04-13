@@ -1,26 +1,27 @@
 :root {
-  --border-radius: 5px;
-  --primary-font: "Inter";
-  --fg-color-h: 0;
-  --fg-color-s: 0%;
-  --fg-color-l: 0%;
+  /* ── Overrides marked !important to beat Bullet's #bullet-theme ── */
+  --border-radius: 5px !important;
+  --primary-font: "Inter" !important;
+  --fg-color-h: 0 !important;
+  --fg-color-s: 0% !important;
+  --fg-color-l: 0% !important;
   --fg-color: hsl(var(--fg-color-h), var(--fg-color-s), var(--fg-color-l));
-  --bg-color-h: 0;
-  --bg-color-s: 0%;
-  --bg-color-l: 100%;
+  --bg-color-h: 0 !important;
+  --bg-color-s: 0% !important;
+  --bg-color-l: 100% !important;
   --bg-color: hsl(var(--bg-color-h), var(--bg-color-s), var(--bg-color-l));
   --navbar-bg-color: #fff;
-  --navbar-fg-color: #000;
-  --navbar-btn-fg-color: #fff;
-  --navbar-btn-bg-color: #314252;
-  --navbar-brand-font-size: 1.375rem;
+  --navbar-fg-color: #000 !important;
+  --navbar-btn-fg-color: #fff !important;
+  --navbar-btn-bg-color: #314252 !important;
+  --navbar-brand-font-size: 1.375rem !important;
   --heading-font-size: 1.5rem;
   --heading1: calc(var(--heading-font-size) * 2.5);
   --heading2: calc(var(--heading-font-size) * 1.652);
   --notion-blue_background_co: #fff;
-  --notion-brown-h: 225;
-  --notion-brown-s: 100%;
-  --notion-brown-l: 98%;
+  --notion-brown-h: 225 !important;
+  --notion-brown-s: 100% !important;
+  --notion-brown-l: 98% !important;
   --notion-brown: hsl(
     var(--notion-brown-h),
     var(--notion-brown-s),
@@ -32,17 +33,17 @@
     98%
   );
   --notion-brown_background_co: var(--notion-brown_background);
-  --notion-gray-h: 205;
-  --notion-gray-s: 25%;
-  --notion-gray-l: 21%;
+  --notion-gray-h: 205 !important;
+  --notion-gray-s: 25% !important;
+  --notion-gray-l: 21% !important;
   --notion-gray_background: hsl(
     var(--notion-gray-h),
     var(--notion-gray-s),
     25%
   );
-  --notion-blue-h: 214;
-  --notion-blue-s: 80%;
-  --notion-blue-l: 48%;
+  --notion-blue-h: 214 !important;
+  --notion-blue-s: 80% !important;
+  --notion-blue-l: 48% !important;
   --notion-blue: hsl(
     var(--notion-blue-h),
     var(--notion-blue-s),
@@ -55,7 +56,7 @@
   );
   --notion-blue_background_co: var(--notion-blue_background);
   --notion-gray: var(--fg-color);
-  --db-card-title-size: 1rem;
+  --db-card-title-size: 1rem !important;
   --callout-icon-display: block;
 }
 .notion-page-icon-inline .notion-page-icon-image {
