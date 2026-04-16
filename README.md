@@ -11,7 +11,7 @@ Content is managed in **Notion** and published via **Bullet.so**. This repo hold
 | File | Purpose |
 |------|---------|
 | `charm_style_sheet.css` | Main site stylesheet — CSS custom properties, Notion/Bullet class overrides, blog typography, responsive breakpoints |
-| `footer.html` | Injected into every page footer: LinkedIn Insight tag, callout-height equaliser script, Zapier chatbot widget |
+| `footer.html` | Injected into every page footer: GA4, LinkedIn Insight tag, callout-height equaliser script |
 | `jtbd_widget.html` | Auto-scrolling "pain points" chat-bubble widget embedded on the homepage |
 | `notocat_custom.css` | Email newsletter styles (Notocat), based on the site's brand tokens |
 | `Original Logo.png` | Logo asset |
