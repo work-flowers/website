@@ -613,3 +613,32 @@ RESPONSIVE
   margin-right: 0 !important;
 }
 
+/* =======================================================
+   PARTNER BADGES — lock badge area to a uniform height so
+   the paragraph beneath each starts at the same Y position
+   across all three callout columns regardless of the
+   badge's native aspect ratio or text reflow width.
+   ======================================================= */
+.bullet-3-column .notion-callout figure.notion-asset-wrapper-image {
+  height: 180px;
+  margin: 0 auto 20px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.bullet-3-column .notion-callout figure.notion-asset-wrapper-image > div {
+  height: 100% !important;
+  width: 100% !important;
+  max-width: 288px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.bullet-3-column .notion-callout figure.notion-asset-wrapper-image img {
+  max-height: 100%;
+  max-width: 100%;
+  height: auto;
+  width: auto;
+  object-fit: contain !important;
+}
+
