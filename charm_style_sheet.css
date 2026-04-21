@@ -621,15 +621,14 @@ RESPONSIVE
    ======================================================= */
 .bullet-3-column .notion-callout figure.notion-asset-wrapper-image {
   height: 180px;
-  margin: 0 auto 20px;
+  margin: 0 0 20px;
   display: flex !important;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .bullet-3-column .notion-callout figure.notion-asset-wrapper-image > div {
   height: 100% !important;
-  width: 100% !important;
-  max-width: 288px;
+  /* preserve Bullet's inline width (288px for badges, 480px for team photos) */
   display: flex !important;
   align-items: center;
   justify-content: center;
