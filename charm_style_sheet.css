@@ -263,7 +263,7 @@ body {
     radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
   background-size: 20px 20px;
   color: #fff;
-  padding: 88px 100px 120px;
+  padding: 88px 100px 120px !important;
   margin: 0 !important;
   width: auto;
   align-self: stretch;
@@ -307,7 +307,7 @@ body {
 .notion-blue_background_co {
   background: var(--wf-indigo);
   color: #fff;
-  padding: 96px 100px;
+  padding: 96px 100px !important;
   margin: 0 !important;
   width: auto;
   align-self: stretch;
@@ -571,7 +571,7 @@ body {
    ================================================================ */
 .notion-page-content-inner > .notion-blue_background_co:last-of-type {
   text-align: center;
-  padding: 140px 100px;
+  padding: 140px 100px !important;
   align-self: stretch;
   background:
     radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
