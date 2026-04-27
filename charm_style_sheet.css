@@ -248,6 +248,9 @@ body {
 }
 .notion-link:hover { opacity: 0.8; color: var(--wf-azure-hover); }
 
+/* Partner badge images — beat Bullet's inline object-fit:cover */
+.notion-callout figure.notion-asset-wrapper-image img { object-fit: contain !important; }
+
 /* ================================================================
    7. HERO BLOCK — first .notion-blue_background_co on the page
    Full-bleed indigo, dotted background, large display type.
