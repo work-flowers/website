@@ -546,47 +546,6 @@ body {
 .wf-pp__list .wf-pp__item:nth-child(2n) { align-self: flex-end; }
 
 /* ================================================================
-  12. PARTNERS STRIP — editorial top-bar treatment
-   ================================================================ */
-.notion-page-content-inner > .bullet-3-column .notion-callout {
-  border-top: 2px solid var(--wf-azure);
-  border-radius: 0;
-  padding: 24px 28px;
-  background: transparent;
-  height: 100%;
-}
-/* Per-partner accent (in Notion, set callout icon emoji to ⚡/📐/🛡 in order
-   and we colour by :nth-of-type) */
-.notion-page-content-inner > .bullet-3-column > .notion-column:nth-child(1) .notion-callout { border-top-color: #FF4F00; }
-.notion-page-content-inner > .bullet-3-column > .notion-column:nth-child(2) .notion-callout { border-top-color: #1F1F1F; }
-.notion-page-content-inner > .bullet-3-column > .notion-column:nth-child(3) .notion-callout { border-top-color: #00C49A; }
-
-/* Partner badge images */
-.bullet-3-column .notion-callout figure.notion-asset-wrapper-image {
-  height: 64px;
-  margin: 0 0 16px;
-  display: flex !important;
-  align-items: center;
-  justify-content: flex-start;
-}
-.bullet-3-column .notion-callout figure.notion-asset-wrapper-image > div {
-  height: 100% !important;
-  display: flex !important;
-  align-items: center;
-  justify-content: flex-start;
-}
-.bullet-3-column .notion-callout figure.notion-asset-wrapper-image img {
-  max-height: 100%;
-  width: auto;
-  object-fit: contain !important;
-  object-position: left center !important;
-  flex: 0 0 auto !important;
-}
-/* On 3-col-callout text, smaller editorial body */
-.bullet-3-column > div > div > .notion-callout-text { font-size: 0.875rem; }
-.bullet-3-column > div > div > .notion-callout-text > .notion-text { font-size: 0.875rem; font-weight: 400; color: var(--wf-fg-muted); }
-
-/* ================================================================
   13. FINAL CTA — second indigo block (last blue_bg callout on page)
    Bookends the hero. Centred, large display closer.
    ================================================================ */
