@@ -224,9 +224,11 @@ body {
 }
 .bullet-btn:hover { background: var(--wf-ochre-hover); color: #fff; }
 
-/* On dark backgrounds (indigo hero, indigo CTA) — secondary ghost button */
-.notion-blue_background_co .bullet-btn,
-.notion-gray_background_co .bullet-btn {
+/* On dark backgrounds (indigo hero, indigo CTA) — secondary ghost button.
+   Compound .notion-link.bullet-btn raises specificity so the link-recolour
+   rule below (peach on blue_bg) doesn't override the white button text. */
+.notion-blue_background_co .notion-link.bullet-btn,
+.notion-gray_background_co .notion-link.bullet-btn {
   background: var(--wf-ochre);
   color: #fff !important;
 }
@@ -366,7 +368,7 @@ body {
   background: var(--wf-paper-warm) !important;
   background-image: none !important;
   color: var(--wf-ink) !important;
-  padding: 96px 100px !important;
+  padding: 64px 100px !important;
   margin: 0 !important;
   width: auto !important;
   align-self: stretch;
@@ -379,7 +381,7 @@ body {
    full-bleed band. Distinguishes them from the "mess we fix" columns
    which have a chat-widget embed and should stay in the content gutter. */
 .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) {
-  padding: 96px 100px !important;
+  padding: 64px 100px !important;
   margin: 0 !important;
   width: auto !important;
   align-self: stretch;
