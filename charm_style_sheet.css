@@ -547,6 +547,9 @@ body {
 }
 /* Stagger left/right for Slack feel — every 2nd item shifts right */
 .wf-pp__list .wf-pp__item:nth-child(2n) { align-self: flex-end; }
+/* When the widget sits inside the indigo hero, beat the hero's white-text rule */
+.notion-page-content-inner > .notion-blue_background_co:first-of-type .wf-pp__item,
+.notion-blue_background_co .wf-pp__item { color: var(--wf-ink) !important; }
 
 /* ================================================================
   13. FINAL CTA — second indigo block (last blue_bg callout on page)
