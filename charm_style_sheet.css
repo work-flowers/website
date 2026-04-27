@@ -208,6 +208,15 @@ body {
   margin-bottom: 0.75em;
 }
 
+/* Display headings inside callouts: don't let Bullet's
+   .notion-callout-text { word-break: break-word } chop words mid-char. */
+.notion-callout .notion-h1,
+.notion-callout .notion-h2,
+.notion-callout .notion-h3 {
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
 /* ================================================================
    5. BUTTONS — primary ochre, secondary ghost
    ================================================================ */
@@ -276,8 +285,6 @@ body {
   letter-spacing: -0.04em;
   margin-top: 0.4em;
   text-wrap: balance;
-  word-break: normal;
-  overflow-wrap: normal;
 }
 .notion-page-content-inner > .notion-blue_background_co:first-of-type .notion-text {
   font-size: clamp(1.125rem, 1.4vw, 1.375rem);
@@ -578,7 +585,7 @@ body {
   background-size: 20px 20px, auto;
 }
 .notion-page-content-inner > .notion-blue_background_co:last-of-type .notion-h2 {
-  font-size: clamp(4rem, 8vw, 7.5rem);
+  font-size: clamp(2.25rem, 8vw, 7.5rem);
   line-height: 0.96;
   font-weight: 800;
   letter-spacing: -0.035em;
