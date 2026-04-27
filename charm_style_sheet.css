@@ -57,9 +57,9 @@
   --wf-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   --wf-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Navbar */
-  --navbar-bg-color: var(--wf-indigo);     /* dark by default — hero is indigo */
-  --navbar-fg-color: #FFFFFF !important;
+  /* Navbar — white, so brand logo is visible */
+  --navbar-bg-color: #FFFFFF;
+  --navbar-fg-color: var(--wf-ink) !important;
   --navbar-btn-fg-color: #FFFFFF !important;
   --navbar-btn-bg-color: var(--wf-ochre) !important;
   --navbar-brand-font-size: 1.375rem !important;
@@ -128,18 +128,25 @@ body {
 }
 .notion-page-no-cover { margin: 0 !important; }
 .notion-title { display: none; }
+/* Default content gutter — but full-bleed bands opt out below */
 .notion-page-content-inner > * { padding: 0 100px; }
+.notion-page-content-inner > .notion-blue_background_co,
+.notion-page-content-inner > .notion-brown_background_co,
+.notion-page-content-inner > .notion-gray_background_co {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
 .notion-page-icon-image > img { height: 40px; width: 40px; }
 .notion-empty-icon { display: none !important; }
 .notion-hash-link { display: none; }
 
 /* ================================================================
-   3. NAVBAR — dark, sits on the indigo hero
+   3. NAVBAR — white, so the dark logo + ink wordmark stay legible
    ================================================================ */
 .navbar {
   height: 88px;
-  background: var(--wf-indigo);
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--wf-rule);
 }
 .navbar-brand-logo {
   min-height: 40px !important;
@@ -149,21 +156,21 @@ body {
   padding: 0 10px;
 }
 .navbar-brand > .navbar-item {
-  color: #fff;
+  color: var(--wf-ink);
   font-size: 1.375rem;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 .navbar-link, .navbar-link:hover, .navbar-end > .navbar-item {
-  color: #fff !important;
+  color: var(--wf-ink) !important;
   font-weight: 500;
   font-size: 0.9375rem;
 }
 .navbar-end > .navbar-item { padding: 0 24px; }
 .navbar-item:focus, .navbar-item:hover {
   background-color: transparent !important;
-  color: #fff !important;
-  opacity: 0.75;
+  color: var(--wf-ink) !important;
+  opacity: 0.7;
 }
 .buttons > .nav-cta-btn {
   background-color: var(--wf-ochre);
@@ -336,10 +343,13 @@ body {
 }
 
 /* ================================================================
-   9. PILLAR CARDS — three full-width bands
-   In Notion: three sequential gray_bg callouts on the page
-   (replacing today's yellow_bg three-column layout).
+   9. PILLAR BANDS — three full-width vertical sections
+   In Notion: three sequential 2-column blocks (with one wrapped in
+   brown_bg callout for the warm middle tint). CSS gives each:
+   numbered eyebrow, indigo display headline, azure inline-code pills.
    ================================================================ */
+
+/* Yellow callouts (legacy) flatten to white cards — kept as fallback */
 .notion-page-content-inner > .notion-yellow_background_co {
   background: #FFFFFF;
   border: 1px solid var(--wf-rule);
@@ -349,19 +359,98 @@ body {
   width: auto !important;
   box-shadow: var(--wf-shadow-sm);
 }
-.notion-page-content-inner > .notion-yellow_background_co .notion-h3 {
-  font-size: 1.5rem;
-  margin: 0 0 12px;
-  letter-spacing: -0.015em;
+
+/* Pillar 2 — brown_bg (warm tint band) when used INLINE between sections */
+.notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) {
+  background: var(--wf-paper-warm) !important;
+  background-image: none !important;
+  color: var(--wf-ink) !important;
+  padding: 96px 100px !important;
+  margin: 0 !important;
+  width: auto !important;
 }
-.notion-page-content-inner > .notion-yellow_background_co .notion-list-disc {
-  font-size: 1rem;
-  margin-left: 0;
+.notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) * {
+  color: var(--wf-ink) !important;
 }
-/* Three-column callouts row gets normalised spacing */
-.bullet-3-column { gap: 24px; }
-.bullet-3-column > .notion-column > .notion-callout.notion-yellow_background_co {
-  height: 100%;
+
+/* Pillar 1 + Pillar 3: bare <columns> blocks containing an image →
+   full-bleed band. Distinguishes them from the "mess we fix" columns
+   which have a chat-widget embed and should stay in the content gutter. */
+.notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) {
+  padding: 96px 100px !important;
+  margin: 0 !important;
+  width: auto !important;
+  align-items: center;
+  gap: 80px;
+  background: var(--wf-paper);
+}
+/* "Mess we fix" — bare 2-col with no image, gets normal gutter + spacing */
+.notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)) {
+  align-items: center;
+  gap: 64px;
+  padding: 64px 100px !important;
+}
+/* Inner 2-cols (e.g. inside the brown band) keep the original treatment */
+.notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column {
+  align-items: center;
+  gap: 80px;
+  padding: 0 100px;
+}
+.bullet-2-column .notion-h3 {
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--wf-indigo);
+  margin: 16px 0 16px;
+}
+.bullet-2-column .notion-callout-text > .notion-text:first-of-type strong,
+.bullet-2-column .notion-text strong:only-child {
+  font-size: 1.125rem;
+  font-weight: 600;
+  display: inline-block;
+  line-height: 1.4;
+}
+.bullet-2-column figure.notion-asset-wrapper-image img {
+  border-radius: 5px;
+  box-shadow: var(--wf-shadow-md);
+  aspect-ratio: 5/3;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* Inline-code chips → azure pills (used in pillar pill rows) */
+.bullet-2-column .notion-text code {
+  display: inline-block;
+  background: #E6F1FB;
+  color: var(--wf-azure);
+  font-family: var(--wf-sans);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin: 4px 6px 0 0;
+  letter-spacing: 0;
+}
+
+/* Numbered eyebrow inside pillars: "01 / Automation" */
+.bullet-2-column .notion-text:first-child:has(> code:only-child) {
+  font-family: var(--wf-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--wf-fg-subtle);
+  margin-bottom: 12px;
+}
+.bullet-2-column .notion-text:first-child:has(> code:only-child) > code {
+  background: transparent;
+  color: var(--wf-fg-subtle);
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  border-radius: 0;
+  margin: 0;
 }
 
 /* ================================================================
