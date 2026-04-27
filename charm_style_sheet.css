@@ -533,17 +533,20 @@ body {
    Auto-scrolling chat — kept; only the surrounding section is restyled.
    ================================================================ */
 .wf-pp__viewport { height: 280px; }
-/* Inside the hero, let the widget fill the column height */
-.notion-blue_background_co .notion-column:has(#wf-painpoints),
-.notion-blue_background_co .notion-column:has(#wf-painpoints) > .notion-custom-code,
+/* In the hero, take the widget out of flow so it stretches to match the
+   left column's height instead of the other way round. Top offset aligns
+   the widget with the H1's text top; bottom 0 ends it at the buttons. */
+.notion-blue_background_co .notion-column:has(#wf-painpoints) { position: relative; }
+.notion-blue_background_co .notion-column:has(#wf-painpoints) > .notion-custom-code {
+  position: absolute;
+  top: clamp(3.5rem, 2rem + 3.6vw, 5.25rem);
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
 .notion-blue_background_co #wf-painpoints,
 .notion-blue_background_co .wf-pp { height: 100%; }
 .notion-blue_background_co .wf-pp__viewport { height: 100% !important; }
-/* Push widget down so its viewport top aligns with the H1's text top.
-   Matches eyebrow row (~32px) + H1's responsive margin-top (0.4em of clamp 4.5rem-8rem). */
-.notion-blue_background_co .notion-column:has(#wf-painpoints) {
-  padding-top: clamp(3.5rem, 2rem + 3.6vw, 5.25rem);
-}
 .wf-pp__item {
   background: #FFFFFF !important;
   color: var(--wf-ink) !important;
