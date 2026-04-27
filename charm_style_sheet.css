@@ -470,12 +470,19 @@ body {
 .notion-blue_background_co .bullet-4-column::before {
   content: "";
   position: absolute;
-  top: 24px;
+  top: 8px;
   left: 12%;
   right: 12%;
   height: 0;
   border-top: 1.5px dashed rgba(255,255,255,0.4);
   z-index: 0;
+}
+.notion-blue_background_co .bullet-4-column .notion-text:first-child:has(> code:only-child) {
+  background: var(--wf-indigo);  /* match the band so it "erases" the line behind text */
+  display: inline-block;
+  padding: 0 12px;
+  position: relative;
+  z-index: 1;
 }
 .notion-blue_background_co .bullet-4-column > .notion-column {
   text-align: center;
