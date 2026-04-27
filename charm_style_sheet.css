@@ -397,11 +397,12 @@ body {
   gap: 64px;
   padding: 64px 100px !important;
 }
-/* Inner 2-cols (e.g. inside the brown band) keep the original treatment */
+/* Inner 2-cols (e.g. inside the brown band) — no extra horizontal
+   padding; the band's 100px already insets content to match the
+   white pillar bands. */
 .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column {
   align-items: center;
   gap: 80px;
-  padding: 0 100px;
 }
 .bullet-2-column .notion-h3 {
   font-size: clamp(2rem, 3vw, 3rem);
