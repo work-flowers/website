@@ -128,14 +128,8 @@ body {
 }
 .notion-page-no-cover { margin: 0 !important; }
 .notion-title { display: none; }
-/* Default content gutter — but full-bleed bands opt out below */
+/* Default content gutter — bands override this with their own padding */
 .notion-page-content-inner > * { padding: 0 100px; }
-.notion-page-content-inner > .notion-blue_background_co,
-.notion-page-content-inner > .notion-brown_background_co,
-.notion-page-content-inner > .notion-gray_background_co {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
 .notion-page-icon-image > img { height: 40px; width: 40px; }
 .notion-empty-icon { display: none !important; }
 .notion-hash-link { display: none; }
