@@ -1,643 +1,613 @@
+/* ================================================================
+   work.flowers — charm_style_sheet.css  (Direction C drop-in)
+   ----------------------------------------------------------------
+   Replaces your existing Bullet stylesheet. Implements the
+   Direction C visual system on top of Bullet's standard markup.
+
+   READ THIS FIRST
+   ----------------------------------------------------------------
+   Bullet renders Notion blocks with a mix of its own classes
+   (.bullet-callout, .bullet-2-column, .bullet-3-column,
+   .bullet-4-column, .bullet-image, etc.) and the Notion-style
+   colour utility classes you've been using (.brown_bg, .blue_bg,
+   .gray_bg, .orange_bg, .purple_bg, etc.).
+
+   This sheet styles ALL of those plus a small set of utility
+   classes you can drop into Notion as inline-code or callouts to
+   trigger specific layouts (e.g. "wf-hero-band", "wf-pillar-band",
+   "wf-process-strip"). Where a specific layout needs a marker
+   class, the corresponding section is labelled @TRIGGER.
+
+   The Notion implementation plan ("Direction C — Notion plan.md")
+   tells you exactly which classes to add and where.
+   ================================================================ */
+
+
+/* ================================================================
+   1. TOKENS — colours, type, spacing
+   ================================================================ */
 :root {
-  /* ── Overrides marked !important to beat Bullet's #bullet-theme ── */
-  --border-radius: 5px !important;
-  --primary-font: "Inter" !important;
-  --fg-color-h: 0 !important;
-  --fg-color-s: 0% !important;
-  --fg-color-l: 0% !important;
-  --fg-color: hsl(var(--fg-color-h), var(--fg-color-s), var(--fg-color-l));
-  --bg-color-h: 0 !important;
-  --bg-color-s: 0% !important;
-  --bg-color-l: 100% !important;
-  --bg-color: hsl(var(--bg-color-h), var(--bg-color-s), var(--bg-color-l));
-  --navbar-bg-color: #fff;
-  --navbar-fg-color: #000 !important;
-  --navbar-btn-fg-color: #fff !important;
-  --navbar-btn-bg-color: #2E1B88 !important;
-  --navbar-brand-font-size: 1.375rem !important;
-  --heading-font-size: 1.5rem;
-  --heading1: calc(var(--heading-font-size) * 2.5);
-  --heading2: calc(var(--heading-font-size) * 1.652);
-  --notion-blue_background_co: #fff;
-  --notion-brown-h: 225 !important;
-  --notion-brown-s: 100% !important;
-  --notion-brown-l: 98% !important;
-  --notion-brown: hsl(
-    var(--notion-brown-h),
-    var(--notion-brown-s),
-    var(--notion-brown-l)
-  );
-  --notion-brown_background: hsl(
-    var(--notion-brown-h),
-    var(--notion-brown-s),
-    98%
-  );
-  --notion-brown_background_co: var(--notion-brown_background);
-  --notion-gray-h: 205 !important;
-  --notion-gray-s: 25% !important;
-  --notion-gray-l: 21% !important;
-  --notion-gray_background: hsl(
-    var(--notion-gray-h),
-    var(--notion-gray-s),
-    25%
-  );
-  --notion-blue-h: 214 !important;
-  --notion-blue-s: 80% !important;
-  --notion-blue-l: 48% !important;
-  --notion-blue: hsl(
-    var(--notion-blue-h),
-    var(--notion-blue-s),
-    var(--notion-blue-l)
-  );
-  --notion-blue_background: hsl(
-    var(--notion-blue-h),
-    var(--notion-blue-s),
-    48%
-  );
-  --notion-blue_background_co: var(--notion-blue_background);
-  --notion-gray: var(--fg-color);
-  --db-card-title-size: 1rem !important;
-  --callout-icon-display: block;
-}
-.notion-page-icon-inline .notion-page-icon-image {
-  display: var(--callout-icon-display);
-}
-.notion-page-icon-image > img {
-  height: 40px;
-  width: 40px;
+  /* Brand palette */
+  --wf-indigo:       #2E1B88;
+  --wf-indigo-deep:  #1B0F5C;
+  --wf-azure:        #1479E1;
+  --wf-violet:       #4E1B61;
+  --wf-npb:          #9CE1FC;       /* non-photo blue */
+  --wf-ochre:        #E17A14;
+  --wf-peach:        #F6C696;
+  --wf-ink:          #1F1F1F;
+  --wf-paper:        #FFFFFF;
+  --wf-paper-tint:   #F5FAFE;
+
+  /* Functional */
+  --wf-fg:           var(--wf-ink);
+  --wf-fg-muted:     #4B4B4B;
+  --wf-fg-subtle:    #6B6B6B;
+  --wf-rule:         rgba(31,31,31,0.12);
+  --wf-rule-strong:  rgba(31,31,31,0.22);
+  --wf-rule-on-dark: rgba(255,255,255,0.18);
+
+  /* Shadows */
+  --wf-shadow-sm:    0 1px 2px rgba(31,31,31,0.06);
+  --wf-shadow-md:    0 8px 24px rgba(31,31,31,0.08);
+  --wf-shadow-lg:    0 18px 48px rgba(46,27,136,0.18);
+  --wf-shadow-hero:  0 24px 60px rgba(0,0,0,0.4);
+
+  /* Type */
+  --wf-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --wf-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Layout */
+  --wf-gutter: clamp(24px, 6vw, 100px);
+  --wf-radius: 5px;
+  --wf-radius-lg: 16px;
+
+  /* Easing */
+  --wf-ease: cubic-bezier(0.2, 0.6, 0.2, 1);
 }
 
-/* ================================
-NAVBAR STYLING - INTEGRATED
-================================ */
-.navbar {
-  height: 100px;
-}
-.navbar-brand-logo {
-  min-height: 80px !important;
-  min-width: 80px !important;
-  max-height: 150px !important;
-  width: auto !important;
-  padding: 0 10px;
-}
-.navbar-link,
-.navbar-link:hover {
-  color: var(--navbar-fg-color);
-}
-.navbar-item:focus {
-  background-color: unset !important;
-  color: unset !important;
-}
-.notion-frame {
-  padding: 0;
-}
-.navbar-brand > .navbar-item {
-  color: var(--navbar-fg-color);
-  font-size: 1.375rem;
-  font-weight: 700;
-}
-.navbar-item:hover {
-  background-color: unset;
-  color: var(--fg-color);
-}
-.navbar-end > .navbar-item {
-  color: var(--navbar-fg-color);
-  padding: 0 30px;
-}
-.buttons > .nav-cta-btn {
-  background-color: var(--navbar-btn-bg-color);
-  color: var(--navbar-btn-fg-color);
-}
-.notion-page-content-inner > * {
-  padding: 0 100px;
-}
-.notion-page {
-  --notion-max-width: calc(min(1920px, 100vw));
-  padding: 0;
-}
-.notion-page-no-cover {
-  margin: 0 !important;
-}
-.notion-title {
-  display: none;
-}
-.notion-h1 {
-  font-size: var(--heading1);
-  font-weight: 700;
-  margin: 1.2em 0 0.5em;
-}
-.notion-gray_background {
-  color: var(--notion-gray_background_co);
-}
-.notion-h2 {
-  font-size: var(--heading2);
-  font-weight: 700;
-  margin: 1em 0 0.4em;
-}
-.bullet-btn {
-  background: var(--navbar-btn-bg-color);
-  border: none;
-  border-radius: var(--border-radius);
-  font-weight: 600;
-  opacity: 1;
-  padding: 15px 25px;
-}
-.bullet-btn,
-.bullet-btn:hover {
-  color: var(--navbar-btn-fg-color);
-}
-.notion-callout {
-  padding-bottom: 30px;
-  padding-top: 30px;
-}
-.notion-callout-text > b {
-  font-size: 1.625rem;
-  font-weight: 700;
-  padding-bottom: 20px !important;
-  text-align: left;
-}
-.notion-callout .notion-page-icon-inline {
-  height: 60px;
-  width: 60px;
-}
-.notion-page-icon-inline {
-  max-height: 100px;
-  max-width: 100px;
-}
-.notion-gray_background_co
-  > .notion-callout-text
-  > .bullet-2-column
-  > .notion-column
-  > .bullet-3-column
-  > div
-  > div
-  > .notion-page-icon-span {
-  background-color: var(--fg-color);
-  border-radius: 5px;
-  box-shadow: 0 0 2px #f7f9ff;
-}
-.notion-link {
-  color: var(--notion-blue);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.notion-link:hover {
-  opacity: 0.8;
-}
-.notion-hash-link {
-  display: none;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* ================================
-BULLET POINT FORMATTING - INTEGRATED
-================================ */
-.notion-list-disc:not(.blog_main .notion-list-disc) {
-  font-size: 1rem;
-  font-weight: 400;
-  list-style-type: disc;
-  position: relative;
-  margin-left: 20px;
-}
-.notion-list-disc:not(.blog_main .notion-list-disc) li:before {
-  content: "";
-  margin-right: 0;
-  position: unset;
-  height: auto;
-  width: auto;
-  background-position: unset !important;
-  background-size: unset !important;
-}
-.notion-list-disc:not(.blog_main .notion-list-disc) li {
-  margin-left: unset;
-}
 
-/* ================================
-BROWN CALLOUT WITH BACKGROUND IMAGE
-================================ */
-.notion-brown_background_co {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
-    url("https://res.cloudinary.com/ddvqw2xgc/image/upload/v1756341201/blue_hills_background_qgo5ck.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: var(--notion-brown_background_co);
-}
-.notion-brown_background_co .notion-callout-text,
-.notion-brown_background_co .notion-text,
-.notion-brown_background_co .notion-link,
-.notion-brown_background_co strong,
-.notion-brown_background_co em,
-.notion-brown_background_co * {
-  color: #ffffff !important;
-}
-.notion-brown_background_co .notion-callout-text {
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-}
-.notion-brown_background_co .wf-pp,
-.notion-brown_background_co .wf-pp * {
-  text-shadow: none !important;
-}
-.notion-brown_background_co > .notion-page-icon-inline {
-  display: none;
-}
+/* ================================================================
+   2. BASE — body, links, default rhythm
+   ================================================================ */
+* { box-sizing: border-box; }
 
-.notion-page-content-inner > .notion-gray_background_co {
-  background: var(--notion-gray_background_co);
-  margin: 0 100px;
-  width: fit-content;
-}
-.notion-gray_background_co > .notion-callout-text {
-  color: #fff;
-}
-.notion-gray_background_co > .notion-page-icon-inline {
-  background-color: #fff;
-  display: none;
-}
-.bullet-3-column > div > div > .notion-callout-text {
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-.bullet-3-column > div > div > .notion-callout-text > .notion-text {
-  font-size: 1.063rem;
-  font-weight: 500;
-}
-.notion-toggle > div > div {
-  font-size: 1rem;
-}
-summary {
-  list-style: none;
-  list-style-type: none;
-  width: 100%;
-}
-summary:before {
-  content: "+";
-  left: 0;
-  position: absolute;
-  top: 8px;
-}
-details[open] summary:before {
-  content: "-";
-  left: 0;
-  position: absolute;
-  top: 8px;
-}
-.notion-toggle {
+body, .bullet-page, .bullet-content {
+  font-family: var(--wf-sans);
   font-size: 17px;
-  font-weight: 500;
-  padding: 8px 30px 10px;
-  position: relative;
-  width: 100%;
+  line-height: 1.55;
+  color: var(--wf-fg);
+  background: var(--wf-paper);
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
-.notion-toggle .notion-h3 {
-  margin-top: 0;
-}
-.notion-blue_background_co {
-  background: var(--notion-blue_background_co);
-}
-.notion-text-children {
-  padding-left: 0;
-}
-.notion-blue_background_co
-  > .notion-callout-text
-  > .notion-text
-  > .notion-gray_background {
-  background-color: hsla(260, 9%, 60%, 0.15);
-  border-radius: var(--border-radius);
-  color: #fff;
-  padding: 5px 10px;
-}
-.notion-blue_background_co > .notion-page-icon-inline {
-  display: none;
-}
-.notion-blue_background_co > .notion-callout-text {
-  color: #fff;
-}
-.navbar-dropdown {
-  background-color: transparent;
-}
-.notion-gray_background > .bullet-btn {
-  background: #fff;
-  border: none;
-  border-radius: var(--border-radius);
-  color: var(--primary-color) !important;
-  font-size: 1.063rem;
+
+a { color: var(--wf-azure); text-decoration: underline; text-underline-offset: 3px; }
+a:hover { color: var(--wf-indigo-deep); }
+
+p { line-height: 1.6; max-width: 70ch; }
+
+strong, b { font-weight: 700; color: var(--wf-ink); }
+
+img { display: block; max-width: 100%; }
+
+/* Default button styling — applies to Bullet's default <a> CTAs as
+   well as any inline-code class triggers (.btn--ochre, .btn--ghost). */
+.bullet-button,
+a.bullet-button,
+.btn,
+button.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border-radius: var(--wf-radius);
+  font-family: var(--wf-sans);
+  font-size: 15px;
   font-weight: 600;
-  opacity: 1;
-  padding: 15px 25px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 120ms var(--wf-ease), background 120ms var(--wf-ease);
+  background: var(--wf-indigo);
+  color: #fff;
+}
+.bullet-button:hover, .btn:hover { transform: translateY(-1px); }
+
+.btn--ochre  { background: var(--wf-ochre); color: #fff; }
+.btn--indigo { background: var(--wf-indigo); color: #fff; }
+.btn--ghost  { background: transparent; color: inherit; border: 1.5px solid currentColor; }
+.btn--white  { background: #fff; color: var(--wf-indigo); }
+
+
+/* ================================================================
+   3. HEADINGS — display scale (deck DNA)
+   ================================================================ */
+h1, .bullet-h1,
+h2, .bullet-h2,
+h3, .bullet-h3 {
+  font-family: var(--wf-sans);
+  color: var(--wf-ink);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-weight: 800;
+  text-wrap: balance;
+}
+
+/* Page-level h1 — deck-cover scale on the home hero */
+h1, .bullet-h1 {
+  font-size: clamp(56px, 8vw + 1rem, 128px);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  margin: 24px 0 32px;
+}
+
+/* Section-level h2 — used everywhere */
+h2, .bullet-h2 {
+  font-size: clamp(40px, 5vw + 1rem, 96px);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  margin: 0 0 32px;
+}
+
+/* h3 — pillar headlines, big editorial */
+h3, .bullet-h3 {
+  font-size: clamp(32px, 3vw + 1rem, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin: 0 0 24px;
 }
 
 
-.bullet-3-column > .notion-column > .notion-h2,
-.bullet-3-column > .notion-column > .notion-text {
+/* ================================================================
+   4. EYEBROWS — deck-style "● LABEL" eyebrows
+   ----------------------------------------------------------------
+   In Notion, type the eyebrow as an inline code span at the top of
+   a section, then add the inline-code class .eyebrow (and optionally
+   .is-azure or .is-peach for tint). Bullet renders inline code as
+   <code>; we restyle it here.
+   ================================================================ */
+.bullet-content code.eyebrow,
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  font-family: var(--wf-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--wf-ochre);
+  padding: 0;
+  margin-bottom: 16px;
+}
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.eyebrow.is-azure { color: var(--wf-azure); }
+.eyebrow.is-peach { color: var(--wf-peach); }
+.eyebrow.is-ink   { color: var(--wf-ink); }
+
+
+/* ================================================================
+   5. NOTION COLOR-BG CALLOUTS — full-bleed band treatment
+   ----------------------------------------------------------------
+   In your current site these render as boxed callouts. Direction C
+   treats each as a full-width section band. Keys:
+     .brown_bg   → indigo hero / closer band  (full-bleed dark)
+     .blue_bg    → azure accent (used sparingly for eyebrows)
+     .orange_bg  → peach paper tint band
+     .gray_bg    → light tint band (TL;DR)
+     .purple_bg  → violet accent
+   ================================================================ */
+.brown_bg,
+.bullet-callout.brown_bg,
+.bullet-block.brown_bg {
+  background: var(--wf-indigo);
+  color: #fff;
+  padding: 120px var(--wf-gutter);
+  margin: 0 calc(var(--wf-gutter) * -1);     /* break out of column */
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+  border: none;
+}
+.brown_bg::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.brown_bg > * { position: relative; z-index: 1; }
+.brown_bg h1, .brown_bg h2, .brown_bg h3 { color: #fff; }
+.brown_bg p { color: rgba(255,255,255,0.88); }
+.brown_bg a { color: var(--wf-peach); }
+.brown_bg .eyebrow { color: var(--wf-peach); }
+
+.gray_bg,
+.bullet-callout.gray_bg {
+  background: var(--wf-paper-tint);
+  padding: 96px var(--wf-gutter);
+  margin: 0 calc(var(--wf-gutter) * -1);
+  border-radius: 0;
+  border: none;
+}
+.orange_bg,
+.bullet-callout.orange_bg {
+  background: #FAF7F2;       /* warm paper */
+  padding: 96px var(--wf-gutter);
+  margin: 0 calc(var(--wf-gutter) * -1);
+  border-radius: 0;
+  border: none;
+}
+.purple_bg,
+.bullet-callout.purple_bg {
+  background: var(--wf-violet);
+  color: #fff;
+  padding: 96px var(--wf-gutter);
+  margin: 0 calc(var(--wf-gutter) * -1);
+  border-radius: 0;
+}
+.purple_bg h1, .purple_bg h2, .purple_bg h3 { color: #fff; }
+.blue_bg,
+.bullet-callout.blue_bg {
+  background: var(--wf-npb);
+  padding: 24px;
+  border-radius: var(--wf-radius);
+  border: none;
+}
+
+
+/* ================================================================
+   6. ITALIC PEACH ACCENT — the "—for as long as you need one." style
+   ----------------------------------------------------------------
+   In Notion, italicise the words you want highlighted *and* wrap them
+   in inline code with class .accent (or .accent-peach). The combination
+   of <em> + <code class="accent"> hits this rule.
+   ================================================================ */
+em, .accent, .bullet-content code.accent {
+  font-style: italic;
+  font-weight: 700;
+  background: transparent;
+  padding: 0;
+  color: var(--wf-ochre);
+}
+.brown_bg em, .brown_bg .accent,
+.purple_bg em, .purple_bg .accent {
+  color: var(--wf-peach);
+}
+
+
+/* ================================================================
+   7. "LIKE AN ANIMAL" CHIP
+   ----------------------------------------------------------------
+   In Notion, type "Like an animal." as an inline code span and add
+   class .animal-chip.
+   ================================================================ */
+.bullet-content code.animal-chip,
+.animal-chip {
+  display: inline-block;
+  background: var(--wf-peach);
+  color: var(--wf-violet);
+  font-family: var(--wf-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  vertical-align: middle;
+  margin: 0 4px;
+}
+.brown_bg .animal-chip { background: var(--wf-ink); color: var(--wf-peach); }
+
+
+/* ================================================================
+   8. NAV — top of every page
+   ----------------------------------------------------------------
+   Bullet renders the nav as .bullet-nav. We invert it on the home
+   page where the hero is dark — apply via the home-page wrapper
+   class .wf-home (or scope to body[data-page="home"]).
+   ================================================================ */
+.bullet-nav {
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--wf-gutter);
+  border-bottom: 1px solid var(--wf-rule);
+  background: var(--wf-paper);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.bullet-nav a { text-decoration: none; color: var(--wf-ink); font-weight: 500; font-size: 15px; }
+.bullet-nav a:hover { color: var(--wf-indigo); }
+
+/* Inverted nav on dark hero pages */
+.wf-home .bullet-nav,
+body[data-page="home"] .bullet-nav {
+  background: var(--wf-indigo);
+  border-bottom: 1px solid var(--wf-rule-on-dark);
+}
+.wf-home .bullet-nav a,
+body[data-page="home"] .bullet-nav a { color: #fff; }
+.wf-home .bullet-nav .bullet-button,
+body[data-page="home"] .bullet-nav .bullet-button { background: var(--wf-ochre); }
+
+
+/* ================================================================
+   9. COLUMN LAYOUTS — Bullet's grid blocks
+   ----------------------------------------------------------------
+   .bullet-2-column, .bullet-3-column, .bullet-4-column are emitted
+   when you use a Notion column block. We set sensible gaps and
+   alignment.
+   ================================================================ */
+.bullet-2-column, .bullet-3-column, .bullet-4-column {
+  display: grid;
+  gap: 64px;
+  align-items: start;
+  margin: 64px 0;
+}
+.bullet-2-column { grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.bullet-3-column { grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.bullet-4-column { grid-template-columns: repeat(4, 1fr); gap: 24px; }
+
+/* ----------------------------------------------------------------
+   @TRIGGER: .wf-process-strip
+   Apply to a 4-column callout block to render the numbered process
+   strip with the dotted ruler behind. Each child should start with
+   an h3 ("01", "02", …) followed by a heading and one paragraph.
+   ---------------------------------------------------------------- */
+.wf-process-strip {
+  position: relative;
   text-align: center;
 }
-
-.blog_header_wrapper,
-.header_wrapper {
-  background: var(--bg-color);
-}
-.categories-section {
-  margin: 0 auto;
-}
-.pagination {
-  margin: 0;
-  padding: 50px 0;
-}
-.blog_main {
-  margin: 0 auto;
-}
-.notion-page-content-inner img {
-  flex: 1 !important;
-}
-.notion-blue_background_co .notion-gray,
-.notion-blue_background_co > * {
-  color: #fff !important;
-}
-.notion-blue_background_co .bullet-btn {
-  background-color: #fff !important;
-}
-.notion-blue_background_co .notion-gray_background {
-  background-color: unset !important;
-}
-.notion-gray_background_co .notion-gray,
-.notion-gray_background_co > * {
-  color: #fff !important;
-}
-.notion-page {
-  width: 100%;
-}
-.bullet-5-column figure div {
-  height: 100% !important;
-}
-.bullet-5-column {
-  align-items: center;
-}
-img.notion-page-icon {
-  border-radius: unset;
-}
-.notion-list li {
-  margin-left: unset;
-}
-.notion-page-content-inner .notion-list-disc {
-  padding-inline-start: unset;
-}
-.notion-list-numbered {
-  list-style-position: inside;
-}
-
-/* Updated to work with new bullet formatting */
-.notion-page-content-inner
-  > .notion-list-disc:not(.blog_main .notion-list-disc) {
-  padding-inline-start: 120px; /* 100px base + 20px for bullets */
-}
-.notion-list-disc li:before {
-  margin-right: 10px;
-  position: unset;
-}
-.notion-empty-icon {
-  display: none !important;
-}
-
-/* ================================
-BLOG PAGE TYPOGRAPHY & SPACING
-================================ */
-.blog_main .blog_page_content {
-  --font-size: calc(var(--base-font-size) + 2px);
-  --quote-font-size: 1.143rem;
-  --heading-font-size: 1.4rem;
-  --heading-3: calc(var(--heading-font-size) * 1.04);
-}
-.blog_main .blog_page_content .notion-h3 {
-  font-size: var(--heading-3);
-}
-.blog_main .blog_page_content .notion-text {
-  padding-bottom: 0;
-}
-.blog_main .blog_page_content .notion-h1 {
-  margin-top: 1.08em;
-}
-.blog_main .blog_page_content .notion-h2 {
-  margin-top: 1.1em;
-}
-
-/* Let the title breathe and scale responsively */
-.header-below-thumbnail h1 {
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  margin-bottom: 0.4em;
-}
-@media (max-width: 640px) {
-  .header-below-thumbnail h1 {
-    line-height: 1.26;
-  }
-}
-
-.blog_main .blog_page_content .notion-simple-table-cell {
-  font-size: 1rem;
-}
-.blog_main .blog_page_content .notion-table-container {
-  padding-bottom: 18px;
-  padding-inline-end: 18px;
-  padding-top: 13px;
-}
-.blog_main .blog_page_content .notion-quote {
-  font-size: var(--quote-font-size);
-}
-.blog_main .blog_page_content .notion {
-  font-size: 1rem;
-}
-.blog_main .notion-list-disc {
-  list-style-type: disc;
-}
-.blog_main .notion-list-disc li:before {
+.wf-process-strip::before {
   content: "";
-  margin-right: 0;
+  position: absolute;
+  top: 24px; left: 10%; right: 10%;
+  border-top: 1.5px dashed currentColor;
+  opacity: 0.4;
 }
-.blog_main summary:before {
-  content: "";
+.wf-process-strip > * {
+  position: relative;
+  z-index: 1;
+  padding: 0 24px;
 }
-.blog_main summary {
-  list-style: inside;
-  list-style-type: disclosure-closed;
-}
-.blog_main details[open] > summary:first-of-type {
-  list-style-type: disclosure-open;
-}
-.blog_main details[open] summary:before {
-  content: "";
-}
-.blog_main .notion-toggle {
-  padding: 3px 2px;
-}
-.blog_main .notion-callout {
-  border: 1px solid var(--fg-color-0);
-  display: flex;
-  padding: calc(var(--padding)) calc(var(--padding) * 0.75);
-}
-
-/* Base font-size normalisation for various elements */
-.active-breadcrumb,
-.blog_main .blog-description,
-.blog_main .blog_page_content,
-.blog_main .blog_page_content .notion,
-.blog_main .blog_page_content .notion-quote,
-.blog_main .blog_page_content .notion-simple-table-cell,
-.blog_main .notion-list,
-.blog_main .notion-list-disc,
-.blog_main .notion-text,
-.blog_main .notion-to-do,
-.blog_main .notion-toggle,
-.blog_navigator_title,
-.breadcrumb,
-.bullet-3-column > div > div > .notion-callout-text,
-.bullet-3-column > div > div > .notion-callout-text > .notion-text,
-.bullet-btn,
-.header-below-thumbnail > .blog-subtitle,
-.list-item-notion,
-.list-item-notion > *,
-.notion-collection-card-size-medium
-  > .notion-collection-card-body
-  > .notion-collection-card-property
-  > .notion-property-text,
-.notion-collection-card-size-medium
-  > .notion-collection-card-body
-  > .notion-collection-card-property
-  > span
-  > span
-  > span
-  > .notion-page-title-text,
-.notion-gray_background > .bullet-btn,
-.notion-text,
-.notion-toggle > div > div {
-  font-size: var(--base-font-size);
-}
-/* ================================
-TEXT SPACING FOR LONG-FORM PAGES
-================================ */
-.notion-text {
-  line-height: 1.65;
-  margin-bottom: 0.75em;
-}
-.blog_main .notion-callout > .notion-page-icon-inline {
-  background: transparent;
-  display: block;
-  height: 20px;
-  width: 20px;
-}
-.blog_main .notion-to-do {
-  font-size: calc(var(--base-font-size) * 1.0001);
-}
-.blog_main .notion-to-do-body {
-  padding: 3px 2px;
-}
-.blog_main .notion-to-do-item {
-  align-items: start;
-}
-.blog_main .notion-property-checkbox-unchecked {
-  margin-top: 8px;
-}
-/* ================================
-RESPONSIVE
-================================ */
-@media screen and (max-width: 800px) {
-  .notion-page-content-inner > * {
-    padding: 0 20px;
-  }
-  .notion-page-content-inner > .notion-gray_background_co {
-    margin: 0 20px;
-    width: auto;
-  }
-  .notion-page-content-inner > .notion-blue_background_co {
-    display: unset;
-    margin: 0;
-    width: 100%;
-  }
-}
-@media (min-width: 650px) {
-  .bullet-3-column .notion-column {
-    width: calc(33.3333% - 30.66664px) !important;
-  }
-}
-@media (max-width: 600px) {
-  .navbar {
-    height: 70px !important;
-  }
-  .navbar-brand-logo {
-    min-height: 50px !important;
-    min-width: 50px !important;
-    max-height: 80px !important;
-    padding: 0 5px !important;
-  }
-}
-
-/* ================================
-   FINAL BLOG OVERRIDES - Fixed Alignment
-   ================================ */
-
-/* Apply consistent padding to ALL direct children in blog pages */
-.blog_main .notion-page-content-inner > * {
-    padding-left: 100px !important;
-    padding-right: 100px !important;
-}
-
-/* Responsive adjustments */
-@media screen and (max-width: 800px) {
-    .blog_main .notion-page-content-inner > * {
-        padding-left: 20px !important;
-        padding-right: 20px !important;
-    }
-}
-
-/* BLOG: pixel-perfect left edge */
-.blog_main .header-below-thumbnail h1,
-.blog_main .header-below-thumbnail .blog-subtitle {
-  margin-left: 0 !important;
-  padding-left: 0 !important;
-}
-
-/* Ensure the first block of the article starts flush */
-.blog_main .blog_page_content > *:first-child {
-  margin-left: 0 !important;
-  padding-left: 0 !important;
-}
-
-/* Stretch custom code embeds to full width (flex parent uses align-items: flex-start) */
-.notion-page-content-inner > .notion-custom-code {
-  align-self: stretch;
-}
-
-/* Guard against background callouts adding side margins on blog pages */
-.blog_main .notion-page-content-inner > .notion-gray_background_co,
-.blog_main .notion-page-content-inner > .notion-blue_background_co {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-
-/* =======================================================
-   PARTNER BADGES — lock badge area to a uniform height so
-   the paragraph beneath each starts at the same Y position
-   across all three callout columns regardless of the
-   badge's native aspect ratio or text reflow width.
-   ======================================================= */
-.bullet-3-column .notion-callout figure.notion-asset-wrapper-image {
-  height: 180px;
-  margin: 0 0 20px;
-  display: flex !important;
-  align-items: center;
-  justify-content: flex-start;
-}
-.bullet-3-column .notion-callout figure.notion-asset-wrapper-image > div {
-  height: 100% !important;
-  /* preserve Bullet's inline width (288px for badges, 480px for team photos) */
-  display: flex !important;
+.wf-process-strip h3 {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  background: var(--wf-indigo);
+  color: #fff;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--wf-mono);
+  font-weight: 700;
+  font-size: 14px;
+  margin: 0 auto 24px;
 }
-.bullet-3-column .notion-callout figure.notion-asset-wrapper-image img {
-  max-height: 100%;
-  max-width: 100%;
-  height: auto;
-  width: auto;
-  object-fit: contain !important;
+.wf-process-strip h4 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: inherit;
+}
+.wf-process-strip p {
+  font-size: 15px;
+  margin: 0 auto;
+  max-width: 220px;
+  opacity: 0.75;
 }
 
+
+/* ================================================================
+   10. PILLAR BANDS — three full-width image+text rows
+   ----------------------------------------------------------------
+   @TRIGGER: .wf-pillar
+   Apply to a 2-column block. First child = text (eyebrow + h3 + p),
+   second child = image. Add .wf-pillar--flip to swap order.
+   ================================================================ */
+.wf-pillar {
+  padding: 80px var(--wf-gutter);
+  margin: 0 calc(var(--wf-gutter) * -1);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.wf-pillar:nth-of-type(even) { background: #FAF7F2; }
+.wf-pillar + .wf-pillar { border-top: 1px solid var(--wf-rule); }
+.wf-pillar--flip > *:first-child { order: 2; }
+
+.wf-pillar img,
+.wf-pillar .bullet-image img {
+  width: 100%;
+  aspect-ratio: 5/3;
+  object-fit: cover;
+  border-radius: var(--wf-radius);
+  box-shadow: var(--wf-shadow-md);
+}
+.wf-pillar h3 { font-size: clamp(40px, 4vw + 1rem, 64px); }
+
+
+/* ================================================================
+   11. PAIN-POINTS WIDGET — auto-scroll preserved
+   ----------------------------------------------------------------
+   Your existing widget HTML keeps its own structure; we just
+   restyle the bubbles + add the masking gradient.
+   ================================================================ */
+.pp-stack, .wf-painpoints {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 380px;
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+}
+.pp-bubble, .wf-painpoints__item {
+  background: #fff;
+  color: var(--wf-ink);
+  border: 1px solid var(--wf-rule);
+  border-radius: var(--wf-radius-lg);
+  padding: 10px 18px;
+  font-size: 17px;
+  line-height: 1.4;
+  max-width: 92%;
+  box-shadow: var(--wf-shadow-sm);
+}
+.pp-bubble:nth-child(odd),
+.wf-painpoints__item:nth-child(odd)  { align-self: flex-start; }
+.pp-bubble:nth-child(even),
+.wf-painpoints__item:nth-child(even) { align-self: flex-end; }
+
+
+/* ================================================================
+   12. PARTNER TOP-BAR CARDS — restrained editorial treatment
+   ----------------------------------------------------------------
+   @TRIGGER: .wf-partners
+   Apply to a 3-column block. Each child = one partner with an h3
+   (the partner name) and a paragraph. The colour bar is set per
+   partner via .is-zapier / .is-notion / .is-vanta.
+   ================================================================ */
+.wf-partners > * {
+  padding: 24px 28px;
+  border-top: 2px solid var(--wf-ink);
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+.wf-partners h3 {
+  font-family: var(--wf-mono);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+.wf-partners p { font-size: 14px; color: var(--wf-fg-muted); margin: 0; }
+.wf-partners .is-zapier { border-top-color: #FF4F00; }
+.wf-partners .is-zapier h3 { color: #FF4F00; }
+.wf-partners .is-notion { border-top-color: #000000; }
+.wf-partners .is-notion h3 { color: #000000; }
+.wf-partners .is-vanta  { border-top-color: #00C49A; }
+.wf-partners .is-vanta  h3 { color: #00C49A; }
+
+
+/* ================================================================
+   13. DOTTED RULE — section-header rule (eyebrow + dot-rule)
+   ----------------------------------------------------------------
+   @TRIGGER: a Notion divider with class .dot-rule, OR an inline
+   code span with .dot-rule placed after an eyebrow.
+   ================================================================ */
+hr.dot-rule, .dot-rule {
+  display: block;
+  height: 0;
+  border: none;
+  border-top: 1.5px dashed rgba(46,27,136,0.32);
+  margin: 24px 0;
+}
+.brown_bg hr.dot-rule, .brown_bg .dot-rule {
+  border-top-color: rgba(255,255,255,0.3);
+}
+
+
+/* ================================================================
+   14. NUMBERED MARKER — used in pillar headers
+   ----------------------------------------------------------------
+   @TRIGGER: inline code span with class .num-marker, content "01".
+   ================================================================ */
+.bullet-content code.num-marker,
+.num-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px; height: 56px;
+  border: 1.5px solid var(--wf-indigo);
+  border-radius: 50%;
+  font-family: var(--wf-mono);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--wf-indigo);
+  background: transparent;
+  margin-right: 18px;
+  vertical-align: middle;
+}
+.brown_bg .num-marker { border-color: rgba(255,255,255,0.6); color: #fff; }
+
+
+/* ================================================================
+   15. FOOTER
+   ================================================================ */
+.bullet-footer, footer {
+  background: var(--wf-ink);
+  color: #cbcbcb;
+  padding: 56px var(--wf-gutter) 36px;
+  font-size: 14px;
+  margin-top: 0;
+}
+.bullet-footer a, footer a { color: #cbcbcb; text-decoration: none; }
+.bullet-footer a:hover, footer a:hover { color: #fff; }
+.bullet-footer h6, footer h6 {
+  color: #fff; font-size: 13px; letter-spacing: 0.06em;
+  text-transform: uppercase; margin: 0 0 12px;
+}
+
+
+/* ================================================================
+   16. RESPONSIVE — collapse columns + reduce gutters
+   ================================================================ */
+@media (max-width: 900px) {
+  :root { --wf-gutter: 24px; }
+
+  .bullet-2-column,
+  .bullet-3-column,
+  .bullet-4-column,
+  .wf-pillar {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .wf-pillar--flip > *:first-child { order: 0; }
+
+  .brown_bg, .gray_bg, .orange_bg, .purple_bg,
+  .wf-pillar { padding: 64px var(--wf-gutter); }
+
+  .wf-process-strip::before { display: none; }
+
+  h1, .bullet-h1 { font-size: clamp(48px, 12vw, 80px); }
+  h2, .bullet-h2 { font-size: clamp(36px, 9vw, 56px); }
+  h3, .bullet-h3 { font-size: clamp(28px, 7vw, 40px); }
+}
+
+@media (max-width: 540px) {
+  .bullet-nav { padding: 0 16px; height: 72px; }
+  .bullet-nav .bullet-nav__links { display: none; } /* hamburger handled by Bullet's JS */
+}
+
+
+/* ================================================================
+   17. PRINT — keep it clean
+   ================================================================ */
+@media print {
+  .brown_bg, .purple_bg { background: #fff !important; color: #000 !important; }
+  .brown_bg::before { display: none; }
+  .bullet-nav, .bullet-footer, footer { display: none; }
+}
+
+/* ================================================================
+   END
+   ================================================================ */
