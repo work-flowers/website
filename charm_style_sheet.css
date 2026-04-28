@@ -680,9 +680,10 @@ img.notion-page-icon { border-radius: unset; }
   }
   .notion-blue_background_co { padding: 48px 20px !important; }
   .notion-brown_background_co { padding: 48px 20px !important; }
-  .notion-page-content-inner > .notion-yellow_background_co {
-    padding: 28px 20px !important;
-    margin: 12px 12px !important;
+  .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type),
+  .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image),
+  .notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)) {
+    padding: 48px 20px !important;
   }
 }
 
