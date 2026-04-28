@@ -680,6 +680,10 @@ img.notion-page-icon { border-radius: unset; }
   }
   .notion-blue_background_co { padding: 48px 20px !important; }
   .notion-brown_background_co { padding: 48px 20px !important; }
+  .notion-page-content-inner > .notion-yellow_background_co {
+    padding: 28px 20px !important;
+    margin: 12px 12px !important;
+  }
 }
 
 /* ================================================================
