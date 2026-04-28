@@ -674,6 +674,12 @@ img.notion-page-icon { border-radius: unset; }
   .navbar-brand-logo { min-height: 36px !important; max-height: 56px !important; padding: 0 5px !important; }
   .notion-h1 { font-size: 3rem; line-height: 1; }
   .notion-h2 { font-size: 2rem; }
+  .notion-page-content-inner > .notion-blue_background_co:first-of-type,
+  .notion-page-content-inner > .notion-brown_background_co:first-of-type {
+    padding: 56px 20px 72px !important;
+  }
+  .notion-blue_background_co { padding: 48px 20px !important; }
+  .notion-brown_background_co { padding: 48px 20px !important; }
 }
 
 /* ================================================================
