@@ -253,8 +253,10 @@ body {
 }
 .notion-link:hover { opacity: 0.8; color: var(--wf-azure-hover); }
 
-/* Partner badge images — beat Bullet's inline object-fit:cover */
-.notion-callout figure.notion-asset-wrapper-image img { object-fit: contain !important; }
+/* Partner badge images — beat Bullet's inline object-fit:cover.
+   Scoped by filename so other callout images (e.g. the brown pillar
+   photo) keep Bullet's default cover and don't get letterboxed. */
+.notion-callout figure.notion-asset-wrapper-image img[src*="partner-padded"] { object-fit: contain !important; }
 
 /* ================================================================
    7. HERO BLOCK — first .notion-blue_background_co on the page
