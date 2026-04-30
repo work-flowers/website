@@ -873,18 +873,16 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
   ~ .bullet-2-column:has(figure.notion-asset-wrapper-image) {
   flex-direction: row;
 }
-/* Constrain the figure wrapper itself (not just the img) so all three
-   photos render at identical 4:5 / max 420px regardless of source aspect.
-   Zero out internal padding/bg so the img fills the box edge-to-edge —
-   Bullet's polaroid-frame chrome around figures is removed on About Us. */
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) > .notion-column:has(figure.notion-asset-wrapper-image) {
-  display: flex;
-  justify-content: flex-start;
-}
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image {
+/* Photo sizing: put the 4:5 constraint on the img itself (not the figure),
+   so Bullet's nested wrapper divs can't introduce vertical letterboxing.
+   The figure shrink-wraps the img; padding/bg/borders zeroed out. */
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image,
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image > div,
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image > div > div {
   width: 100% !important;
   max-width: 420px !important;
-  aspect-ratio: 4/5;
+  height: auto !important;
+  aspect-ratio: auto !important;
   margin: 0 !important;
   padding: 0 !important;
   background: transparent !important;
@@ -892,21 +890,16 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
   box-shadow: none !important;
   display: block;
 }
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image > div {
-  width: 100% !important;
-  height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
-}
 body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image img {
+  display: block !important;
   width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
+  max-width: 420px !important;
+  height: auto !important;
+  aspect-ratio: 4/5 !important;
   flex: 0 0 auto !important;
   margin: 0 !important;
   padding: 0 !important;
-  object-fit: cover;
+  object-fit: cover !important;
   border-radius: 5px;
   box-shadow: var(--wf-shadow-md);
 }
