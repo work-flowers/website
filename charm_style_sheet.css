@@ -791,6 +791,10 @@ body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.noti
    Brown-band 2-col where each column leads with an inline-code-only
    eyebrow (01 / 02). The eyebrow renders as a 64px outline ring;
    H3 + body sit beneath. Bottom rule between rows. */
+/* About Us: principles band uses cool paper-tint, not warm cream */
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) {
+  background: var(--wf-paper-tint) !important;
+}
 body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type):has(.bullet-2-column .notion-text:first-child > code:only-child) .bullet-2-column {
   align-items: start;
   column-gap: 80px;
