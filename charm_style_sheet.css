@@ -767,10 +767,11 @@ body.about-us .notion-page-content-inner:not(:has(> .notion-blue_background_co:f
 }
 
 /* 19.2 Hero supporting 2-column
-   The first top-level 2-col directly under the H1 is NOT a pillar
-   band — render in normal gutter as an editorial intro with the
-   right column as a sidebar pull-out. Overrides §9 pillar treatment. */
-body.about-us .notion-page-content-inner > .notion-h1 + .bullet-2-column {
+   The hero supporting 2-col is the top-level no-figure 2-col that
+   contains an inline-code eyebrow (e.g. WHO WE WORK WITH). Identifying
+   by content rather than `+` adjacency to the H1 avoids Bullet's
+   sibling wrapping. Overrides §9 pillar treatment. */
+body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)):has(> .notion-column .notion-text > code:first-child:last-child) {
   margin-top: 64px;
   padding: 0 100px !important;
   width: auto !important;
@@ -779,7 +780,9 @@ body.about-us .notion-page-content-inner > .notion-h1 + .bullet-2-column {
   gap: 80px;
   align-items: start;
 }
-body.about-us .notion-page-content-inner > .notion-h1 + .bullet-2-column > .notion-column:nth-of-type(2) {
+/* Sidebar pull-out: any column inside that 2-col whose first paragraph
+   is a single inline-code eyebrow gets the ochre left border. */
+body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)) > .notion-column:has(> .notion-text:first-child > code:first-child:last-child) {
   border-left: 2px solid var(--wf-ochre);
   padding-left: 32px;
 }
@@ -854,8 +857,17 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
   column-gap: 64px;
   background: transparent;
 }
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image):nth-of-type(even) {
+/* Alternate flip via sibling chain: row 2 (Nasri) flips, row 3 (Ernest)
+   un-flips. Avoids :nth-of-type(even) which counts among all same-tag
+   siblings, not just figure-2-cols. */
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image)
+  + .bullet-2-column:has(figure.notion-asset-wrapper-image) {
   flex-direction: row-reverse;
+}
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image)
+  + .bullet-2-column:has(figure.notion-asset-wrapper-image)
+  + .bullet-2-column:has(figure.notion-asset-wrapper-image) {
+  flex-direction: row;
 }
 body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image img {
   aspect-ratio: 4/5;
@@ -926,7 +938,11 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
 }
 @media (max-width: 600px) {
   body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image),
-  body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image):nth-of-type(even) {
+  body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image)
+    + .bullet-2-column:has(figure.notion-asset-wrapper-image),
+  body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image)
+    + .bullet-2-column:has(figure.notion-asset-wrapper-image)
+    + .bullet-2-column:has(figure.notion-asset-wrapper-image) {
     flex-direction: column;
   }
   body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image img {
