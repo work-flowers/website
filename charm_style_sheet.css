@@ -901,7 +901,7 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
   padding: 0 !important;
   object-fit: cover !important;
   border-radius: 5px;
-  box-shadow: var(--wf-shadow-md);
+  box-shadow: none !important;
 }
 body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-h2 {
   font-size: clamp(2.5rem, 4.5vw, 3.5rem);
