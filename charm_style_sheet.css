@@ -759,9 +759,10 @@ body.about-us .notion-page-content-inner:not(:has(> .notion-blue_background_co:f
   text-wrap: balance;
   max-width: 1240px;
 }
-/* Italic em inside the paper H1 → ochre accent (mirrors final-CTA peach em) */
+/* Italic em inside the paper H1 → indigo accent (About Us leans cooler
+   than the homepage hero, which uses ochre/peach). */
 body.about-us .notion-page-content-inner:not(:has(> .notion-blue_background_co:first-child)) .notion-h1:first-of-type em {
-  color: var(--wf-ochre);
+  color: var(--wf-indigo);
   font-style: italic;
   font-weight: 700;
 }
