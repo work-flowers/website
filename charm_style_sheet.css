@@ -735,3 +735,202 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   padding: 32px 0;
   border-bottom: 1px solid color-mix(in oklch, currentColor 8%, transparent);
 }
+
+/* ================================================================
+  19. ABOUT US (Direction B)
+   Editorial paper layout — opens on white, not the indigo hero.
+   All rules scoped to body.about-us so home/blog stay untouched.
+   ================================================================ */
+
+/* 19.1 Editorial paper hero
+   When the first top-level block isn't an indigo callout, the page
+   opens as paper: tall top breathing room, generous gutter, large
+   balanced display H1. */
+body.about-us .notion-page-content-inner > *:first-child:not(.notion-blue_background_co) {
+  padding-top: 96px;
+  padding-left: 100px;
+  padding-right: 100px;
+}
+body.about-us .notion-page-content-inner:not(:has(> .notion-blue_background_co:first-child)) .notion-h1:first-of-type {
+  font-size: clamp(3rem, 6vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  text-wrap: balance;
+  max-width: 1240px;
+}
+/* Italic em inside the paper H1 → ochre accent (mirrors final-CTA peach em) */
+body.about-us .notion-page-content-inner:not(:has(> .notion-blue_background_co:first-child)) .notion-h1:first-of-type em {
+  color: var(--wf-ochre);
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* 19.2 Hero supporting 2-column
+   The first top-level 2-col directly under the H1 is NOT a pillar
+   band — render in normal gutter as an editorial intro with the
+   right column as a sidebar pull-out. Overrides §9 pillar treatment. */
+body.about-us .notion-page-content-inner > .notion-h1 + .bullet-2-column {
+  margin-top: 64px;
+  padding: 0 100px !important;
+  width: auto !important;
+  align-self: auto;
+  background: transparent;
+  gap: 80px;
+  align-items: start;
+}
+body.about-us .notion-page-content-inner > .notion-h1 + .bullet-2-column > .notion-column:nth-of-type(2) {
+  border-left: 2px solid var(--wf-ochre);
+  padding-left: 32px;
+}
+
+/* 19.3 Principles display list
+   Brown-band 2-col where each column leads with an inline-code-only
+   eyebrow (01 / 02). The eyebrow renders as a 64px outline ring;
+   H3 + body sit beneath. Bottom rule between rows. */
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type):has(.bullet-2-column .notion-text:first-child > code:only-child) .bullet-2-column {
+  align-items: start;
+  column-gap: 80px;
+  row-gap: 48px;
+}
+/* Successive 2-col blocks inside the band → 1px rule between rows */
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) > .bullet-2-column:not(:last-child) {
+  border-bottom: 1px solid var(--wf-rule);
+  padding-bottom: 48px;
+  margin-bottom: 48px;
+}
+/* Numbered eyebrow → 64px outline ring (mirrors React mock .num-marker) */
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column .notion-text:first-child:has(> code:only-child) {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+  color: inherit;
+  margin-bottom: 16px;
+}
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column .notion-text:first-child:has(> code:only-child) > code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--wf-indigo);
+  background: transparent;
+  font-family: var(--wf-mono);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--wf-indigo);
+  letter-spacing: 0;
+}
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column .notion-h3 {
+  font-size: clamp(1.75rem, 2.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 12px 0 8px;
+  color: var(--wf-ink);
+}
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column .notion-text:not(:first-child) {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  max-width: 560px;
+  color: var(--wf-fg-muted);
+}
+
+/* 19.4 Team alternating rows
+   Three sequential top-level 2-cols, each one figure + one text column.
+   Overrides §9 pillar-band full-bleed treatment. Even rows flip so
+   Nasri's image sits on the right. */
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) {
+  border-top: 1px solid var(--wf-rule);
+  padding: 48px 100px !important;
+  margin: 0 !important;
+  width: auto !important;
+  align-self: stretch;
+  align-items: center;
+  column-gap: 64px;
+  background: transparent;
+}
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image):nth-of-type(even) {
+  flex-direction: row-reverse;
+}
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image img {
+  aspect-ratio: 4/5;
+  max-width: 420px;
+  width: 100%;
+  border-radius: 5px;
+  box-shadow: var(--wf-shadow-md);
+  object-fit: cover;
+}
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-h2 {
+  font-size: clamp(2.5rem, 4.5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.04;
+  color: var(--wf-ink);
+}
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child)) {
+  font-size: 1.1875rem;
+  line-height: 1.6;
+  max-width: 680px;
+}
+/* Inline-code chips inside team bios → peach pill chips (animal-chip) */
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child)) code {
+  display: inline-block;
+  background: var(--wf-peach);
+  color: var(--wf-violet);
+  font-family: var(--wf-mono);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin: 4px 6px 0 0;
+  letter-spacing: 0;
+}
+
+/* 19.5 Responsive — mirrors §17 breakpoints */
+@media screen and (max-width: 1024px) {
+  body.about-us .notion-page-content-inner > *:first-child:not(.notion-blue_background_co) {
+    padding: 64px 32px 0;
+  }
+  body.about-us .notion-page-content-inner > .notion-h1 + .bullet-2-column {
+    padding: 0 32px !important;
+    gap: 48px;
+  }
+  body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) {
+    padding: 48px 32px !important;
+    column-gap: 48px;
+  }
+}
+@media screen and (max-width: 800px) {
+  body.about-us .notion-page-content-inner > *:first-child:not(.notion-blue_background_co) {
+    padding: 56px 20px 0;
+  }
+  body.about-us .notion-page-content-inner > .notion-h1 + .bullet-2-column {
+    padding: 0 20px !important;
+    gap: 32px;
+  }
+  body.about-us .notion-page-content-inner > .notion-h1 + .bullet-2-column > .notion-column:nth-of-type(2) {
+    border-left: none;
+    border-top: 2px solid var(--wf-ochre);
+    padding-left: 0;
+    padding-top: 24px;
+  }
+  body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) {
+    padding: 40px 20px !important;
+    column-gap: 32px;
+  }
+}
+@media (max-width: 600px) {
+  body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image),
+  body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image):nth-of-type(even) {
+    flex-direction: column;
+  }
+  body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image img {
+    max-width: 100%;
+    aspect-ratio: 4/5;
+  }
+}
