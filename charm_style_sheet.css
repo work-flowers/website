@@ -873,13 +873,25 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
   ~ .bullet-2-column:has(figure.notion-asset-wrapper-image) {
   flex-direction: row;
 }
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image img {
-  aspect-ratio: 4/5;
-  max-width: 420px;
+/* Constrain the figure wrapper itself (not just the img) so all three
+   photos render at identical 4:5 / max 420px regardless of source aspect.
+   Beats §16's `.notion-page-content-inner img { flex: 1 }` flex-grow. */
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image,
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image > div {
   width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4/5;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image img {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 0 0 auto !important;
+  object-fit: cover;
   border-radius: 5px;
   box-shadow: var(--wf-shadow-md);
-  object-fit: cover;
 }
 body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-h2 {
   font-size: clamp(2.5rem, 4.5vw, 3.5rem);
