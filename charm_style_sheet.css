@@ -934,10 +934,11 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
   margin: 4px 6px 0 0;
   letter-spacing: 0;
 }
-/* Chip palette rotation — peach/violet → npb/indigo → paper-tint/azure */
+/* Chip palette rotation — indigo/white → npb/indigo → paper-tint/azure
+   (no ochre/peach; ochre is reserved for the Chat With CTA buttons). */
 body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child)) code:nth-of-type(3n+1) {
-  background: var(--wf-peach);
-  color: var(--wf-violet);
+  background: var(--wf-indigo);
+  color: #fff;
 }
 body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child)) code:nth-of-type(3n+2) {
   background: var(--wf-npb);
