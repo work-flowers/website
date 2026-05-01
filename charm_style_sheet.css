@@ -992,33 +992,27 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   text-wrap: balance;
 }
 
-/* Section headings ("Featured Posts", "Posts") — display + dotted ruler */
+/* Section headings ("Featured Posts", "Posts") — render as mono ochre
+   eyebrow rows above a dashed indigo rule, matching the ●-prefixed
+   eyebrow pattern used elsewhere on the site. */
 .blog-section h2.header,
 .categories-section h2.header {
-  font-family: var(--wf-sans);
-  font-size: clamp(1.625rem, 2.4vw, 2.25rem);
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: var(--wf-ink);
-  margin: 64px 0 32px;
-  padding-top: 32px;
-  border-top: 1.5px dashed rgba(46,27,136,0.32);
-  text-align: left;
-  position: relative;
-}
-.blog-section h2.header::before,
-.categories-section h2.header::before {
-  content: "● ";
   font-family: var(--wf-mono);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--wf-ochre);
-  display: block;
-  margin-bottom: 12px;
-  line-height: 1;
+  text-align: left;
+  margin: 64px 0 32px;
+  padding-top: 32px;
+  border-top: 1.5px dashed rgba(46,27,136,0.32);
+  line-height: 1.4;
+}
+.blog-section h2.header::before,
+.categories-section h2.header::before {
+  content: "● ";
+  color: var(--wf-ochre);
 }
 
 /* Category filter chips — same outlined indigo treatment as article tags */
