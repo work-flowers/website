@@ -786,21 +786,27 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   text-wrap: balance;
 }
 
-/* Tags — mono ochre uppercase, no chip background */
+/* Tags — outlined indigo pill chips, mono uppercase. Hover fills indigo. */
 .blog_main .tags-container .blog-tags {
+  display: inline-block;
   font-family: var(--wf-mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--wf-ochre);
+  color: var(--wf-indigo) !important;
   background: transparent !important;
-  padding: 4px 0;
-  margin-right: 20px;
-  border: none;
-  text-decoration: none;
+  padding: 6px 14px;
+  margin: 0 8px 8px 0;
+  border: 1.5px solid var(--wf-indigo);
+  border-radius: 999px;
+  text-decoration: none !important;
+  transition: background-color 150ms ease, color 150ms ease;
 }
-.blog_main .tags-container .blog-tags:hover { color: var(--wf-ochre-hover); }
+.blog_main .tags-container .blog-tags:hover {
+  background: var(--wf-indigo) !important;
+  color: #fff !important;
+}
 
 /* Body type — measured line for long-form reading */
 .blog_main .blog_page_content .notion-text {
