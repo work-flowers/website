@@ -793,9 +793,9 @@ body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.noti
   align-items: start;
 }
 /* Sidebar pull-out: any column inside that 2-col whose first paragraph
-   is a single inline-code eyebrow gets the indigo left border. */
+   is a single inline-code eyebrow gets the ochre left border. */
 body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)) > .notion-column:has(> .notion-text:first-child > code:first-child:last-child) {
-  border-left: 2px solid var(--wf-indigo);
+  border-left: 2px solid var(--wf-ochre);
   padding-left: 32px;
 }
 
