@@ -818,16 +818,15 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   margin-bottom: 1.25em;
 }
 
-/* H2 — editorial section heading with dotted top rule */
+/* H2 — editorial section heading. No auto top rule — author adds a
+   Notion divider when they want a section break, which is styled below. */
 .blog_main .blog_page_content .notion-h2 {
   font-size: clamp(1.75rem, 2.6vw, 2.5rem);
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--wf-ink);
-  margin: 2.2em 0 0.6em;
-  padding-top: 1.4em;
-  border-top: 1.5px dashed rgba(46,27,136,0.32);
+  margin: 1.8em 0 0.5em;
   text-wrap: balance;
   max-width: 70ch;
 }
@@ -1223,7 +1222,7 @@ body.legal .notion-page-content-inner .notion-h1 em {
   font-weight: 700;
 }
 
-/* H2 — editorial section heading with dotted indigo top rule */
+/* H2 — editorial section heading. No auto top rule. */
 body.legal .notion-page-content-inner .notion-h2 {
   font-family: var(--wf-sans);
   font-size: clamp(1.5rem, 2.4vw, 2rem);
@@ -1231,9 +1230,7 @@ body.legal .notion-page-content-inner .notion-h2 {
   line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--wf-ink);
-  margin: 2.4em 0 0.6em;
-  padding-top: 1.4em;
-  border-top: 1.5px dashed rgba(46,27,136,0.32);
+  margin: 1.8em 0 0.5em;
   text-wrap: balance;
 }
 body.legal .notion-page-content-inner .notion-h2 em {
@@ -1297,15 +1294,18 @@ body.legal .notion-page-content-inner .notion-code {
   margin: 1.5em 0;
 }
 
-/* Lists */
+/* Lists — Bullet renders each list item as its own <ul>/<ol>, and stacks
+   browser default padding-left (~40px) on top, so we override with !important
+   to a single sensible indent and zero out the per-li padding. */
 body.legal .notion-page-content-inner .notion-list-disc,
 body.legal .notion-page-content-inner .notion-list-numbered {
-  padding-left: 1.5em;
-  margin: 0 0 1.25em;
+  padding-left: 1.5em !important;
+  margin: 0 0 0.5em !important;
 }
 body.legal .notion-page-content-inner .notion-list-disc li,
 body.legal .notion-page-content-inner .notion-list-numbered li {
-  margin-bottom: 0.45em;
+  margin: 0 0 0.35em !important;
+  padding-left: 0 !important;
   line-height: 1.6;
   font-size: 17px;
 }
