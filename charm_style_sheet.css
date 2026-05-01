@@ -1188,6 +1188,172 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
 }
 
 /* ================================================================
+  21. LEGAL / FREESTANDING PAGES
+   Long-form pages (MSA, DPA, privacy, etc.) styled with the same
+   editorial paper voice as blog articles. Activated by adding
+   `body.legal` via Bullet's per-page body code.
+   ================================================================ */
+
+/* Outer page frame: keep Bullet's normal gutter, but cap the article
+   column to a comfortable measure rather than full-bleed. */
+body.legal .notion-page-content-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 80px 100px 120px;
+}
+body.legal .notion-page-content-inner > * {
+  padding: 0;
+  width: 100%;
+}
+
+/* H1 — display heading at the top of the document */
+body.legal .notion-page-content-inner .notion-h1 {
+  font-family: var(--wf-sans);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  color: var(--wf-ink);
+  margin: 0 0 32px;
+}
+body.legal .notion-page-content-inner .notion-h1 em {
+  color: var(--wf-ochre);
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* H2 — editorial section heading with dotted indigo top rule */
+body.legal .notion-page-content-inner .notion-h2 {
+  font-family: var(--wf-sans);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--wf-ink);
+  margin: 2.4em 0 0.6em;
+  padding-top: 1.4em;
+  border-top: 1.5px dashed rgba(46,27,136,0.32);
+  text-wrap: balance;
+}
+body.legal .notion-page-content-inner .notion-h2 em {
+  color: var(--wf-indigo);
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* H3 — indigo subhead */
+body.legal .notion-page-content-inner .notion-h3 {
+  font-family: var(--wf-sans);
+  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--wf-indigo);
+  margin: 1.6em 0 0.4em;
+}
+
+/* Body type — measured line for legal reading */
+body.legal .notion-page-content-inner .notion-text {
+  font-size: 17px;
+  line-height: 1.65;
+  letter-spacing: -0.003em;
+  color: var(--wf-ink);
+  margin-bottom: 1.1em;
+}
+
+/* Inline links — azure with underline (already global, but ensure
+   the legal-page body wins over Bullet defaults) */
+body.legal .notion-page-content-inner .notion-link {
+  color: var(--wf-azure);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+/* Inline code chips — paper-tint with indigo text */
+body.legal .notion-page-content-inner .notion-text code,
+body.legal .notion-page-content-inner .notion-list-disc code,
+body.legal .notion-page-content-inner .notion-list-numbered code {
+  background: var(--wf-paper-tint);
+  color: var(--wf-indigo);
+  font-family: var(--wf-mono);
+  font-size: 0.875em;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0;
+}
+
+/* Code block (multiline) */
+body.legal .notion-page-content-inner .notion-code {
+  background: var(--wf-paper-tint);
+  border: 1px solid var(--wf-rule);
+  border-radius: 5px;
+  padding: 18px 22px;
+  font-family: var(--wf-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 1.5em 0;
+}
+
+/* Lists */
+body.legal .notion-page-content-inner .notion-list-disc,
+body.legal .notion-page-content-inner .notion-list-numbered {
+  padding-left: 1.5em;
+  margin: 0 0 1.25em;
+}
+body.legal .notion-page-content-inner .notion-list-disc li,
+body.legal .notion-page-content-inner .notion-list-numbered li {
+  margin-bottom: 0.45em;
+  line-height: 1.6;
+  font-size: 17px;
+}
+body.legal .notion-page-content-inner .notion-list-disc li::marker {
+  color: var(--wf-ochre);
+}
+
+/* Quotes — indigo rule + ochre serif glyph */
+body.legal .notion-page-content-inner .notion-quote {
+  position: relative;
+  border-left: 3px solid var(--wf-indigo);
+  padding: 6px 0 6px 28px;
+  margin: 1.75em 0;
+  font-style: italic;
+  font-size: 1.125em;
+  line-height: 1.55;
+  color: var(--wf-fg-muted);
+}
+body.legal .notion-page-content-inner .notion-quote::before {
+  content: "\201C";
+  position: absolute;
+  left: 16px;
+  top: -28px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--wf-ochre);
+  pointer-events: none;
+}
+
+/* Dividers */
+body.legal .notion-page-content-inner .notion-divider {
+  border: none;
+  border-top: 1.5px dashed rgba(46,27,136,0.32);
+  margin: 2.5em 0;
+}
+
+/* Responsive */
+@media screen and (max-width: 1024px) {
+  body.legal .notion-page-content-inner { padding: 64px 40px 96px; }
+}
+@media screen and (max-width: 800px) {
+  body.legal .notion-page-content-inner { padding: 48px 24px 80px; }
+  body.legal .notion-page-content-inner .notion-h2 { padding-top: 1em; margin-top: 1.6em; }
+  body.legal .notion-page-content-inner .notion-quote::before { font-size: 2.5rem; top: -20px; }
+}
+
+/* ================================================================
   19. ABOUT US (Direction B)
    Editorial paper layout — opens on white, not the indigo hero.
    All rules scoped to body.about-us so home/blog stay untouched.
