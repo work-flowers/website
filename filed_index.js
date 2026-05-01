@@ -7,7 +7,7 @@
 (function () {
   if (!document.body.classList.contains('about-us')) return;
 
-  const SELECTOR_GALLERY = '.co-webeeui-single-row-cards, [class*="webeeui-single-row-cards"]';
+  const SELECTOR_GALLERY = '.co-client-testimonials';
   const ROTATE_MS = 6000;
 
   function escapeHtml(s) {
@@ -43,13 +43,28 @@
     return (parts.slice(0, 2).join('') || 'WF').toUpperCase();
   }
 
-  function build(items) {
+  /**
+   * Pull eyebrow text from the callout (e.g. "● OUR CLIENTS" → "OUR CLIENTS").
+   * Skips anything inside a gallery card. Returns null if nothing found,
+   * caller substitutes a default.
+   */
+  function extractEyebrow(galleryWrap) {
+    const candidates = galleryWrap.querySelectorAll('.notion-text');
+    for (const t of candidates) {
+      if (t.closest('.notion-collection-card')) continue;
+      const text = t.textContent.trim();
+      if (text) return text.replace(/^[●•·]\s*/, '').trim();
+    }
+    return null;
+  }
+
+  function build(items, eyebrow) {
     const root = document.createElement('section');
     root.className = 'wf-filed-index';
     root.setAttribute('data-paused', 'false');
     root.innerHTML = `
       <header class="wf-filed-index__header">
-        <p class="wf-filed-index__eyebrow">Client testimonials</p>
+        <p class="wf-filed-index__eyebrow">${escapeHtml(eyebrow || 'Client testimonials')}</p>
         <span class="wf-filed-index__rule" aria-hidden="true"></span>
         <span class="wf-filed-index__counter"><strong data-active-counter>01</strong> / ${String(items.length).padStart(2, '0')}</span>
       </header>
@@ -89,7 +104,7 @@
   }
 
   function mount(galleryWrap, items) {
-    const root = build(items);
+    const root = build(items, extractEyebrow(galleryWrap));
     const quotePanel = root.querySelector('.wf-filed-index__quote');
     const counterEl = root.querySelector('[data-active-counter]');
     const rows = root.querySelectorAll('.wf-filed-index__row');
