@@ -1009,9 +1009,12 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   border-top: 1.5px dashed rgba(46,27,136,0.32);
   line-height: 1.4;
 }
-.blog-section h2.header::before,
-.categories-section h2.header::before {
+.blog-section h2.header::before {
   content: "● ";
+  color: var(--wf-ochre);
+}
+.categories-section h2.header::before {
+  content: "● ALL ";
   color: var(--wf-ochre);
 }
 
