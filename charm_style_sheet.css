@@ -748,6 +748,230 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
 }
 
 /* ================================================================
+  20. BLOG — editorial paper refresh
+   Layered on top of §18 to bring the blog look in line with About Us.
+   Scoped to .blog_main so non-blog pages stay untouched.
+   ================================================================ */
+
+/* Display H1 — match About Us paper hero scale */
+.blog_main .blog-head-detail h1,
+.blog_main .header-below-thumbnail h1 {
+  font-family: var(--wf-sans);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  margin: 0 0 24px;
+  color: var(--wf-ink);
+}
+.blog_main .blog-head-detail h1 em,
+.blog_main .header-below-thumbnail h1 em {
+  color: var(--wf-ochre);
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* Editorial deck — italic muted subtitle */
+.blog_main .blog-subtitle {
+  font-family: var(--wf-sans);
+  font-size: clamp(1.125rem, 1.5vw, 1.3125rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  color: var(--wf-fg-muted);
+  max-width: 64ch;
+  margin: 0 0 32px;
+  text-wrap: balance;
+}
+
+/* Tags — mono ochre uppercase, no chip background */
+.blog_main .tags-container .blog-tags {
+  font-family: var(--wf-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--wf-ochre);
+  background: transparent !important;
+  padding: 4px 0;
+  margin-right: 20px;
+  border: none;
+  text-decoration: none;
+}
+.blog_main .tags-container .blog-tags:hover { color: var(--wf-ochre-hover); }
+
+/* Body type — measured line for long-form reading */
+.blog_main .blog_page_content .notion-text {
+  font-size: 18px;
+  line-height: 1.65;
+  letter-spacing: -0.003em;
+  color: var(--wf-ink);
+  max-width: 70ch;
+  margin-bottom: 1.25em;
+}
+
+/* H2 — editorial section heading with dotted top rule */
+.blog_main .blog_page_content .notion-h2 {
+  font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--wf-ink);
+  margin: 2.2em 0 0.6em;
+  padding-top: 1.4em;
+  border-top: 1.5px dashed rgba(46,27,136,0.32);
+  text-wrap: balance;
+  max-width: 70ch;
+}
+.blog_main .blog_page_content .notion-h2 em {
+  color: var(--wf-indigo);
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* H3 — indigo subhead */
+.blog_main .blog_page_content .notion-h3 {
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--wf-indigo);
+  margin: 1.6em 0 0.4em;
+  max-width: 70ch;
+}
+
+/* Inline code chips — quiet paper-tint with indigo text */
+.blog_main .blog_page_content .notion-text code,
+.blog_main .blog_page_content .notion-list-disc code,
+.blog_main .blog_page_content .notion-list-numbered code {
+  background: var(--wf-paper-tint);
+  color: var(--wf-indigo);
+  font-family: var(--wf-mono);
+  font-size: 0.875em;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0;
+}
+
+/* Code block (multi-line) */
+.blog_main .blog_page_content .notion-code {
+  background: var(--wf-paper-tint);
+  border: 1px solid var(--wf-rule);
+  border-radius: 5px;
+  padding: 18px 22px;
+  font-family: var(--wf-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 1.5em 0;
+  max-width: 70ch;
+}
+
+/* Quote — indigo rule + oversized ochre opening glyph */
+.blog_main .blog_page_content .notion-quote {
+  position: relative;
+  border-left: 3px solid var(--wf-indigo);
+  padding: 6px 0 6px 28px;
+  margin: 1.75em 0;
+  font-style: italic;
+  font-size: 1.125em;
+  line-height: 1.55;
+  color: var(--wf-fg-muted);
+  max-width: 70ch;
+}
+.blog_main .blog_page_content .notion-quote::before {
+  content: "\201C";
+  position: absolute;
+  left: 16px;
+  top: -28px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--wf-ochre);
+  pointer-events: none;
+}
+
+/* Lists */
+.blog_main .blog_page_content .notion-list-disc,
+.blog_main .blog_page_content .notion-list-numbered {
+  max-width: 70ch;
+  padding-left: 1.5em;
+  margin: 0 0 1.25em;
+}
+.blog_main .blog_page_content .notion-list-disc li,
+.blog_main .blog_page_content .notion-list-numbered li {
+  margin-bottom: 0.45em;
+  line-height: 1.6;
+  font-size: 18px;
+}
+.blog_main .blog_page_content .notion-list-disc li::marker { color: var(--wf-ochre); }
+
+/* Images — soft radius + shadow, breathing room */
+.blog_main .blog_page_content .notion-asset-wrapper-image { margin: 2em 0; }
+.blog_main .blog_page_content .notion-asset-wrapper-image img {
+  border-radius: 6px;
+  box-shadow: var(--wf-shadow-md);
+}
+
+/* Dividers in article body */
+.blog_main .blog_page_content .notion-divider {
+  border: none;
+  border-top: 1.5px dashed rgba(46,27,136,0.32);
+  margin: 2.5em 0;
+}
+
+/* Table of contents — quiet indigo ledger */
+.blog_main .toc {
+  font-family: var(--wf-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.45;
+  margin: 0;
+}
+.blog_main .toc a {
+  color: var(--wf-fg-subtle);
+  text-decoration: none;
+  display: block;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(31,31,31,0.10);
+  transition: color 150ms ease;
+}
+.blog_main .toc a:hover { color: var(--wf-indigo); }
+.blog_main .toc a.active,
+.blog_main .toc a[aria-current="true"],
+.blog_main .toc.active > a {
+  color: var(--wf-indigo);
+  font-weight: 700;
+}
+.blog_main .toc.toc-indent-1 a { padding-left: 16px; font-size: 11.5px; }
+.blog_main .toc.toc-indent-2 a { padding-left: 32px; font-size: 11px; }
+
+/* Header eyebrow above the H1 — small mono ochre line if Bullet provides
+   a category label slot. Falls back gracefully if not present. */
+.blog_main .blog-head-detail .blog-tags:first-child {
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
+/* Responsive */
+@media screen and (max-width: 800px) {
+  .blog_main .blog_page_content .notion-text,
+  .blog_main .blog_page_content .notion-list-disc,
+  .blog_main .blog_page_content .notion-list-numbered,
+  .blog_main .blog_page_content .notion-h2,
+  .blog_main .blog_page_content .notion-h3,
+  .blog_main .blog_page_content .notion-quote,
+  .blog_main .blog_page_content .notion-code {
+    max-width: 100%;
+  }
+  .blog_main .blog_page_content .notion-h2 { padding-top: 1em; margin-top: 1.6em; }
+  .blog_main .blog_page_content .notion-quote::before { font-size: 2.5rem; top: -20px; }
+}
+
+/* ================================================================
   19. ABOUT US (Direction B)
    Editorial paper layout — opens on white, not the indigo hero.
    All rules scoped to body.about-us so home/blog stay untouched.
