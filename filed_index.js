@@ -16,22 +16,14 @@
   }
 
   /**
-   * Normalise stars from either the existing emoji-string property
-   * (e.g. "⭐⭐⭐⭐⭐") or a numeric Rating property (e.g. 5) into a
-   * uniform "★★★★★" glyph string. CSS can colour ★ ochre — the ⭐
-   * emoji is a coloured Unicode glyph that ignores `color`.
+   * Convert the numeric Rating property (1–5) into a "★★★★★" glyph
+   * string. CSS colours ★ ochre.
    */
   function normaliseStars(raw) {
     if (raw == null) return '';
-    const text = String(raw).trim();
-    if (!text) return '';
-    const glyphCount = (text.match(/[⭐★]/g) || []).length;
-    if (glyphCount > 0) return '★'.repeat(Math.min(glyphCount, 5));
-    if (/^\d+(\.\d+)?$/.test(text)) {
-      const n = Math.round(parseFloat(text));
-      return '★'.repeat(Math.max(0, Math.min(5, n)));
-    }
-    return '';
+    const n = Math.round(parseFloat(String(raw).trim()));
+    if (!Number.isFinite(n)) return '';
+    return '★'.repeat(Math.max(0, Math.min(5, n)));
   }
 
   function extract(card) {
@@ -46,7 +38,7 @@
     const bodyEl = card.querySelector('.prop-review-body');
     const body = bodyEl ? bodyEl.textContent.trim() : '';
 
-    const starsEl = card.querySelector('.prop-stars, .prop-rating');
+    const starsEl = card.querySelector('.prop-rating');
     const stars = starsEl ? normaliseStars(starsEl.textContent) : '';
 
     return { name, body, stars, iconSrc };
