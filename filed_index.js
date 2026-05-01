@@ -7,7 +7,14 @@
 (function () {
   if (!document.body.classList.contains('about-us')) return;
 
-  const SELECTOR_GALLERY = '.co-client-testimonials';
+  // Locate the testimonials callout by content rather than class hint:
+  // any Notion callout containing a gallery view will do. On About Us
+  // there is only one such callout, so this is unambiguous.
+  const SELECTOR_GALLERY_CANDIDATES = [
+    '.notion-callout:has(.notion-collection-card)',
+    '.notion-callout:has(.notion-gallery-grid)',
+    '.co-client-testimonials' // legacy explicit class, still honoured
+  ];
   const ROTATE_MS = 6000;
 
   function escapeHtml(s) {
@@ -168,8 +175,16 @@
     start();
   }
 
+  function findGallery() {
+    for (const sel of SELECTOR_GALLERY_CANDIDATES) {
+      const el = document.querySelector(sel);
+      if (el) return el;
+    }
+    return null;
+  }
+
   function tryInit() {
-    const galleryWrap = document.querySelector(SELECTOR_GALLERY);
+    const galleryWrap = findGallery();
     if (!galleryWrap || galleryWrap.dataset.filedIndexMounted === 'true') return false;
 
     const cards = galleryWrap.querySelectorAll('.notion-collection-card');
