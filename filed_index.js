@@ -7,14 +7,6 @@
 (function () {
   if (!document.body.classList.contains('about-us')) return;
 
-  // Locate the testimonials callout by content rather than class hint:
-  // any Notion callout containing a gallery view will do. On About Us
-  // there is only one such callout, so this is unambiguous.
-  const SELECTOR_GALLERY_CANDIDATES = [
-    '.notion-callout:has(.notion-collection-card)',
-    '.notion-callout:has(.notion-gallery-grid)',
-    '.co-client-testimonials' // legacy explicit class, still honoured
-  ];
   const ROTATE_MS = 6000;
 
   function escapeHtml(s) {
@@ -51,18 +43,42 @@
   }
 
   /**
-   * Pull eyebrow text from the callout (e.g. "● OUR CLIENTS" → "OUR CLIENTS").
-   * Skips anything inside a gallery card. Returns null if nothing found,
-   * caller substitutes a default.
+   * Find the top-level page block that contains the gallery cards. Could
+   * be a callout wrapping the inline DB view, or the bare collection
+   * itself if the author removed the callout. Returns null if no gallery
+   * has rendered yet.
+   */
+  function findGallery() {
+    const card = document.querySelector('.notion-page-content-inner .notion-collection-card');
+    if (!card) return null;
+    let el = card;
+    while (el && el.parentElement && !el.parentElement.classList.contains('notion-page-content-inner')) {
+      el = el.parentElement;
+    }
+    if (!el || !el.parentElement || !el.parentElement.classList.contains('notion-page-content-inner')) return null;
+    return el;
+  }
+
+  /**
+   * Pull the eyebrow text. If the gallery is wrapped (callout), look
+   * inside for an eyebrow paragraph not inside a card. If the gallery is
+   * top-level, look at the immediately preceding sibling. Returns the
+   * text plus an element to remove during mount (preceding sibling case),
+   * or null if no eyebrow is found — caller falls back to a default.
    */
   function extractEyebrow(galleryWrap) {
-    const candidates = galleryWrap.querySelectorAll('.notion-text');
-    for (const t of candidates) {
+    const insideTexts = galleryWrap.querySelectorAll('.notion-text');
+    for (const t of insideTexts) {
       if (t.closest('.notion-collection-card')) continue;
       const text = t.textContent.trim();
-      if (text) return text.replace(/^[●•·]\s*/, '').trim();
+      if (text) return { text: text.replace(/^[●•·]\s*/, '').trim(), consume: null };
     }
-    return null;
+    const prev = galleryWrap.previousElementSibling;
+    if (prev && prev.classList && prev.classList.contains('notion-text')) {
+      const text = prev.textContent.trim();
+      if (text) return { text: text.replace(/^[●•·]\s*/, '').trim(), consume: prev };
+    }
+    return { text: null, consume: null };
   }
 
   function build(items, eyebrow) {
@@ -111,7 +127,8 @@
   }
 
   function mount(galleryWrap, items) {
-    const root = build(items, extractEyebrow(galleryWrap));
+    const { text: eyebrow, consume } = extractEyebrow(galleryWrap);
+    const root = build(items, eyebrow);
     const quotePanel = root.querySelector('.wf-filed-index__quote');
     const counterEl = root.querySelector('[data-active-counter]');
     const rows = root.querySelectorAll('.wf-filed-index__row');
@@ -170,17 +187,10 @@
     root.addEventListener('mouseenter', () => { stop(); root.setAttribute('data-paused', 'true'); });
     root.addEventListener('mouseleave', () => { root.setAttribute('data-paused', 'false'); start(); });
 
+    if (consume && consume.parentElement) consume.remove();
     galleryWrap.replaceWith(root);
     renderActive();
     start();
-  }
-
-  function findGallery() {
-    for (const sel of SELECTOR_GALLERY_CANDIDATES) {
-      const el = document.querySelector(sel);
-      if (el) return el;
-    }
-    return null;
   }
 
   function tryInit() {
