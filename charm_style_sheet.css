@@ -242,6 +242,17 @@ body {
   color: #fff !important;
 }
 
+/* Buttons sitting on plain paper (no colour callout) — without this the
+   §6 .notion-link rule (azure + underline) wins over .bullet-btn's white
+   because both have equal specificity and .notion-link is later. The
+   compound selector below beats either rule on its own. */
+.notion-link.bullet-btn,
+.notion-link.bullet-btn:hover {
+  color: #fff !important;
+  text-decoration: none !important;
+  opacity: 1 !important;
+}
+
 /* ================================================================
    6. LINKS
    ================================================================ */
