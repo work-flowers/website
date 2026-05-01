@@ -1097,10 +1097,10 @@ body.about-us .wf-filed-index__stars {
 }
 body.about-us .wf-filed-index__body {
   font-family: var(--wf-sans);
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
   text-wrap: pretty;
   margin: 0 0 32px;
   color: var(--wf-ink);
