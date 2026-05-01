@@ -1010,12 +1010,15 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   line-height: 1.4;
 }
 .blog-section h2.header::before {
-  content: "● ";
+  content: "●";
   color: var(--wf-ochre);
+  margin-right: 0.5em;
+  letter-spacing: 0;
 }
 .categories-section h2.header::before {
-  content: "● ALL ";
+  content: "●\00A0ALL";
   color: var(--wf-ochre);
+  margin-right: 0.5em;
 }
 
 /* Category filter chips — same outlined indigo treatment as article tags */
