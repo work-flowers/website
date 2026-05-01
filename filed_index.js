@@ -15,24 +15,39 @@
     );
   }
 
+  /**
+   * Normalise stars from either the existing emoji-string property
+   * (e.g. "⭐⭐⭐⭐⭐") or a numeric Rating property (e.g. 5) into a
+   * uniform "★★★★★" glyph string. CSS can colour ★ ochre — the ⭐
+   * emoji is a coloured Unicode glyph that ignores `color`.
+   */
+  function normaliseStars(raw) {
+    if (raw == null) return '';
+    const text = String(raw).trim();
+    if (!text) return '';
+    const glyphCount = (text.match(/[⭐★]/g) || []).length;
+    if (glyphCount > 0) return '★'.repeat(Math.min(glyphCount, 5));
+    if (/^\d+(\.\d+)?$/.test(text)) {
+      const n = Math.round(parseFloat(text));
+      return '★'.repeat(Math.max(0, Math.min(5, n)));
+    }
+    return '';
+  }
+
   function extract(card) {
     const iconImg = card.querySelector('.notion-page-title-icon img, .notion-page-icon-inline img');
     const iconSrc = iconImg ? iconImg.src : null;
 
-    const titleEl = card.querySelector('.notion-collection-card-title, .notion-collection-card-body h2, h2, h1, .notion-h2');
-    const name = titleEl ? titleEl.textContent.trim() : '';
+    // Bullet generates `prop-<slug>` classes on each property based on the
+    // Notion property name, e.g. "Reviewer Name" → `.prop-reviewer-name`.
+    const nameEl = card.querySelector('.prop-reviewer-name');
+    const name = nameEl ? nameEl.textContent.trim() : '';
 
-    let stars = '';
-    let body = '';
-    card.querySelectorAll('.notion-property-text, .notion-collection-card-property, .notion-property').forEach(p => {
-      const text = p.textContent.trim();
-      if (!text) return;
-      if (text.includes('★')) {
-        if (text.length > stars.length) stars = text;
-      } else if (text !== name) {
-        if (text.length > body.length) body = text;
-      }
-    });
+    const bodyEl = card.querySelector('.prop-review-body');
+    const body = bodyEl ? bodyEl.textContent.trim() : '';
+
+    const starsEl = card.querySelector('.prop-stars, .prop-rating');
+    const stars = starsEl ? normaliseStars(starsEl.textContent) : '';
 
     return { name, body, stars, iconSrc };
   }
