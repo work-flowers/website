@@ -913,12 +913,8 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
 }
 .blog_main .blog_page_content .notion-list-disc li::marker { color: var(--wf-ochre); }
 
-/* Images — soft radius + shadow, breathing room */
+/* Images — breathing room only; shadows are baked into the source images. */
 .blog_main .blog_page_content .notion-asset-wrapper-image { margin: 2em 0; }
-.blog_main .blog_page_content .notion-asset-wrapper-image img {
-  border-radius: 6px;
-  box-shadow: var(--wf-shadow-md);
-}
 
 /* Dividers in article body */
 .blog_main .blog_page_content .notion-divider {
