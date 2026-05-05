@@ -1139,6 +1139,12 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   overflow: hidden;
 }
 
+/* Featured (first) post on blog index — let description fill the hero width
+   so it visually matches the full-width image above instead of capping at 60ch. */
+.blogs-container > .blog:first-child .blog-description {
+  max-width: none;
+}
+
 /* Card tags — same outlined indigo chip family, slightly smaller */
 .blog-details .tags-container .blog-tags {
   display: inline-block;

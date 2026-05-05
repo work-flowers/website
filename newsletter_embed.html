@@ -1,0 +1,119 @@
+<style>
+  .wf-newsletter-embed,
+  .wf-newsletter-embed * {
+    box-sizing: border-box !important;
+  }
+  .wf-newsletter-embed {
+    background: #2E1B88 !important;          /* --wf-indigo */
+    border: 0 !important;
+    border-radius: 5px !important;
+    padding: 2rem 2.25rem !important;
+    margin: 0 auto 2rem !important;
+    max-width: 560px !important;
+    width: 100% !important;
+    font-family: "Inter", system-ui, sans-serif !important;
+    text-align: left !important;
+    color: #FFFFFF !important;
+  }
+  .wf-newsletter-embed h3.wf-newsletter-heading {
+    display: block !important;
+    margin: 0 0 .4rem !important;
+    padding: 0 !important;
+    font-family: inherit !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    letter-spacing: -0.01em !important;
+    color: #FFFFFF !important;
+    text-align: left !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .wf-newsletter-embed p.wf-newsletter-pitch {
+    display: block !important;
+    margin: 0 0 1.1rem !important;
+    padding: 0 !important;
+    font-family: inherit !important;
+    font-size: .95rem !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    line-height: 1.5 !important;
+    color: #FAF7F2 !important;               /* --wf-paper-warm */
+    opacity: 0.88 !important;
+    text-align: left !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .wf-newsletter-form {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: .5rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  .wf-newsletter-form label {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    white-space: nowrap !important;
+  }
+  .wf-newsletter-form input[type="email"] {
+    flex: 1 1 240px !important;
+    min-width: 0 !important;
+    padding: .7rem .9rem !important;
+    font-family: inherit !important;
+    font-size: 1rem !important;
+    color: #1F1F1F !important;               /* --wf-ink */
+    background: #FFFFFF !important;
+    border: 0 !important;
+    border-radius: 5px !important;
+    box-shadow: none !important;
+  }
+  .wf-newsletter-form input[type="email"]::placeholder {
+    color: #6B6B6B !important;               /* --wf-fg-subtle */
+    opacity: 1 !important;
+  }
+  .wf-newsletter-form input[type="email"]:focus {
+    outline: 2px solid #E17A14 !important;   /* --wf-ochre */
+    outline-offset: 2px !important;
+  }
+  .wf-newsletter-form input[type="submit"] {
+    padding: .7rem 1.5rem !important;
+    font-family: inherit !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #FFFFFF !important;
+    background: #E17A14 !important;          /* --wf-ochre */
+    border: 0 !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    transition: background .15s ease !important;
+  }
+  .wf-newsletter-form input[type="submit"]:hover {
+    background: #C36810 !important;          /* --wf-ochre-hover */
+  }
+  @media (max-width: 600px) {
+    .wf-newsletter-form input[type="submit"] {
+      flex: 1 1 100% !important;
+    }
+  }
+</style>
+
+<div class="wf-newsletter-embed">
+  <h3 class="wf-newsletter-heading">Get the next one in your inbox</h3>
+  <p class="wf-newsletter-pitch">Practical automation, AI, and analytics tips for early-stage startups. Delivered every other week.</p>
+  <form
+    action="https://buttondown.com/api/emails/embed-subscribe/workflowers"
+    method="post"
+    target="popupwindow"
+    onsubmit="window.open('https://buttondown.com/workflowers', 'popupwindow')"
+    class="wf-newsletter-form embeddable-buttondown-form"
+  >
+    <label for="wf-bd-email">Enter your email</label>
+    <input type="email" name="email" id="wf-bd-email" placeholder="you@yourcompany.com" required />
+    <input type="submit" value="Subscribe" />
+  </form>
+</div>
