@@ -422,7 +422,12 @@ body {
   align-items: center;
   gap: 80px;
 }
-.bullet-2-column .notion-h3 {
+/* Homepage-pillar scope: the bare 2-cols at the top level of the page,
+   plus the one wrapped in the brown_bg warm band. Standalone pages that
+   happen to use a 2-col block elsewhere (e.g. inside a callout) won't
+   match these selectors and so won't inherit pillar styling. */
+.notion-page-content-inner > .bullet-2-column .notion-h3,
+.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-h3 {
   font-size: clamp(2rem, 3vw, 3rem);
   font-weight: 800;
   line-height: 1.05;
@@ -430,14 +435,17 @@ body {
   color: var(--wf-indigo);
   margin: 16px 0 16px;
 }
-.bullet-2-column .notion-callout-text > .notion-text:first-of-type strong,
-.bullet-2-column .notion-text strong:only-child {
+.notion-page-content-inner > .bullet-2-column .notion-callout-text > .notion-text:first-of-type strong,
+.notion-page-content-inner > .bullet-2-column .notion-text strong:only-child,
+.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-callout-text > .notion-text:first-of-type strong,
+.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-text strong:only-child {
   font-size: 1.125rem;
   font-weight: 600;
   display: inline-block;
   line-height: 1.4;
 }
-.bullet-2-column figure.notion-asset-wrapper-image img {
+.notion-page-content-inner > .bullet-2-column figure.notion-asset-wrapper-image img,
+.notion-page-content-inner > .notion-brown_background_co .bullet-2-column figure.notion-asset-wrapper-image img {
   border-radius: 5px;
   box-shadow: var(--wf-shadow-md);
   aspect-ratio: 5/3;
@@ -446,7 +454,8 @@ body {
 }
 
 /* Inline-code chips → azure pills (used in pillar pill rows) */
-.bullet-2-column .notion-text code {
+.notion-page-content-inner > .bullet-2-column .notion-text code,
+.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-text code {
   display: inline-block;
   background: #E6F1FB;
   color: var(--wf-azure);
@@ -460,7 +469,8 @@ body {
 }
 
 /* Numbered eyebrow inside pillars: "01 / Automation" */
-.bullet-2-column .notion-text:first-child:has(> code:only-child) {
+.notion-page-content-inner > .bullet-2-column .notion-text:first-child:has(> code:only-child),
+.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-text:first-child:has(> code:only-child) {
   font-family: var(--wf-mono);
   font-size: 13px;
   letter-spacing: 0.04em;
@@ -468,7 +478,8 @@ body {
   color: var(--wf-fg-subtle);
   margin-bottom: 12px;
 }
-.bullet-2-column .notion-text:first-child:has(> code:only-child) > code {
+.notion-page-content-inner > .bullet-2-column .notion-text:first-child:has(> code:only-child) > code,
+.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-text:first-child:has(> code:only-child) > code {
   background: transparent;
   color: var(--wf-fg-subtle);
   padding: 0;
