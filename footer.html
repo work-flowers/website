@@ -122,23 +122,35 @@
      paragraphs here so the eyebrow rule can opt them out via `:not()`. -->
 <script>
 (function () {
-  function tag() {
-    document.querySelectorAll('.notion-text').forEach(el => {
-      const code = el.querySelector(':scope > code');
-      if (!code) return;
-      if (el.textContent.trim() !== code.textContent.trim()
-          && !el.classList.contains('wf-has-inline-code')) {
-        el.classList.add('wf-has-inline-code');
+  function tag(el) {
+    if (el.classList.contains('wf-has-inline-code')) return;
+    const code = el.querySelector(':scope > code');
+    if (!code) return;
+    if (el.textContent.trim() !== code.textContent.trim()) {
+      el.classList.add('wf-has-inline-code');
+    }
+  }
+  function scan(root) {
+    if (!root || root.nodeType !== 1) return;
+    if (root.matches && root.matches('.notion-text')) tag(root);
+    if (root.querySelectorAll) root.querySelectorAll('.notion-text').forEach(tag);
+  }
+  function init() {
+    scan(document.body);
+    // Walk only added subtrees on hydration — avoids re-scanning the whole
+    // document on every mutation. Disconnect after Bullet settles.
+    const obs = new MutationObserver(records => {
+      for (const r of records) {
+        r.addedNodes.forEach(scan);
       }
     });
+    obs.observe(document.body, { childList: true, subtree: true });
+    setTimeout(() => obs.disconnect(), 10000);
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', tag);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    tag();
+    init();
   }
-  let t;
-  new MutationObserver(() => { clearTimeout(t); t = setTimeout(tag, 50); })
-    .observe(document.documentElement, { childList: true, subtree: true });
 })();
 </script>
