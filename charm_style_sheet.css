@@ -337,9 +337,14 @@ body {
 /* ================================================================
    8. EYEBROW LABELS
    In Notion: any line beginning with "● " becomes an eyebrow via
-   first-letter trick. We also style any inline-code at start as eyebrow.
+   first-letter trick. We also style any inline-code paragraph as an
+   eyebrow — but only when the entire paragraph is the code. Paragraphs
+   that mix prose with an inline-code snippet are tagged
+   `.wf-has-inline-code` by footer.html so this rule skips them; that
+   keeps inline code in blog posts looking like inline code, not an
+   eyebrow.
    ================================================================ */
-.notion-text:has(> code:first-child:last-child) {
+.notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) {
   font-family: var(--wf-mono);
   font-size: 13px;
   font-weight: 700;
@@ -348,7 +353,7 @@ body {
   color: var(--wf-ochre);
   margin-bottom: 1.5em;
 }
-.notion-text:has(> code:first-child:last-child) > code {
+.notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) > code {
   background: transparent !important;
   padding: 0 !important;
   font-family: inherit !important;
@@ -356,12 +361,12 @@ body {
   color: inherit !important;
 }
 /* Eyebrow on dark blocks → peach */
-.notion-blue_background_co .notion-text:has(> code:first-child:last-child),
-.notion-gray_background_co .notion-text:has(> code:first-child:last-child) {
+.notion-blue_background_co .notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code),
+.notion-gray_background_co .notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) {
   color: var(--wf-peach) !important;
 }
-.notion-blue_background_co .notion-text:has(> code:first-child:last-child) > code,
-.notion-gray_background_co .notion-text:has(> code:first-child:last-child) > code {
+.notion-blue_background_co .notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) > code,
+.notion-gray_background_co .notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) > code {
   color: var(--wf-peach) !important;
 }
 
