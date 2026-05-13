@@ -337,14 +337,9 @@ body {
 /* ================================================================
    8. EYEBROW LABELS
    In Notion: any line beginning with "● " becomes an eyebrow via
-   first-letter trick. We also style any inline-code paragraph as an
-   eyebrow — but only when the entire paragraph is the code. Paragraphs
-   that mix prose with an inline-code snippet are tagged
-   `.wf-has-inline-code` by footer.html so this rule skips them; that
-   keeps inline code in blog posts looking like inline code, not an
-   eyebrow.
+   first-letter trick. We also style any inline-code at start as eyebrow.
    ================================================================ */
-.notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) {
+.notion-text:has(> code:first-child:last-child) {
   font-family: var(--wf-mono);
   font-size: 13px;
   font-weight: 700;
@@ -353,7 +348,7 @@ body {
   color: var(--wf-ochre);
   margin-bottom: 1.5em;
 }
-.notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) > code {
+.notion-text:has(> code:first-child:last-child) > code {
   background: transparent !important;
   padding: 0 !important;
   font-family: inherit !important;
@@ -361,12 +356,12 @@ body {
   color: inherit !important;
 }
 /* Eyebrow on dark blocks → peach */
-.notion-blue_background_co .notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code),
-.notion-gray_background_co .notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) {
+.notion-blue_background_co .notion-text:has(> code:first-child:last-child),
+.notion-gray_background_co .notion-text:has(> code:first-child:last-child) {
   color: var(--wf-peach) !important;
 }
-.notion-blue_background_co .notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) > code,
-.notion-gray_background_co .notion-text:has(> code:first-child:last-child):not(.wf-has-inline-code) > code {
+.notion-blue_background_co .notion-text:has(> code:first-child:last-child) > code,
+.notion-gray_background_co .notion-text:has(> code:first-child:last-child) > code {
   color: var(--wf-peach) !important;
 }
 
@@ -875,6 +870,28 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   padding: 2px 6px;
   border-radius: 4px;
   letter-spacing: 0;
+}
+
+/* Suppress §8 eyebrow auto-styling for code-only paragraphs in blog posts.
+   CSS can't reliably distinguish "whole paragraph is code" from
+   "paragraph has a single inline code among prose" (text nodes are
+   invisible to selectors), so on blog pages we keep all paragraphs
+   rendering as normal blog body type and leave the inline code chip
+   styling above to handle the code element. Use the eyebrow elsewhere. */
+.blog_main .notion-text:has(> code:first-child:last-child) {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: inherit;
+  letter-spacing: -0.003em;
+  text-transform: none;
+  color: var(--wf-ink);
+}
+.blog_main .notion-text:has(> code:first-child:last-child) > code {
+  background: var(--wf-paper-tint) !important;
+  color: var(--wf-indigo) !important;
+  font-family: var(--wf-mono) !important;
+  font-size: 0.875em !important;
+  padding: 2px 6px !important;
 }
 
 /* Code block (multi-line) */

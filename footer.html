@@ -115,30 +115,3 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(go).catch(()=>{});
 })();
 </script>
-
-<!-- Restrict §8 eyebrow style to truly code-only paragraphs.
-     CSS can't see text nodes, so `.notion-text:has(> code:first-child:last-child)`
-     also matches `<p>prose <code>code</code> prose</p>`. Tag those mixed
-     paragraphs here so the eyebrow rule can opt them out via `:not()`. -->
-<script>
-(function () {
-  function tag() {
-    document.querySelectorAll('.notion-text').forEach(el => {
-      const code = el.querySelector(':scope > code');
-      if (!code) return;
-      if (el.textContent.trim() !== code.textContent.trim()
-          && !el.classList.contains('wf-has-inline-code')) {
-        el.classList.add('wf-has-inline-code');
-      }
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', tag);
-  } else {
-    tag();
-  }
-  let t;
-  new MutationObserver(() => { clearTimeout(t); t = setTimeout(tag, 50); })
-    .observe(document.documentElement, { childList: true, subtree: true });
-})();
-</script>
