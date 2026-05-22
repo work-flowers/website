@@ -794,7 +794,7 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   color: var(--wf-fg-muted);
   max-width: 70ch;
   margin: 0 0 32px;
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 
 /* Tags — outlined indigo pill chips, mono uppercase. Hover fills indigo. */
