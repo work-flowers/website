@@ -945,6 +945,16 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   font-size: 18px;
 }
 .blog_main .blog_page_content .notion-list-disc li::marker { color: var(--wf-ochre); }
+/* Bullet renders each list item as its own <ol>/<ul>. Collapse the gap
+   between adjacent same-type lists so they read as one continuous list. */
+.blog_main .blog_page_content .notion-list-disc + .notion-list-disc,
+.blog_main .blog_page_content .notion-list-numbered + .notion-list-numbered {
+  margin-top: 0;
+}
+.blog_main .blog_page_content .notion-list-disc:has(+ .notion-list-disc),
+.blog_main .blog_page_content .notion-list-numbered:has(+ .notion-list-numbered) {
+  margin-bottom: 0.35em;
+}
 
 /* Images — breathing room only; shadows are baked into the source images. */
 .blog_main .blog_page_content .notion-asset-wrapper-image { margin: 2em 0; }
