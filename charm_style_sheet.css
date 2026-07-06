@@ -1986,6 +1986,27 @@ body.home .notion-collection .notion-collection-card-body {
   padding: 16px 0 0;
 }
 
+/* Cross-card vertical alignment — each card subgrids onto four shared
+   row tracks (cover / title / date / description), so dates and
+   excerpts top-align across the row even when titles wrap to
+   different line counts. The body unwraps via display: contents so
+   its three property divs land on the shared tracks directly.
+   Browsers without subgrid keep the flex layout above. */
+@supports (grid-template-rows: subgrid) {
+  body.home .notion-collection .notion-collection-card {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 4;
+    row-gap: 10px;
+  }
+  body.home .notion-collection .notion-collection-card-cover {
+    margin-bottom: 6px; /* 10px row-gap + 6px = the 16px cover→title gap */
+  }
+  body.home .notion-collection .notion-collection-card-body {
+    display: contents;
+  }
+}
+
 /* Title — display weight, indigo on hover; hide any page icon */
 body.home .notion-collection .notion-collection-card .notion-page-title-icon {
   display: none !important;
