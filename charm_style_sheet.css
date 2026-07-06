@@ -1932,19 +1932,15 @@ body.home .notion-collection .notion-gallery-load-more {
   display: none !important;
 }
 
-/* Grid — three across, single column on small screens */
+/* Grid — three across, wrapping to further rows for 4+ featured
+   posts, single column on small screens. Row gap is wider than the
+   column gap so stacked card rows read as separate rows */
 body.home .notion-collection .notion-gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
+  gap: 64px 40px;
   border-top: none;
   padding-top: 0;
-}
-
-/* Safety net: never show more than three cards even if the Notion
-   filter lets extras through */
-body.home .notion-collection .notion-collection-card:nth-child(n+4) {
-  display: none;
 }
 
 /* Card — quiet: no box, the cover image carries the visual weight.
@@ -2051,7 +2047,7 @@ body.home .notion-collection .notion-collection-card .notion-property-text {
 
 @media screen and (max-width: 1024px) {
   body.home .notion-page-content-inner .notion-collection { padding: 0 32px; }
-  body.home .notion-collection .notion-gallery-grid { gap: 32px; }
+  body.home .notion-collection .notion-gallery-grid { gap: 48px 32px; }
 }
 @media screen and (max-width: 800px) {
   body.home .notion-page-content-inner .notion-collection { padding: 0 20px; margin: 32px 0 64px; }
