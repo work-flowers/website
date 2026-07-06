@@ -1,27 +1,28 @@
-<!-- Google Analytics (GA4) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6FPQKF7KR9"></script>
+<!-- Tag the homepage <body> so page-scoped CSS can target it.
+     Bullet derives body classes from the page slug; the root path gets none,
+     so §22 (home featured posts) hooks onto body.home added here. -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-6FPQKF7KR9');
+  if (location.pathname === '/' || location.pathname === '') {
+    document.body.classList.add('home');
+  }
 </script>
 
-<script type="text/javascript">
-  _linkedin_partner_id = "7383676";
-  window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
-  window._linkedin_data_partner_ids.push(_linkedin_partner_id);
-  </script><script type="text/javascript">
-  (function(l) {
-  if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
-  window.lintrk.q=[]}
-  var s = document.getElementsByTagName("script")[0];
-  var b = document.createElement("script");
-  b.type = "text/javascript";b.async = true;
-  b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
-  s.parentNode.insertBefore(b, s);})(window.lintrk);
+<!-- Google Analytics (GA4) - guarded against iframe previews and non-canonical domains -->
+<script>
+  if (window.top === window.self && window.location.hostname.endsWith('work.flowers')) {
+    var ga = document.createElement('script');
+    ga.async = true;
+    ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-6FPQKF7KR9';
+    document.head.appendChild(ga);
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-6FPQKF7KR9');
+    gtag('config', 'AW-17609903901');
+  }
 </script>
-
 <!-- Normalise height for horizontally aligned callouts -->
 <script>
 (function () {
