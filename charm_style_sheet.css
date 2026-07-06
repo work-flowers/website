@@ -1912,8 +1912,11 @@ body.about-us .wf-filed-index[data-paused="true"] .wf-filed-index__row-progress 
    body.home, which footer.html adds on the root path.
    Cards restyled to match the blog index (§20): cover image with
    soft shadow + hover lift, bold title, mono ochre date, clamped
-   Caption excerpt. Notion view settings should expose only the
-   Created time and Caption properties, in that order.
+   description excerpt. Notion view settings should expose only one
+   date property and one text property, in that order — Bullet emits
+   them as .notion-property-date / .notion-property-text (its prop-*
+   classes are derived from the Notion property names, so we target
+   the type-based classes to survive renames).
    ================================================================ */
 
 /* Section frame — normal content gutter, generous rhythm above the CTA */
@@ -1944,7 +1947,9 @@ body.home .notion-collection .notion-collection-card:nth-child(n+4) {
   display: none;
 }
 
-/* Card — quiet: no box, the cover image carries the visual weight */
+/* Card — quiet: no box, the cover image carries the visual weight.
+   min-width: 0 lets 1fr tracks shrink below content min size, so a
+   nowrap property can never blow the grid out sideways */
 body.home .notion-collection .notion-collection-card {
   background: transparent;
   border: none;
@@ -1952,6 +1957,7 @@ body.home .notion-collection .notion-collection-card {
   box-shadow: none;
   overflow: visible;
   text-decoration: none !important;
+  min-width: 0;
 }
 
 /* Cover image — matches §20 post cards: radius, shadow, hover lift */
@@ -1999,8 +2005,8 @@ body.home .notion-collection .notion-collection-card:hover .notion-page-title-te
   color: var(--wf-indigo);
 }
 
-/* Created time — mono ochre eyebrow row, like §20's author/date line */
-body.home .notion-collection .notion-collection-card .prop-created-time {
+/* Date — mono ochre eyebrow row, like §20's author/date line */
+body.home .notion-collection .notion-collection-card .notion-property-date {
   font-family: var(--wf-mono);
   font-size: 11px;
   font-weight: 700;
@@ -2009,8 +2015,8 @@ body.home .notion-collection .notion-collection-card .prop-created-time {
   color: var(--wf-ochre);
 }
 
-/* Caption — the excerpt; clamp to three lines */
-body.home .notion-collection .notion-collection-card .prop-caption {
+/* Description — the excerpt; clamp to three lines */
+body.home .notion-collection .notion-collection-card .notion-property-text {
   font-family: var(--wf-sans);
   font-size: 15px;
   line-height: 1.55;
