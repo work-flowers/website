@@ -1902,3 +1902,131 @@ body.about-us .wf-filed-index[data-paused="true"] .wf-filed-index__row-progress 
   body.about-us .wf-filed-index__rule { display: none; }
   body.about-us .wf-filed-index__body { font-size: 22px; }
 }
+
+/* ================================================================
+   22. HOME — FEATURED POSTS
+   A linked gallery view of Pages List embedded on the homepage,
+   filtered to Page Type = Blog, Publish = Yes, Featured = checked.
+   Bullet renders it as .notion-collection-card gallery markup (same
+   markup family filed_index.js consumes on About Us). Scoped to
+   body.home, which footer.html adds on the root path.
+   Cards restyled to match the blog index (§20): cover image with
+   soft shadow + hover lift, bold title, mono ochre date, clamped
+   Caption excerpt. Notion view settings should expose only the
+   Created time and Caption properties, in that order.
+   ================================================================ */
+
+/* Section frame — normal content gutter, generous rhythm above the CTA */
+body.home .notion-page-content-inner .notion-collection {
+  padding: 0 100px;
+  margin: 48px 0 96px;
+}
+
+/* Bullet/Notion chrome we don't want: view title, tabs, "load more" */
+body.home .notion-collection .notion-collection-header,
+body.home .notion-collection .notion-collection-view-tabs,
+body.home .notion-collection .notion-gallery-load-more {
+  display: none !important;
+}
+
+/* Grid — three across, single column on small screens */
+body.home .notion-collection .notion-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  border-top: none;
+  padding-top: 0;
+}
+
+/* Safety net: never show more than three cards even if the Notion
+   filter lets extras through */
+body.home .notion-collection .notion-collection-card:nth-child(n+4) {
+  display: none;
+}
+
+/* Card — quiet: no box, the cover image carries the visual weight */
+body.home .notion-collection .notion-collection-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  text-decoration: none !important;
+}
+
+/* Cover image — matches §20 post cards: radius, shadow, hover lift */
+body.home .notion-collection .notion-collection-card-cover {
+  aspect-ratio: 16 / 10;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: var(--wf-shadow-sm);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+body.home .notion-collection .notion-collection-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+body.home .notion-collection .notion-collection-card:hover .notion-collection-card-cover {
+  transform: translateY(-2px);
+  box-shadow: var(--wf-shadow-md);
+}
+
+/* Card body */
+body.home .notion-collection .notion-collection-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 0 0;
+}
+
+/* Title — display weight, indigo on hover; hide any page icon */
+body.home .notion-collection .notion-collection-card .notion-page-title-icon {
+  display: none !important;
+}
+body.home .notion-collection .notion-collection-card .notion-page-title-text {
+  font-family: var(--wf-sans);
+  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--wf-ink);
+  text-wrap: balance;
+  white-space: normal;
+  border-bottom: none;
+}
+body.home .notion-collection .notion-collection-card:hover .notion-page-title-text {
+  color: var(--wf-indigo);
+}
+
+/* Created time — mono ochre eyebrow row, like §20's author/date line */
+body.home .notion-collection .notion-collection-card .prop-created-time {
+  font-family: var(--wf-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wf-ochre);
+}
+
+/* Caption — the excerpt; clamp to three lines */
+body.home .notion-collection .notion-collection-card .prop-caption {
+  font-family: var(--wf-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--wf-fg-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+}
+
+@media screen and (max-width: 1024px) {
+  body.home .notion-page-content-inner .notion-collection { padding: 0 32px; }
+  body.home .notion-collection .notion-gallery-grid { gap: 32px; }
+}
+@media screen and (max-width: 800px) {
+  body.home .notion-page-content-inner .notion-collection { padding: 0 20px; margin: 32px 0 64px; }
+  body.home .notion-collection .notion-gallery-grid { grid-template-columns: 1fr; gap: 48px; }
+}
