@@ -177,7 +177,37 @@ body {
   transition: background-color 0.15s ease;
 }
 .buttons > .nav-cta-btn:hover { background-color: var(--wf-ochre-hover); }
-.navbar-dropdown { background-color: transparent; }
+
+/* Resources dropdown — solid white panel so items stay legible over
+   the dark indigo hero (was transparent → low-contrast text) */
+.navbar-dropdown {
+  background-color: #FFFFFF !important;
+  border: 1px solid var(--wf-rule);
+  border-radius: 8px;
+  box-shadow: var(--wf-shadow-md);
+  padding: 8px;
+  margin-top: 6px;
+}
+.nav-drop-item-container {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background-color: transparent !important;
+  transition: background-color 0.15s ease;
+}
+.nav-drop-item-container:hover,
+.nav-drop-item-container:focus {
+  background-color: var(--wf-paper-warm) !important;
+}
+.nav-drop-title {
+  color: var(--wf-ink) !important;
+  font-weight: 600;
+}
+.nav-drop-desc {
+  color: var(--wf-fg-muted) !important;
+}
 
 /* ================================================================
    4. TYPOGRAPHY — display headings + body
