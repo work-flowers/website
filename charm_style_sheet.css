@@ -208,15 +208,18 @@ body {
 .nav-drop-desc {
   color: var(--wf-fg-muted) !important;
 }
-/* The pain-points hero widget animates via transform + will-change, which puts
-   it on its own GPU layer. That layer overlaps where this dropdown opens, and
-   some browsers mis-composite the overlap — tinting the opaque white panel
-   lavender. De-promoting the layer isn't enough (it survives); removing it from
-   the render tree is. So while the Resources menu is open, drop the widget's
-   scrolling list (it sits behind the panel anyway; it returns on mouse-out). */
-body:has(.navbar-item.has-dropdown:hover) .wf-pp__list,
-body:has(.navbar-item.has-dropdown:hover) .wf-pp__list--anim {
-  display: none !important;
+/* The pain-points hero widget's transform animation + will-change promote it
+   to its own GPU layer, and some compositors mis-blend that layer where this
+   dropdown opens — tinting the opaque white panel lavender. Hiding the widget
+   only while the menu was hovered proved insufficient on real hardware, so
+   kill the transform animation outright; the widget embed now scrolls via a
+   margin-top rAF loop instead (see jtbd_widget.html), which never composites.
+   These overrides also neutralise any stale copy of the old embed code. */
+.wf-pp__list,
+.wf-pp__list--anim {
+  animation: none !important;
+  will-change: auto !important;
+  transform: none !important;
 }
 
 /* ================================================================

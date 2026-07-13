@@ -64,15 +64,14 @@ const css = `
     position: relative;
   }
 
+  /* No transform/will-change here: animating transform promotes the list to
+     its own GPU layer, and some compositors mis-blend that layer where the
+     Resources navbar dropdown opens (tints the white panel lavender). The
+     scroll is driven by JS below via margin-top, which never composites. */
   .wf-pp__list {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    will-change: transform;
-  }
-
-  .wf-pp__list--anim {
-    animation: wf-pp-scroll 40s linear infinite;
   }
 
   .wf-pp__item {
@@ -86,15 +85,6 @@ const css = `
     max-width: 90%;
     align-self: flex-start;
   }
-
-  @keyframes wf-pp-scroll {
-    0% { transform: translateY(0) }
-    100% { transform: translateY(-50%) }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .wf-pp__list--anim { animation: none }
-  }
 `;
 
 const style = document.createElement('style');
@@ -103,5 +93,24 @@ document.head.appendChild(style);
 
 // 2) Inject the markup with no whitespace
 host.innerHTML = `<div class="wf-pp"><div class="wf-pp__viewport"><div class="wf-pp__list wf-pp__list--anim">${WF_PAINPOINTS.map(t => `<div class="wf-pp__item">${t}</div>`).join('')}${WF_PAINPOINTS.map(t => `<div class="wf-pp__item" aria-hidden="true">${t}</div>`).join('')}</div></div></div>`;
+
+// 3) Marquee via margin-top on rAF. Same 40s-per-loop pace as the old
+//    transform keyframes, but margin-top stays on the main thread — no GPU
+//    layer, so the navbar dropdown can't be mis-composited against it.
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const list = host.querySelector('.wf-pp__list');
+  const LOOP_MS = 40000;
+  let offset = 0, last = null;
+  requestAnimationFrame(function tick(ts){
+    if (last !== null) {
+      const half = list.scrollHeight / 2; // duplicated content: loop at halfway
+      offset += (ts - last) * (half / LOOP_MS);
+      if (offset >= half) offset -= half;
+      list.style.marginTop = -offset + 'px';
+    }
+    last = ts;
+    requestAnimationFrame(tick);
+  });
+}
 })();
 </script>
