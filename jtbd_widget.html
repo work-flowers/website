@@ -64,10 +64,8 @@ const css = `
     position: relative;
   }
 
-  /* No transform/will-change here: animating transform promotes the list to
-     its own GPU layer, and some compositors mis-blend that layer where the
-     Resources navbar dropdown opens (tints the white panel lavender). The
-     scroll is driven by JS below via margin-top, which never composites. */
+  /* Scroll is driven by JS below via margin-top on rAF (formerly a CSS
+     transform animation; either works — this is just the current shape). */
   .wf-pp__list {
     display: flex;
     flex-direction: column;
@@ -94,9 +92,8 @@ document.head.appendChild(style);
 // 2) Inject the markup with no whitespace
 host.innerHTML = `<div class="wf-pp"><div class="wf-pp__viewport"><div class="wf-pp__list wf-pp__list--anim">${WF_PAINPOINTS.map(t => `<div class="wf-pp__item">${t}</div>`).join('')}${WF_PAINPOINTS.map(t => `<div class="wf-pp__item" aria-hidden="true">${t}</div>`).join('')}</div></div></div>`;
 
-// 3) Marquee via margin-top on rAF. Same 40s-per-loop pace as the old
-//    transform keyframes, but margin-top stays on the main thread — no GPU
-//    layer, so the navbar dropdown can't be mis-composited against it.
+// 3) Marquee via margin-top on rAF; 40s per loop, wraps seamlessly at the
+//    halfway point since the item list is duplicated.
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const list = host.querySelector('.wf-pp__list');
   const LOOP_MS = 40000;

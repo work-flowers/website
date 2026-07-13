@@ -164,6 +164,16 @@ body {
 .navbar-item:focus, .navbar-item:hover {
   background-color: transparent !important;
   color: var(--wf-ink) !important;
+}
+/* Hover dim. Never put opacity on .has-dropdown itself: the open dropdown
+   panel is its child, so the whole menu renders at 70% and blends lavender
+   into the indigo hero. Dim only the "Resources" label instead. */
+.navbar-item:not(.has-dropdown):focus,
+.navbar-item:not(.has-dropdown):hover {
+  opacity: 0.7;
+}
+.navbar-item.has-dropdown:hover > .navbar-link,
+.navbar-item.has-dropdown:focus-within > .navbar-link {
   opacity: 0.7;
 }
 .buttons > .nav-cta-btn {
@@ -207,19 +217,6 @@ body {
 }
 .nav-drop-desc {
   color: var(--wf-fg-muted) !important;
-}
-/* The pain-points hero widget's transform animation + will-change promote it
-   to its own GPU layer, and some compositors mis-blend that layer where this
-   dropdown opens — tinting the opaque white panel lavender. Hiding the widget
-   only while the menu was hovered proved insufficient on real hardware, so
-   kill the transform animation outright; the widget embed now scrolls via a
-   margin-top rAF loop instead (see jtbd_widget.html), which never composites.
-   These overrides also neutralise any stale copy of the old embed code. */
-.wf-pp__list,
-.wf-pp__list--anim {
-  animation: none !important;
-  will-change: auto !important;
-  transform: none !important;
 }
 
 /* ================================================================
