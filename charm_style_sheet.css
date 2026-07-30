@@ -788,7 +788,13 @@ img.notion-page-icon { border-radius: unset; }
 .blog_main .notion-page-content-inner > .notion-blue_background_co {
   margin-left: 0 !important; margin-right: 0 !important;
 }
-.notion-page-content-inner > .notion-custom-code { align-self: stretch; }
+/* Custom-code blocks whose only content is an absolutely-positioned iframe
+   (aspect-ratio embeds) have zero max-content width. Their flex parent uses
+   align-items: flex-start, so they collapse to 0×0 and the embed vanishes.
+   Blog posts nest blocks under .notion-page, other pages under
+   .notion-page-content-inner — both need the stretch. */
+.notion-page-content-inner > .notion-custom-code,
+.notion-page > .notion-custom-code { align-self: stretch; }
 
 /* Logo strip — widgets.work.flowers embed after the hero */
 iframe[src*="widgets.work.flowers/embed/workflowers"] {
