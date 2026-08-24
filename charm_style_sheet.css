@@ -814,6 +814,22 @@ img.notion-page-icon { border-radius: unset; }
   .notion-custom-code iframe[src*=".notion.site/ebd/"] { min-height: 1550px; }
 }
 
+/* Native Notion form blocks. Bullet renders these as real HTML rather than an
+   iframe, and lets them run the full width of the content column — at a 1280px
+   viewport every input came out 978px wide. Cap the measure and centre it.
+   .notion-form is a flex column; the body/description carry margin: 0 20px,
+   which the auto margins replace (the 20px side padding on .notion-form keeps
+   the gutter on narrow screens). */
+.notion-form { align-items: center; }
+.notion-form-title,
+.notion-form-description,
+.notion-form-body {
+  width: 100%;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Logo strip — widgets.work.flowers embed after the hero */
 iframe[src*="widgets.work.flowers/embed/workflowers"] {
   display: block;
