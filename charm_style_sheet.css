@@ -815,19 +815,39 @@ img.notion-page-icon { border-radius: unset; }
 }
 
 /* Native Notion form blocks. Bullet renders these as real HTML rather than an
-   iframe, and lets them run the full width of the content column — at a 1280px
-   viewport every input came out 978px wide. Cap the measure and centre it.
-   .notion-form is a flex column; the body/description carry margin: 0 20px,
-   which the auto margins replace (the 20px side padding on .notion-form keeps
-   the gutter on narrow screens). */
-.notion-form { align-items: center; }
-.notion-form-title,
-.notion-form-description,
-.notion-form-body {
+   iframe, gives .notion-form width: 100% plus a 1px border, and pads content
+   children by 100px (20px under 800px). At full column width that draws a
+   faint box edge across the whole page with the fields adrift inside it, on a
+   different alignment grid from the heading above.
+
+   Cap the card and centre it — Bullet's own 100px padding then lines the
+   fields up with the heading's text. :has() keeps this to pages that actually
+   contain a form; under 800px the cap stops binding and the card goes full
+   width with a 20px gutter. Replaces an earlier attempt that capped
+   .notion-form-body instead: that fixed the field width but left the border
+   spanning the column. */
+.notion-page-content-inner:has(> .notion-form) > .notion-h,
+.notion-page-content-inner:has(> .notion-form) > .notion-form {
   width: 100%;
-  max-width: 640px;
+  max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+}
+/* Space the heading off the card here rather than with blank Notion blocks —
+   a blank block is 26px of collapsible nothing and drifts when content moves. */
+.notion-page-content-inner:has(> .notion-form) > .notion-h {
+  margin-bottom: 32px;
+}
+.notion-form {
+  border-radius: 8px;
+  padding-top: 28px;
+  padding-bottom: 36px;
+}
+/* Bullet ships the description with no bottom margin, so it sits right on top
+   of the first question. Direct-child selector to match the specificity of
+   Bullet's own .notion-form .notion-form-description rule. */
+.notion-form > .notion-form-description {
+  margin-bottom: 28px;
 }
 
 /* Logo strip — widgets.work.flowers embed after the hero */
