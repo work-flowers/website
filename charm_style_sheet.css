@@ -850,6 +850,27 @@ img.notion-page-icon { border-radius: unset; }
   margin-bottom: 28px;
 }
 
+/* The form's own title is hidden by §2's .notion-title { display: none } —
+   that rule suppresses Notion page titles site-wide so pages can lead with
+   their own hero heading, and a native form block's title happens to carry
+   the same class. Opt this one back in: it is the card's heading, not a
+   duplicate page title, so a page with a form needs no separate heading
+   block. Zeroing margin-top also drops Bullet's 60px, which the card's own
+   28px of padding already covers. */
+.notion-form > .notion-form-title {
+  display: block;
+  margin: 0 0 4px;
+}
+/* Bullet insets the title, description and body 20px inside the card, which
+   leaves the fields 20px off the 100px content gutter the heading uses. Let
+   the card's padding set the measure on its own so everything lines up. */
+.notion-form > .notion-form-title,
+.notion-form > .notion-form-description,
+.notion-form > .notion-form-body {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 /* Logo strip — widgets.work.flowers embed after the hero */
 iframe[src*="widgets.work.flowers/embed/workflowers"] {
   display: block;
