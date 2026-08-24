@@ -796,6 +796,24 @@ img.notion-page-icon { border-radius: unset; }
 .notion-page-content-inner > .notion-custom-code,
 .notion-page > .notion-custom-code { align-self: stretch; }
 
+/* Notion embeds (forms, embedded pages) pasted as /ebd/ iframes. Notion's own
+   snippet ships height="100%", which resolves against a parent with no height,
+   so the iframe falls back to its 150px intrinsic default and clips the form.
+   Give it the full column width and a floor, and let each embed set its real
+   height inline in the code block (a form needs ~1400px, taller on mobile).
+   Note: the snippet is also self-closing — <iframe ... /> is parsed as raw
+   text, which swallows the rest of the document, so it must be closed with
+   an explicit </iframe> in the code block. CSS cannot fix that part. */
+.notion-custom-code iframe[src*=".notion.site/ebd/"] {
+  display: block;
+  width: 100%;
+  border: 0;
+  min-height: 600px;
+}
+@media screen and (max-width: 800px) {
+  .notion-custom-code iframe[src*=".notion.site/ebd/"] { min-height: 1550px; }
+}
+
 /* Logo strip — widgets.work.flowers embed after the hero */
 iframe[src*="widgets.work.flowers/embed/workflowers"] {
   display: block;
