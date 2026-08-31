@@ -1674,18 +1674,32 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
   box-shadow: none !important;
   display: block;
 }
+/* The frame is the img's direct wrapper div, not the img: the source
+   PNGs are 1200×675 canvases with a square photo centered in
+   transparent padding (~7.5% top/bottom), which cover-cropping can't
+   remove. The wrapper clips to 4:5 and carries the radius + shadow;
+   the img is overscanned by 675/574 ≈ 1.18 so the padding lands
+   outside the crop. */
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image > div {
+  aspect-ratio: 4/5 !important;
+  height: auto !important;
+  overflow: hidden;
+  border-radius: 5px;
+  box-shadow: var(--wf-shadow-md) !important;
+}
 body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) figure.notion-asset-wrapper-image img {
   display: block !important;
   width: 100% !important;
-  max-width: 420px !important;
-  height: auto !important;
-  aspect-ratio: 4/5 !important;
+  max-width: none !important;
+  height: 100% !important;
+  aspect-ratio: auto !important;
   flex: 0 0 auto !important;
   margin: 0 !important;
   padding: 0 !important;
   object-fit: cover !important;
-  border-radius: 5px;
-  box-shadow: var(--wf-shadow-md) !important;
+  transform: scale(1.18);
+  border-radius: 0;
+  box-shadow: none !important;
 }
 body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-h2 {
   font-size: clamp(2.5rem, 4.5vw, 3.5rem);
