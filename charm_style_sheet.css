@@ -2188,3 +2188,55 @@ body.home .notion-collection .notion-collection-card .notion-property-text {
   body.home .notion-page-content-inner .notion-collection { padding: 0 20px; margin: 32px 0 64px; }
   body.home .notion-collection .notion-gallery-grid { grid-template-columns: 1fr; gap: 48px; }
 }
+
+/* ================================================================
+   23. SUPERCUT RECORDINGS GALLERY — grouped gallery embed
+   The Supercut Recordings database, embedded as a gallery grouped by
+   the "Playlists" multi-select (e.g. on /embed-test and wherever the
+   view is placed). Bullet renders the collection with the scoping
+   class .coll-supercut-recordings and each group heading as a
+   <summary class="notion-collection-group-title"> containing the
+   grouped multi-select value as a coloured Notion pill. We reset that
+   pill to the site's §8 eyebrow: mono, uppercase, ochre, no chrome.
+   ================================================================ */
+
+/* Strip the disclosure marker so the heading reads as a plain label */
+.coll-supercut-recordings .notion-collection-group-title {
+  list-style: none;
+}
+.coll-supercut-recordings .notion-collection-group-title::-webkit-details-marker,
+.coll-supercut-recordings .notion-collection-group-title::marker {
+  display: none;
+  content: "";
+}
+
+/* The grouped multi-select value → eyebrow (matches §8) */
+.coll-supercut-recordings .notion-collection-group-title .notion-property-multi_select-item {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-family: var(--wf-mono) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--wf-ochre) !important;
+}
+
+/* Give each group's label room above its row of cards */
+.coll-supercut-recordings .notion-collection-group-title {
+  margin-bottom: 12px;
+}
+
+/* ================================================================
+   24. SUPERCUT RECORDINGS DETAIL PAGE — suppress duplicate cover
+   Each recording page uses the Supercut video thumbnail as its Notion
+   cover, then embeds the same video in the body. The cover is pure
+   duplication, so hide it on detail pages (body.supercut-recording is
+   added by footer.html). The page's own top padding keeps the title
+   spaced; no cover-driven offset remains to compensate for.
+   ================================================================ */
+body.supercut-recording .notion-page-cover-wrapper {
+  display: none !important;
+}
