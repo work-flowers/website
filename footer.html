@@ -5,6 +5,13 @@
   if (location.pathname === '/' || location.pathname === '') {
     document.body.classList.add('home');
   }
+  // Tag supercut-recording detail pages (/supercut-recordings/<slug>) so the
+  // stylesheet can hide the duplicate video-thumbnail cover. The index page
+  // (/supercut-recordings) has only one path segment and is left untouched.
+  var seg = location.pathname.split('/').filter(Boolean);
+  if (seg[0] === 'supercut-recordings' && seg.length >= 2) {
+    document.body.classList.add('supercut-recording');
+  }
 </script>
 
 <!-- Google Analytics (GA4) - guarded against iframe previews and non-canonical domains -->
