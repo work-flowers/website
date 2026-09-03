@@ -2232,11 +2232,13 @@ body.home .notion-collection .notion-collection-card .notion-property-text {
 /* ================================================================
    24. SUPERCUT RECORDINGS DETAIL PAGE — suppress duplicate cover
    Each recording page uses the Supercut video thumbnail as its Notion
-   cover, then embeds the same video in the body. The cover is pure
-   duplication, so hide it on detail pages (body.supercut-recording is
-   added by footer.html). The page's own top padding keeps the title
-   spaced; no cover-driven offset remains to compensate for.
+   cover, then embeds the same video in the body — pure duplication.
+   Self-scope in CSS: hide the cover on any page whose scroller also
+   contains a Supercut embed. This needs no body-class hook (so no
+   footer.html change and it survives Bullet's client-side navigation),
+   and targets exactly the duplication case. The page's own top padding
+   keeps the title spaced; no cover-driven offset remains to compensate.
    ================================================================ */
-body.supercut-recording .notion-page-cover-wrapper {
+.notion-page-scroller:has(iframe[src*="supercut.ai"]) .notion-page-cover-wrapper {
   display: none !important;
 }
