@@ -1,5 +1,5 @@
 {
-  "_comment": "Cleaned mirror of the Notion Customer Reviews data source ff49c51a-79b1-4254-872a-d1934b8696f6. Source rows carry markdown asterisks and pack the company into the Reviewer Name field; this file is the de-linted version used to build schema markup. Re-run build_review_schema.py after editing.",
+  "_comment": "Cleaned mirror of the Notion Customer Reviews data source ff49c51a-79b1-4254-872a-d1934b8696f6. Source rows carry markdown asterisks and pack the company into the Reviewer Name field; this file is the de-linted version used to build schema markup. Slugs match the live /customer-reviews/ URLs where a page exists. Re-run build_review_schema.py after editing.",
   "source_data_source_id": "ff49c51a-79b1-4254-872a-d1934b8696f6",
   "generated_from_notion": "2026-09-04",
   "reviews": [
@@ -11,17 +11,19 @@
       "company": null,
       "rating": 5,
       "date": "2026-05-17",
-      "body": "work.flowers offers the perfect combination of strategic guidance and speedy execution. Dennis doesn't just build Zaps, he genuinely puts himself in your shoes to solve complex business problems. He can communicate seamlessly with both technical and business stakeholders and execute the vision flawlessly."
+      "body": "work.flowers offers the perfect combination of strategic guidance and speedy execution. Dennis doesn't just build Zaps, he genuinely puts himself in your shoes to solve complex business problems. He can communicate seamlessly with both technical and business stakeholders and execute the vision flawlessly.",
+      "has_live_page": true
     },
     {
-      "slug": "honest-clear-and-does-what-he-promises",
+      "slug": "ruey-teo-no-live-page",
       "headline": "Honest, clear, and does what he promises",
       "author": "Ruey Teo",
       "author_type": "Person",
       "company": null,
       "rating": 5,
       "date": "2026-02-02",
-      "body": "Dennis is not only knowledgeable but also helpful and efficient professional. What sets him apart from others is that he is honest, communicates clearly and sets out to do what he promises."
+      "body": "Dennis is not only knowledgeable but also helpful and efficient professional. What sets him apart from others is that he is honest, communicates clearly and sets out to do what he promises.",
+      "has_live_page": false
     },
     {
       "slug": "professional-and-knowledgable-about-several-fields",
@@ -31,7 +33,8 @@
       "company": null,
       "rating": 5,
       "date": "2026-01-19",
-      "body": "Dennis is a professional and deeply knowledgeable across multiple domains, including accounting, workflow design, automation, and operational problem-solving - essentially everything you need to make your back end run independently. He begins from a perspective of building a system that will self-sustain, not simply replacing the existing workflow. This is someone that understands core mechanics."
+      "body": "Dennis is a professional and deeply knowledgeable across multiple domains, including accounting, workflow design, automation, and operational problem-solving - essentially everything you need to make your back end run independently. He begins from a perspective of building a system that will self-sustain, not simply replacing the existing workflow. This is someone that understands core mechanics.",
+      "has_live_page": true
     },
     {
       "slug": "great-experience-in-automating-hr-ops-workflows",
@@ -41,7 +44,8 @@
       "company": "co:grow",
       "rating": 5,
       "date": "2025-12-10",
-      "body": "It's been a great experience working with Dennis to automate our HR Ops processes. He is very responsive and helpful, the solutions were built and tested fairly quickly and received positive feedback from internal teams."
+      "body": "It's been a great experience working with Dennis to automate our HR Ops processes. He is very responsive and helpful, the solutions were built and tested fairly quickly and received positive feedback from internal teams.",
+      "has_live_page": true
     },
     {
       "slug": "excellent-service-and-solution-for-my-issue",
@@ -51,7 +55,8 @@
       "company": "Start Right",
       "rating": 5,
       "date": "2025-11-12",
-      "body": "Dennis was an incredible help with pushing forward my automation. I felt like my previous solutions were basic and they were working 60% of the time. During the 1st meeting i explained the issues, and Dennis understood my issues and proposed solutions that were both workable and not complicated for my company. A week later i had a fully working solution that went above and beyond my brief. I 100% recommend Work Flowers for automation solutions."
+      "body": "Dennis was an incredible help with pushing forward my automation. I felt like my previous solutions were basic and they were working 60% of the time. During the 1st meeting i explained the issues, and Dennis understood my issues and proposed solutions that were both workable and not complicated for my company. A week later i had a fully working solution that went above and beyond my brief. I 100% recommend Work Flowers for automation solutions.",
+      "has_live_page": true
     },
     {
       "slug": "automation-a-scalability-enabler",
@@ -61,7 +66,8 @@
       "company": "NTUC",
       "rating": 5,
       "date": "2025-11-12",
-      "body": "I am happy to recommend Dennis, who was instrumental in helping me realise my vision to automate a highly manual and time-sensitive process. The outcome of our project has been nothing short of transformative. Thanks to his expertise, we have cut down the execution time significantly and most importantly, allowed us to scale our operations. This opened a path towards future growth."
+      "body": "I am happy to recommend Dennis, who was instrumental in helping me realise my vision to automate a highly manual and time-sensitive process. The outcome of our project has been nothing short of transformative. Thanks to his expertise, we have cut down the execution time significantly and most importantly, allowed us to scale our operations. This opened a path towards future growth.",
+      "has_live_page": true
     },
     {
       "slug": "excellent-service",
@@ -71,17 +77,19 @@
       "company": "Elite Athlete Academy",
       "rating": 5,
       "date": "2025-07-30",
-      "body": "Work Flowers has revolutionised our business and made us improve our performance heaps. Could not be more grateful for their service!"
+      "body": "Work Flowers has revolutionised our business and made us improve our performance heaps. Could not be more grateful for their service!",
+      "has_live_page": true
     },
     {
-      "slug": "streamlined-operations-with-smart-scalable-automations",
+      "slug": "streamlined-operations-with-smart-scalable-automations-from-dennis",
       "headline": "Streamlined operations with smart, scalable automations",
       "author": "Ezra Shuek",
       "author_type": "Person",
       "company": "Ordinary Folk",
       "rating": 5,
       "date": "2025-07-22",
-      "body": "Dennis has played a key role in transforming the day-to-day operations of our business. Tasks that previously took hours to complete are now automated, running seamlessly in the background and freeing up our team to focus on higher-value work. What sets Dennis apart is his thoughtful approach - he didn't just build scripts. He took the time to understand our pain points and crafted solutions that integrated seamlessly into our existing systems. Highly recommend!"
+      "body": "Dennis has played a key role in transforming the day-to-day operations of our business. Tasks that previously took hours to complete are now automated, running seamlessly in the background and freeing up our team to focus on higher-value work. What sets Dennis apart is his thoughtful approach - he didn't just build scripts. He took the time to understand our pain points and crafted solutions that integrated seamlessly into our existing systems. Highly recommend!",
+      "has_live_page": true
     },
     {
       "slug": "effective-and-quick-solution",
@@ -91,7 +99,8 @@
       "company": "ES-Team Lighting",
       "rating": 5,
       "date": "2025-06-17",
-      "body": "My sales team was in dire need of automation to reduce interval time between processes. Engaging Dennis from work.flowers has allowed my firm to increase both efficiency and productivity. The best part is that the automation works behind the scene so it feels as though we have hired a new team of worker assisting our department. If you are looking for automation, Dennis is your guy. Will definitely be engaging him again for any future improvements."
+      "body": "My sales team was in dire need of automation to reduce interval time between processes. Engaging Dennis from work.flowers has allowed my firm to increase both efficiency and productivity. The best part is that the automation works behind the scene so it feels as though we have hired a new team of worker assisting our department. If you are looking for automation, Dennis is your guy. Will definitely be engaging him again for any future improvements.",
+      "has_live_page": true
     },
     {
       "slug": "deep-insights",
@@ -101,7 +110,8 @@
       "company": "Brands For Good Ltd",
       "rating": 5,
       "date": "2025-06-12",
-      "body": "We've worked with various automation tools over the years, but Dennis and the team at work.flowers brought a new level of insight and clarity. Their depth of expertise in AI-powered workflows, and automation strategies has helped us level up the way we work. As a non profit, we have found it useful to try and automate as much of our process as possible to reduce cost, work.flowers has been extremely helpful. Highly recommended!"
+      "body": "We've worked with various automation tools over the years, but Dennis and the team at work.flowers brought a new level of insight and clarity. Their depth of expertise in AI-powered workflows, and automation strategies has helped us level up the way we work. As a non profit, we have found it useful to try and automate as much of our process as possible to reduce cost, work.flowers has been extremely helpful. Highly recommended!",
+      "has_live_page": true
     },
     {
       "slug": "highly-recommend",
@@ -111,7 +121,9 @@
       "company": null,
       "rating": 5,
       "date": "2025-05-13",
-      "body": "I worked with WF to automate our hiring process. The experience was smooth - I liked how I could share my ideas, and the team would be able to translate them into the desired output. The team was extremely knowledgeable and quickly understood the pain points I was facing - this has helped them be creative in delivering the desired output with zapier, amongst other tools. Highly recommend WF if you want to work with a team who truly understands and delivers (and has a sense of humour)!"
+      "body": "I worked with WF to automate our hiring process. The experience was smooth - I liked how I could share my ideas, and the team would be able to translate them into the desired output. The team was extremely knowledgeable and quickly understood the pain points I was facing - this has helped them be creative in delivering the desired output with zapier, amongst other tools. Highly recommend WF if you want to work with a team who truly understands and delivers (and has a sense of humour)!",
+      "has_live_page": true
     }
-  ]
+  ],
+  "live_pages_note": "10 of the 11 reviews have a /customer-reviews/<slug>/ page. Ruey Teo's has none because its Notion Headline (the title property) is blank, so Bullet had no slug to build from. Those 10 pages render empty — see audit C-06."
 }

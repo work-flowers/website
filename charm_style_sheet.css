@@ -1914,6 +1914,24 @@ body.about-us .wf-filed-index__name {
   font-weight: 700;
   color: var(--wf-indigo);
 }
+/* Review date — sits at the far end of the attribution row. Rendered by
+   filed_index.js from the Review Date property, which has to be a shown
+   property on the Notion gallery view for Bullet to emit it. */
+body.about-us .wf-filed-index__date {
+  margin-left: auto;
+  font-family: var(--wf-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--wf-fg-subtle);
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  /* The attribution row wraps on narrow screens; don't let the date get
+     pushed onto a line of its own by margin-left: auto. */
+  body.about-us .wf-filed-index__attribution { flex-wrap: wrap; }
+  body.about-us .wf-filed-index__date { margin-left: 0; flex-basis: 100%; }
+}
 
 /* ── Ledger panel (right) ───────────────────────────────────────── */
 body.about-us .wf-filed-index__ledger-head {

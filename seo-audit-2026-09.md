@@ -6,15 +6,23 @@ Scope: live crawl of 141 indexable URLs (3 Sep 2026), sitemap.xml (254 entries),
 "Our Website" source (page 1d791b07 + Pages List / Posts / Customer Reviews databases),
 GA4 property 532585399 (12 Apr – 3 Sep 2026), and the repo's CSS/HTML snippets.
 
-**Status as at 4 Sep 2026 (round 3, revised): 28 findings — 10 closed · 1 awaiting a paste ·
-1 withdrawn · 16 open** (3 critical · 1 high · 8 medium · 4 low open, plus 7 verified clean)
+**Status as at 4 Sep 2026 (round 3, revised twice): 29 findings — 10 closed · 6 awaiting a paste ·
+1 withdrawn · 12 open** (2 critical · 1 high · 7 medium · 2 low open, plus 7 verified clean)
 
-Deployed into Bullet's custom footer: M-03, C-05, H-05. H-05 verified live
-(`/blog/tags/zapier/` serves "Zapier — Articles & Guides | workFlowers"); C-05 and M-03 shipped
-in the same file and the last block in it is demonstrably running, but script contents can't be
-read back from the rendered page — confirm the JSON-LD via Google's Rich Results Test.
+Only one decision outstanding: `NOINDEX_ARCHIVES` for the 36 tag and author archives.
 
-H-04 is retargeted to `/about-us/` and appended to `footer.html`; needs one more paste.
+**Deployed and verified live** (read back off the rendered DOM via the local Chrome MCP): M-03,
+C-05 (homepage carries the ProfessionalService + WebSite graph; blog posts carry BreadcrumbList
+alongside Bullet's Article), H-05 (`/blog/tags/zapier/` serves "Zapier — Articles & Guides |
+workFlowers").
+
+**Awaiting one more paste of `footer.html`:** H-04 (review markup, retargeted to `/about-us/`),
+C-02 + L-02 (the H1 retag), L-05 (tag-heading hash strip).
+
+Note for future verification: the Cowork built-in browser's `javascript_tool` returns undefined
+and logs nothing, and `read_page` omits `<script>` contents — so JSON-LD cannot be read back
+through it. The local `Control_Chrome` MCP's `execute_javascript` works and is what verified all
+of the above.
 
 Closed and verified live: C-01 homepage title · H-01 broken footer link (Resources nav item
 removed in Bullet, Notion Path lowercased) · H-02 draft annotations in three titles · H-03 all
@@ -31,6 +39,93 @@ community, so every tagged link fell through. Direct's share did fall (65.2% →
 Direct per day rose (11.9 → 13.2) — the share moved because other channels grew, not because
 tagging worked. Script now emits social/email/referral with the distinctions in utm_content.
 Forward-only; the 142 historical Unassigned sessions need a GA4 custom channel group.
+
+## Round 3, third pass — 4 Sep 2026
+
+**C-06 decided — noindex switched on.** Dennis confirmed the review URLs were never meant to be
+click-through destinations: the reviews are a widget on `/about-us/`, and `filed_index.js` calls
+`galleryWrap.replaceWith(root)`, discarding the Notion markup that would otherwise link to them.
+Nothing on the site points at those URLs. `NOINDEX_EMPTY_REVIEW_PAGES` is now `true` in
+`footer.html`. The URLs keep resolving; they just leave the index.
+
+**L-05 answered — it is not Zapier-specific.** `/blog/tags/notion/` renders
+`<h1 class="tag-name"># Notion</h1>` too. Every archive gets the hash, because it is Bullet's
+template decoration, not data: all 33 tag Names in the live Tags data source are clean. What has
+no hash is the tag *chips* — the pill links in the filter row and under each post — which render
+as plain `<a>Notion</a>`. Comparing a chip against an archive H1 is what makes it look selective.
+
+**L-06 (new, low) — the widget never read the review dates.** Adding Review Date to the gallery
+view was necessary but not sufficient. `filed_index.js` reads only `.prop-reviewer-name`,
+`.prop-review-body` and `.prop-rating`, then rebuilds the layout and throws the Notion markup
+away — a property it never queries cannot appear, whatever the CSS says. So this was never a CSS
+problem. Fixed: the script now reads `.prop-review-date` and renders a `<time>` at the end of the
+attribution row, with a matching rule in `charm_style_sheet.css` § 19.6.
+
+Two things caught while testing, both worth remembering:
+
+- **Bullet ignores the Notion view's date format.** The view is `YYYY/MM/DD`; the rendered cell
+  reads `"May 17, 2026"`.
+- **A timezone bug that would have shipped.** `Date.parse("May 17, 2026")` returns local midnight,
+  and `toISOString()` then converts that to the 16th in UTC+8 — every date a day early. The
+  parser now works in calendar parts and never calls `toISOString`. Verified against all 11
+  server-rendered cards: every label and `datetime` matches the Notion source.
+
+**Also worth knowing: every Slug field in the live Tags data source is empty**, so Bullet derives
+archive URLs from the tag Name. Renaming a tag will silently change its archive URL —
+`/blog/tags/zapier/` has inbound links and traffic.
+
+**Verification technique that worked:** `fetch('/about-us/')` + `DOMParser` from inside the page,
+via the local Chrome MCP. That reads Bullet's server-rendered gallery markup *before*
+`filed_index.js` replaces it — the only way to inspect the original property cells.
+
+## Round 3, second correction — 4 Sep 2026
+
+**C-02's diagnosis was wrong, and the CSS route was already taken.** The audit said the homepage's
+most prominent heading is the word "Home". It is not: `charm_style_sheet.css:130` carries
+`.notion-title { display: none; }` sitewide, so that H1 is hidden at zero height. Hiding it is
+precisely what leaves these pages with no usable H1 — the real headline renders as an `<h2>`
+wearing Notion's `.notion-h1` classes. CSS cannot finish the job: it can hide an element but not
+retag one or change its text.
+
+What ships instead is a footer script that promotes the first visible hero heading to `<h1>` and
+demotes the hidden nav-label H1 to a `<div>`. Verified against the live DOM on four page shapes:
+
+- homepage → single visible H1 "Ops on demand for lean teams.", 112.32px / 437px tall / top 285px
+  identical before and after
+- `/contact/` → phantom demoted, form card H1 ("Contact workFlowers") untouched at 42.5px. Closes
+  L-02, whose "two H1s" are a hidden `h1.notion-title` plus the visible `.notion-form-title`.
+- blog posts → post title H1 is real, so only the phantom is removed. (Blog posts also carry a
+  second H1 from an embedded widget — left alone; see M-07.)
+- `/blog/tags/*` → no phantom; only the L-05 hash strip applies
+
+Checked first that the stylesheet has no tag-qualified `.notion-h` selectors (so retagging is
+visually inert) and that the hero sits outside `.hero_section`, whose `h1` rules are scoped to the
+blog landing pages. Caveat: browser-side, so Google only sees it after rendering. Renaming the
+Notion Titles stays the more robust server-side fix, at the cost of changing nav labels.
+
+**L-05 needs JS, not CSS.** The heading is `<h1 class="tag-name"># Zapier</h1>` with the hash
+inside the heading's own single text node — no span, no `::before`. Nothing for CSS to target, and
+clipping would still leave a screen reader announcing "hash Zapier".
+
+**The 10 empty review URLs** (C-06), verified against sitemap.xml — 10, not 11:
+
+    /customer-reviews/strategic-and-speedy-execution/
+    /customer-reviews/professional-and-knowledgable-about-several-fields/
+    /customer-reviews/great-experience-in-automating-hr-ops-workflows/
+    /customer-reviews/excellent-service-and-solution-for-my-issue/
+    /customer-reviews/automation-a-scalability-enabler/
+    /customer-reviews/excellent-service/
+    /customer-reviews/streamlined-operations-with-smart-scalable-automations-from-dennis/
+    /customer-reviews/effective-and-quick-solution/
+    /customer-reviews/deep-insights/
+    /customer-reviews/highly-recommend/
+
+Ruey Teo's review has no page: its Notion Headline (the title property) is blank, so Bullet had no
+slug to build from. `reviews-schema/customer-reviews.json` now records this and its slugs match
+the live URLs.
+
+**Review Date added to the About Us gallery view** by Dennis, so the `datePublished` in the H-04
+markup now matches what a visitor sees.
 
 ## Round 3 corrections — 4 Sep 2026
 
