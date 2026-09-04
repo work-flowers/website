@@ -6,10 +6,40 @@ Scope: live crawl of 141 indexable URLs (3 Sep 2026), sitemap.xml (254 entries),
 "Our Website" source (page 1d791b07 + Pages List / Posts / Customer Reviews databases),
 GA4 property 532585399 (12 Apr – 3 Sep 2026), and the repo's CSS/HTML snippets.
 
-**Status as at 4 Sep 2026 (round 3, revised twice): 29 findings — 10 closed · 6 awaiting a paste ·
-1 withdrawn · 12 open** (2 critical · 1 high · 7 medium · 2 low open, plus 7 verified clean)
+**Status as at 4 Sep 2026 (end of round 3): 33 findings — 16 closed · 1 withdrawn · 16 open**
+(2 critical · 1 high · 9 medium · 4 low open, plus 7 verified clean)
 
-Only one decision outstanding: `NOINDEX_ARCHIVES` for the 36 tag and author archives.
+**Now tracked as a Notion project:** "work.flowers SEO remediation"
+(`3d191b07-11ac-819d-8689-f0b285d3d742`, Projects data source
+`407ac9c1-7045-4529-acde-6d71f3b288d5`) with one task per finding in the Tasks data source
+`27a91b07-11ac-81ed-973f-000ba6da1441` — 34 tasks: 16 Done, 1 Canceled, 17 Not started (the 16
+open findings plus the archives decision). Task names carry the finding ID so the ledger and Notion
+stay in step. Notion has three priority levels against the audit's four, so **Critical and High
+both map to High** — the ID prefix keeps the distinction.
+
+Four items previously filed as loose "scraps" were given proper IDs when the project was set up:
+**M-11** empty tag Slugs · **M-12** publish-or-delete /pricing · **L-07** Ruey Teo's blank
+Headline · **L-08** /security/ description at 169 chars.
+
+Everything deployed was read back off the rendered DOM, not inferred from the repo:
+
+| Page | Verified |
+|---|---|
+| `/` | ProfessionalService + WebSite JSON-LD |
+| `/blog/next-gen-zaps/` | BreadcrumbList + Bullet's own Article |
+| `/blog/tags/zapier/` | title "Zapier — Articles & Guides \| workFlowers"; H1 "Zapier", hash gone |
+| `/about-us/` | AboutPage + AggregateRating 5/5 from 11 + 11 Review nodes; one visible H1 (hero copy); phantom H1 now a `<div>`; date renders with `datetime="2026-02-02"` |
+| `/customer-reviews/deep-insights/` | `robots: noindex, follow`; no review schema leaking onto it |
+
+**Deploy mechanics, worth remembering:** `charm_style_sheet.css` and `filed_index.js` are pinned
+to jsDelivr by commit SHA (`cdn.jsdelivr.net/gh/work-flowers/website@<sha>/…`), so a repo change is
+invisible until both pins move. `footer.html` is pasted inline into Bullet's custom footer and does
+*not* move with them. The two pins were on different commits (CSS `2f91518`, JS `f437808`) — pin
+both to the same SHA each deploy so a script change cannot outrun its stylesheet. Round 3 shipped
+at `a51ca4c`.
+
+**One decision outstanding:** `NOINDEX_ARCHIVES` for the 36 tag and author archives. Confirmed
+still off — those pages carry no robots directive.
 
 **Deployed and verified live** (read back off the rendered DOM via the local Chrome MCP): M-03,
 C-05 (homepage carries the ProfessionalService + WebSite graph; blog posts carry BreadcrumbList
