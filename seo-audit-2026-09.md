@@ -6,6 +6,92 @@ Scope: live crawl of 141 indexable URLs (3 Sep 2026), sitemap.xml (254 entries),
 "Our Website" source (page 1d791b07 + Pages List / Posts / Customer Reviews databases),
 GA4 property 532585399 (12 Apr – 3 Sep 2026), and the repo's CSS/HTML snippets.
 
+**Status as at 4 Sep 2026 (round 3): 27 findings — 7 closed · 3 written, awaiting deploy · 17 open**
+(4 critical · 3 high · 7 medium · 3 low open, plus 7 verified clean)
+
+Written and awaiting one paste into Bullet's custom footer: M-03, C-05, H-05.
+H-04 is written too but blocked on C-06.
+
+Closed and verified live: C-01 homepage title · H-01 broken footer link (Resources nav item
+removed in Bullet, Notion Path lowercased) · H-02 draft annotations in three titles · H-03 all
+missing and over-length meta descriptions · M-08 title lengths, UK spelling, brand casing ·
+M-09 (new) the Raycast UTM script's invalid mediums · L-01 Meta Keywords, closed by decision.
+M-03 is fixed in footer.html but still needs pasting into Bullet's custom footer code.
+
+Remaining Notion-side scraps: /security/ meta description at 169 chars, and a 70-char Meta
+Title on the unpublished /pricing.
+
+New finding M-09 — the Unassigned bucket was self-inflicted. GA4 matches utm_medium against a
+fixed list; the Raycast tagging script offered community / event / dm / webinar and defaulted to
+community, so every tagged link fell through. Direct's share did fall (65.2% → 55.7% Apr–Aug) but
+Direct per day rose (11.9 → 13.2) — the share moved because other channels grew, not because
+tagging worked. Script now emits social/email/referral with the distinctions in utm_content.
+Forward-only; the 142 historical Unassigned sessions need a GA4 custom channel group.
+
+## Round 3 — 4 Sep 2026
+
+**Done and live**
+
+- **GA4 custom channel group created** (`properties/532585399/channelGroups/15717427913`,
+  "workFlowers channel group"). Community and Events rules run first, then the 19 standard
+  channels fall through via `eachScopeDefaultChannelGroup`. Confirmed by report: 114 of the
+  142 Unassigned sessions (94 `community` + 20 `event`) now classify. Channel groups reapply
+  to historical data, so this is retroactive. It is **not** the property's primary channel
+  group — pick it from the "Channel group" selector in reports, or promote it in Admin.
+  The remaining 28 Unassigned sessions are unrelated to the Raycast script.
+  *Note for future API work: GA4 channel-group filters use `eachScopeMedium`, not
+  `sessionMedium`. The latter returns `unsupported-channel-grouping-field`.*
+
+**Built in `footer.html`, still needs pasting into Bullet's custom footer**
+
+- **C-05 closed (pending deploy).** ProfessionalService + WebSite JSON-LD with legal name, UEN,
+  registered address, founder, areaServed, sameAs and a three-service OfferCatalog, anchored at
+  `@id` `https://www.work.flowers/#organization`. Plus a runtime BreadcrumbList derived from the
+  URL path; intermediate crumbs are emitted without a URL when the section has no page behind it
+  (`/customer-reviews/`, `/blog/tags/`), so no crumb links to a 404.
+- **H-05 addressed (pending deploy) — and the original fix was wrong.** There is no Bullet
+  template to change: the Tags database exposes only Name, Slug, Posts and Color, the Authors
+  database has no meta fields, and Blog Settings has no title format or template variables.
+  Archive metadata is not configurable in Bullet at all. Titles, meta descriptions and the
+  OG/Twitter equivalents are now generated at runtime from the slug for all 36 archives
+  (33 tags + 3 authors — the earlier count of 38 was high). A `NOINDEX_ARCHIVES` switch sits
+  in the same block, currently `false`, awaiting a decision.
+- **H-04 markup built, but blocked on a prerequisite.** `reviews-schema/` holds
+  `customer-reviews.json` (cleaned mirror of the Notion data — the source rows carry markdown
+  asterisks and pack the company into the Reviewer Name field), `build_review_schema.py`, and
+  the generated `customer-reviews-schema.html`. Path-scoped: ItemList + AggregateRating on the
+  hub, a single Review per review page, nothing elsewhere. 11 reviews, not 10; all 5 stars.
+
+**New findings**
+
+- **C-06 (new, critical) The customer review pages render empty.** All 11 are published,
+  indexable and titled, and `/customer-reviews/professional-and-knowledgable-about-several-fields`
+  takes real traffic — but the body renders nothing except the footer. The review text lives in
+  Notion *properties* (Review Body, Reviewer Name, Rating), and Bullet renders page *bodies*,
+  which are empty. So the site has 11 thin indexable pages and no visible testimonials anywhere,
+  homepage included. This also blocks H-04: Google requires marked-up review content to be
+  visible on the page. *Fix: build a `/customer-reviews/` hub page in the Pages List holding a
+  gallery view of the Customer Reviews database (the Gallery view already displays Headline,
+  Review Body and Reviewer Name), then de-index the 11 row pages.*
+- **H-07 (new, high) `/customer-reviews/` itself 404s.** There is no hub — the eleven review
+  pages have no index, no internal links pointing at them, and nothing on the homepage.
+- **M-10 (new) A duplicate, unused blog tree exists in Notion.** Both `Pages List / Blog` and
+  `Pages List / Flow Statements` carry a full Blog + Tags + Authors set. The live one is
+  **Flow Statements** (its Tags relation targets Blog Content `1d791b07-11ac-8146-9124-000b0d6dbcc8`).
+  Edits made to the `Blog` tree have no effect on the site.
+- **L-04 (new) Two of the three author archives belong to people who have left** — Ernest Choo
+  and Grace Tang. Also: the footer copyright still reads "© 2024".
+
+**Expected-payoff correction on H-04.** Google does not show review stars for reviews a business
+collects about itself on Organization or LocalBusiness — the self-serving review policy. This
+markup will not produce stars in Google search. It is still worth shipping for Bing, for AI
+answer engines that read JSON-LD, and so the entity carries a rating once third-party reviews
+exist. The real win in this area is C-06: making the testimonials visible at all.
+
+---
+
+*Original findings below, as first written.*
+
 **5 critical · 6 high · 8 medium · 3 low · 7 verified clean**
 
 Root cause for most of it: the Notion properties Bullet.so reads from are empty, wrong,

@@ -124,3 +124,302 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(go).catch(()=>{});
 })();
 </script>
+
+<!-- ============================================================
+     Structured data (JSON-LD) — SEO audit C-05
+     Fixes: no Organization / ProfessionalService / BreadcrumbList
+     markup anywhere on the site. Bullet auto-generates Article
+     markup on blog posts only; everything here is additive and
+     does not collide with it.
+
+     ProfessionalService is a subtype of Organization, so a single
+     node serves both. The @id anchors let later blocks (e.g. the
+     review markup on the reviews hub) reference this entity with
+     {"@id": "https://www.work.flowers/#organization"} instead of
+     restating it.
+     ============================================================ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://www.work.flowers/#organization",
+      "name": "workFlowers",
+      "legalName": "Company Flow Pte. Ltd.",
+      "alternateName": "work.flowers",
+      "url": "https://www.work.flowers/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://firebasestorage.googleapis.com/v0/b/digital-axon-366208.appspot.com/o/sites%2FIsbw6XlCS35Ea2JF9Kaj%2Flogo%2FTransparent%20Logo%20Cropped.png?alt=media&token=048b8590-b364-41f1-9c92-3a4fdbfeace8"
+      },
+      "description": "Operations consultancy for lean teams: workflow automation and AI agents, analytics and BI stacks, and AI enablement. Singapore, serving Asia Pacific.",
+      "slogan": "Ops on demand for lean teams.",
+      "foundingDate": "2024-10-12",
+      "founder": {
+        "@type": "Person",
+        "name": "Dennis Chiuten",
+        "jobTitle": "Founder",
+        "url": "https://www.work.flowers/about-us/"
+      },
+      "identifier": {
+        "@type": "PropertyValue",
+        "propertyID": "UEN",
+        "value": "202442050M",
+        "description": "Singapore Unique Entity Number (ACRA)"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "160 Robinson Road, #14-04, SBF Center",
+        "addressLocality": "Singapore",
+        "postalCode": "068914",
+        "addressCountry": "SG"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "email": "dennis@work.flowers",
+        "url": "https://www.work.flowers/contact/",
+        "availableLanguage": ["en"]
+      },
+      "areaServed": [
+        { "@type": "Country", "name": "Singapore" },
+        { "@type": "Place", "name": "Asia Pacific" }
+      ],
+      "knowsAbout": [
+        "Workflow automation",
+        "Zapier",
+        "Notion",
+        "AI agents",
+        "Model Context Protocol",
+        "Business intelligence",
+        "Data warehousing",
+        "SOC 2",
+        "ISO 27001"
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/company/work-flowers/",
+        "https://www.youtube.com/@work.flowers",
+        "https://github.com/work-flowers",
+        "https://www.reddit.com/user/work-flowers/"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Automation",
+              "description": "Autonomous workflows and AI agents that remove manual work: inbox triage, invoice processing, lead enrichment, approvals.",
+              "serviceType": "Business process automation",
+              "provider": { "@id": "https://www.work.flowers/#organization" }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Analytics",
+              "description": "A full BI stack — warehouse, models and dashboards — turning scattered operational data into numbers teams and investors use.",
+              "serviceType": "Business intelligence and analytics",
+              "provider": { "@id": "https://www.work.flowers/#organization" }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI enablement",
+              "description": "Custom Skills, MCP connectors, agents and API integrations so AI assistants can read and write real business systems.",
+              "serviceType": "AI enablement and integration",
+              "provider": { "@id": "https://www.work.flowers/#organization" }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.work.flowers/#website",
+      "url": "https://www.work.flowers/",
+      "name": "workFlowers",
+      "inLanguage": "en-SG",
+      "publisher": { "@id": "https://www.work.flowers/#organization" }
+    }
+  ]
+}
+</script>
+
+<!-- BreadcrumbList — SEO audit C-05.
+     Bullet has no breadcrumb template, so the trail is derived from
+     the URL path at runtime. Emitted only when the page is at least
+     one level deep; the homepage gets nothing, which is correct.
+     Segment labels are title-cased from the slug, except the last
+     crumb, which uses the page's own H1 where one is available. -->
+<script>
+(function () {
+  var path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  if (!path) return;
+
+  var segments = path.split('/').filter(Boolean);
+  if (!segments.length) return;
+
+  // Words Bullet slugs lowercase that should not be title-cased naively.
+  var ACRONYMS = { ai: 'AI', seo: 'SEO', bi: 'BI', crm: 'CRM', api: 'API', sop: 'SOP', sops: 'SOPs', mcp: 'MCP' };
+
+  function label(slug) {
+    return slug.split('-').map(function (word) {
+      if (ACRONYMS[word]) return ACRONYMS[word];
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  }
+
+  // Intermediate crumbs only get a URL if that section actually resolves.
+  // /customer-reviews/ and /blog/tag/ are synthetic path segments with no
+  // page behind them (audit C-03, H-05), so linking them would point Google
+  // at a 404. A crumb with a name and no item is still valid schema.
+  var LINKABLE_SECTIONS = { '/blog': true, '/about-us': true };
+
+  var items = [{
+    '@type': 'ListItem',
+    position: 1,
+    name: 'Home',
+    item: 'https://www.work.flowers/'
+  }];
+
+  var built = '';
+  segments.forEach(function (segment, index) {
+    built += '/' + segment;
+    var isLast = index === segments.length - 1;
+    var name = label(segment);
+
+    if (isLast) {
+      var h1 = document.querySelector('h1');
+      var heading = h1 && h1.textContent.trim();
+      // Bullet renders the Notion Title as the H1; ignore it when it is
+      // just the nav label (see audit C-02) or empty.
+      if (heading && heading.length > 1 && heading.toLowerCase() !== 'home') {
+        name = heading;
+      }
+    }
+
+    var crumb = {
+      '@type': 'ListItem',
+      position: index + 2,
+      name: name
+    };
+    if (isLast || LINKABLE_SECTIONS[built]) {
+      crumb.item = 'https://www.work.flowers' + built + '/';
+    }
+    items.push(crumb);
+  });
+
+  var node = document.createElement('script');
+  node.type = 'application/ld+json';
+  node.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    '@id': 'https://www.work.flowers' + window.location.pathname + '#breadcrumb',
+    itemListElement: items
+  });
+  document.head.appendChild(node);
+})();
+</script>
+
+<!-- ============================================================
+     Tag & author archive metadata — SEO audit H-05
+     36 archive pages (33 tags + 3 authors) all ship the title
+     "workFlowers" with an empty meta description.
+
+     The audit assumed one Bullet template change would fix them.
+     It won't: Bullet's Tags database reads only Name, Slug, Posts
+     and Color, its Authors database has no meta fields either, and
+     Blog Settings exposes no title format or template variables.
+     Archive metadata is simply not configurable in Bullet, so the
+     only lever is rewriting it here at runtime.
+
+     This sets title, meta description and the Open Graph / Twitter
+     equivalents, so link previews stop reading "workFlowers" too.
+
+     SEPARATE DECISION — see NOINDEX below.
+     ============================================================ -->
+<script>
+(function () {
+  var path = window.location.pathname.replace(/\/+$/, '');
+  var tagMatch = path.match(/^\/blog\/tags\/([^/]+)$/);
+  var authorMatch = path.match(/^\/blog\/authors\/([^/]+)$/);
+  if (!tagMatch && !authorMatch) return;
+
+  // Slugs whose display form isn't just title-case.
+  var LABELS = {
+    'ai': 'AI',
+    'ai-agents': 'AI Agents',
+    'ai-skills': 'AI Skills',
+    'chatgpt': 'ChatGPT',
+    'crm': 'CRM',
+    'dataviz': 'DataViz',
+    'google-gemini': 'Google Gemini',
+    'seo': 'SEO',
+    'whatsapp': 'WhatsApp',
+    'wordpress': 'WordPress'
+  };
+
+  function label(slug) {
+    if (LABELS[slug]) return LABELS[slug];
+    return slug.split('-').map(function (word) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  }
+
+  var name = label(tagMatch ? tagMatch[1] : authorMatch[1]);
+  var title, description;
+
+  if (tagMatch) {
+    title = name + ' — Articles & Guides | workFlowers';
+    // Keep inside Google's ~60-char display budget: drop the descriptor
+    // before the brand, never the brand itself.
+    if (title.length > 60) title = name + ' | workFlowers';
+    description = 'Every workFlowers article tagged ' + name +
+      ' — automation, analytics and AI enablement notes from a Singapore operations consultancy.';
+  } else {
+    title = 'Posts by ' + name + ' | workFlowers';
+    description = 'Articles written by ' + name +
+      ' for workFlowers — automation, analytics and AI enablement for lean teams across Asia Pacific.';
+  }
+
+  document.title = title;
+
+  function setMeta(selector, attr, value, content) {
+    var tag = document.querySelector(selector);
+    if (!tag) {
+      tag = document.createElement('meta');
+      tag.setAttribute(attr, value);
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute('content', content);
+  }
+
+  setMeta('meta[name="description"]', 'name', 'description', description);
+  setMeta('meta[property="og:title"]', 'property', 'og:title', title);
+  setMeta('meta[property="og:description"]', 'property', 'og:description', description);
+  setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', title);
+  setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description);
+
+  // ---- NOINDEX (currently OFF) ----------------------------------
+  // Dennis's call. These 36 archives are thin listing pages over a
+  // 55-post blog that earns ~150 organic sessions in five months
+  // (audit H-06); two of the three author archives belong to people
+  // who have left. Keeping them out of the index is the tidier
+  // long-term answer than 36 synthesised titles competing with
+  // /blog/. Titles above still matter either way — they fix the
+  // browser tab and link previews, which noindex does not.
+  //
+  // To switch on, change NOINDEX_ARCHIVES to true.
+  var NOINDEX_ARCHIVES = false;
+  if (NOINDEX_ARCHIVES) {
+    setMeta('meta[name="robots"]', 'name', 'robots', 'noindex, follow');
+  }
+})();
+</script>

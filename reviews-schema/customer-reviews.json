@@ -1,0 +1,117 @@
+{
+  "_comment": "Cleaned mirror of the Notion Customer Reviews data source ff49c51a-79b1-4254-872a-d1934b8696f6. Source rows carry markdown asterisks and pack the company into the Reviewer Name field; this file is the de-linted version used to build schema markup. Re-run build_review_schema.py after editing.",
+  "source_data_source_id": "ff49c51a-79b1-4254-872a-d1934b8696f6",
+  "generated_from_notion": "2026-09-04",
+  "reviews": [
+    {
+      "slug": "strategic-and-speedy-execution",
+      "headline": "Strategic and speedy execution",
+      "author": "Secure Code Warrior",
+      "author_type": "Organization",
+      "company": null,
+      "rating": 5,
+      "date": "2026-05-17",
+      "body": "work.flowers offers the perfect combination of strategic guidance and speedy execution. Dennis doesn't just build Zaps, he genuinely puts himself in your shoes to solve complex business problems. He can communicate seamlessly with both technical and business stakeholders and execute the vision flawlessly."
+    },
+    {
+      "slug": "honest-clear-and-does-what-he-promises",
+      "headline": "Honest, clear, and does what he promises",
+      "author": "Ruey Teo",
+      "author_type": "Person",
+      "company": null,
+      "rating": 5,
+      "date": "2026-02-02",
+      "body": "Dennis is not only knowledgeable but also helpful and efficient professional. What sets him apart from others is that he is honest, communicates clearly and sets out to do what he promises."
+    },
+    {
+      "slug": "professional-and-knowledgable-about-several-fields",
+      "headline": "Professional and knowledgable about several fields",
+      "author": "N P",
+      "author_type": "Person",
+      "company": null,
+      "rating": 5,
+      "date": "2026-01-19",
+      "body": "Dennis is a professional and deeply knowledgeable across multiple domains, including accounting, workflow design, automation, and operational problem-solving - essentially everything you need to make your back end run independently. He begins from a perspective of building a system that will self-sustain, not simply replacing the existing workflow. This is someone that understands core mechanics."
+    },
+    {
+      "slug": "great-experience-in-automating-hr-ops-workflows",
+      "headline": "Great experience in automating HR Ops workflows",
+      "author": "Celine Nguyen",
+      "author_type": "Person",
+      "company": "co:grow",
+      "rating": 5,
+      "date": "2025-12-10",
+      "body": "It's been a great experience working with Dennis to automate our HR Ops processes. He is very responsive and helpful, the solutions were built and tested fairly quickly and received positive feedback from internal teams."
+    },
+    {
+      "slug": "excellent-service-and-solution-for-my-issue",
+      "headline": "Excellent service and solution for my issue",
+      "author": "Lucy Bradbury",
+      "author_type": "Person",
+      "company": "Start Right",
+      "rating": 5,
+      "date": "2025-11-12",
+      "body": "Dennis was an incredible help with pushing forward my automation. I felt like my previous solutions were basic and they were working 60% of the time. During the 1st meeting i explained the issues, and Dennis understood my issues and proposed solutions that were both workable and not complicated for my company. A week later i had a fully working solution that went above and beyond my brief. I 100% recommend Work Flowers for automation solutions."
+    },
+    {
+      "slug": "automation-a-scalability-enabler",
+      "headline": "Automation - a scalability enabler",
+      "author": "Faizal K",
+      "author_type": "Person",
+      "company": "NTUC",
+      "rating": 5,
+      "date": "2025-11-12",
+      "body": "I am happy to recommend Dennis, who was instrumental in helping me realise my vision to automate a highly manual and time-sensitive process. The outcome of our project has been nothing short of transformative. Thanks to his expertise, we have cut down the execution time significantly and most importantly, allowed us to scale our operations. This opened a path towards future growth."
+    },
+    {
+      "slug": "excellent-service",
+      "headline": "Excellent service",
+      "author": "Eric Vuong",
+      "author_type": "Person",
+      "company": "Elite Athlete Academy",
+      "rating": 5,
+      "date": "2025-07-30",
+      "body": "Work Flowers has revolutionised our business and made us improve our performance heaps. Could not be more grateful for their service!"
+    },
+    {
+      "slug": "streamlined-operations-with-smart-scalable-automations",
+      "headline": "Streamlined operations with smart, scalable automations",
+      "author": "Ezra Shuek",
+      "author_type": "Person",
+      "company": "Ordinary Folk",
+      "rating": 5,
+      "date": "2025-07-22",
+      "body": "Dennis has played a key role in transforming the day-to-day operations of our business. Tasks that previously took hours to complete are now automated, running seamlessly in the background and freeing up our team to focus on higher-value work. What sets Dennis apart is his thoughtful approach - he didn't just build scripts. He took the time to understand our pain points and crafted solutions that integrated seamlessly into our existing systems. Highly recommend!"
+    },
+    {
+      "slug": "effective-and-quick-solution",
+      "headline": "Effective and quick solution",
+      "author": "Shawmann Yeo",
+      "author_type": "Person",
+      "company": "ES-Team Lighting",
+      "rating": 5,
+      "date": "2025-06-17",
+      "body": "My sales team was in dire need of automation to reduce interval time between processes. Engaging Dennis from work.flowers has allowed my firm to increase both efficiency and productivity. The best part is that the automation works behind the scene so it feels as though we have hired a new team of worker assisting our department. If you are looking for automation, Dennis is your guy. Will definitely be engaging him again for any future improvements."
+    },
+    {
+      "slug": "deep-insights",
+      "headline": "Deep insights",
+      "author": "Glenn Lim",
+      "author_type": "Person",
+      "company": "Brands For Good Ltd",
+      "rating": 5,
+      "date": "2025-06-12",
+      "body": "We've worked with various automation tools over the years, but Dennis and the team at work.flowers brought a new level of insight and clarity. Their depth of expertise in AI-powered workflows, and automation strategies has helped us level up the way we work. As a non profit, we have found it useful to try and automate as much of our process as possible to reduce cost, work.flowers has been extremely helpful. Highly recommended!"
+    },
+    {
+      "slug": "highly-recommend",
+      "headline": "Highly recommend!",
+      "author": "Kyara Tan",
+      "author_type": "Person",
+      "company": null,
+      "rating": 5,
+      "date": "2025-05-13",
+      "body": "I worked with WF to automate our hiring process. The experience was smooth - I liked how I could share my ideas, and the team would be able to translate them into the desired output. The team was extremely knowledgeable and quickly understood the pain points I was facing - this has helped them be creative in delivering the desired output with zapier, amongst other tools. Highly recommend WF if you want to work with a team who truly understands and delivers (and has a sense of humour)!"
+    }
+  ]
+}
