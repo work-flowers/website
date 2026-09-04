@@ -7,9 +7,17 @@
   }
 </script>
 
-<!-- Google Analytics (GA4) - guarded against iframe previews and non-canonical domains -->
+<!-- Google Analytics (GA4)
+     Guarded against: iframe previews, non-canonical domains, and the Bullet.so
+     editor. The old hostname check used endsWith('work.flowers'), which also
+     matched Bullet's editor host, so build sessions on /site/<siteId>/pages
+     were being counted as real website traffic. Now the hostname must match
+     exactly and /site/ paths are excluded. -->
 <script>
-  if (window.top === window.self && window.location.hostname.endsWith('work.flowers')) {
+  var WF_GA_HOSTS = ['work.flowers', 'www.work.flowers'];
+  var wfIsSite   = WF_GA_HOSTS.indexOf(window.location.hostname) !== -1;
+  var wfIsEditor = window.location.pathname.indexOf('/site/') === 0;
+  if (window.top === window.self && wfIsSite && !wfIsEditor) {
     var ga = document.createElement('script');
     ga.async = true;
     ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-6FPQKF7KR9';
