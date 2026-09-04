@@ -6,11 +6,15 @@ Scope: live crawl of 141 indexable URLs (3 Sep 2026), sitemap.xml (254 entries),
 "Our Website" source (page 1d791b07 + Pages List / Posts / Customer Reviews databases),
 GA4 property 532585399 (12 Apr – 3 Sep 2026), and the repo's CSS/HTML snippets.
 
-**Status as at 4 Sep 2026 (round 3): 27 findings — 7 closed · 3 written, awaiting deploy · 17 open**
-(4 critical · 3 high · 7 medium · 3 low open, plus 7 verified clean)
+**Status as at 4 Sep 2026 (round 3, revised): 28 findings — 10 closed · 1 awaiting a paste ·
+1 withdrawn · 16 open** (3 critical · 1 high · 8 medium · 4 low open, plus 7 verified clean)
 
-Written and awaiting one paste into Bullet's custom footer: M-03, C-05, H-05.
-H-04 is written too but blocked on C-06.
+Deployed into Bullet's custom footer: M-03, C-05, H-05. H-05 verified live
+(`/blog/tags/zapier/` serves "Zapier — Articles & Guides | workFlowers"); C-05 and M-03 shipped
+in the same file and the last block in it is demonstrably running, but script contents can't be
+read back from the rendered page — confirm the JSON-LD via Google's Rich Results Test.
+
+H-04 is retargeted to `/about-us/` and appended to `footer.html`; needs one more paste.
 
 Closed and verified live: C-01 homepage title · H-01 broken footer link (Resources nav item
 removed in Bullet, Notion Path lowercased) · H-02 draft annotations in three titles · H-03 all
@@ -27,6 +31,32 @@ community, so every tagged link fell through. Direct's share did fall (65.2% →
 Direct per day rose (11.9 → 13.2) — the share moved because other channels grew, not because
 tagging worked. Script now emits social/email/referral with the distinctions in utm_content.
 Forward-only; the 142 historical Unassigned sessions need a GA4 custom channel group.
+
+## Round 3 corrections — 4 Sep 2026
+
+**C-06 revised down from critical to medium; H-07 withdrawn.** Both rested on the same mistake.
+This audit looked for a `/customer-reviews/` hub, found a 404, and concluded the reviews were
+invisible. They are not. `/about-us/` (Notion page `2a891b07-11ac-8011-9836-f97b1008f5dd`) carries
+an inline gallery view of the Customer Reviews data source — Notion database
+`35391b07-11ac-80cd-874f-ca417a282a72`, "View of Customer Reviews", displaying Headline, Review
+Body, Reviewer Name and Rating — which renders all eleven reviews as a carousel plus a full table
+under the heading "OUR CLIENTS". Verified by rendered-DOM read.
+
+What survives of C-06 is narrower: eleven `/customer-reviews/<slug>/` URLs that render nothing,
+duplicating content that already has a home. Index hygiene, not a credibility gap. No hub page is
+needed — building one would create a third location for the same content. A
+`NOINDEX_EMPTY_REVIEW_PAGES` switch is in `footer.html`, currently off, because one of those URLs
+takes real traffic.
+
+**H-04 unblocked and retargeted.** `reviews-schema/build_review_schema.py` now scopes the markup
+to `/about-us/` only, with each Review anchored at `/about-us/#review-<slug>` and no references to
+the dead `/customer-reviews/` paths. Loose end: the markup emits `datePublished`, but Review Date
+is not among the gallery view's displayed properties — adding it to that view makes the markup
+match what a visitor sees.
+
+**L-05 (new, low).** Tag archive headings render a literal markdown hash: `/blog/tags/zapier/`
+shows an H1 of "# Zapier". The Notion tag Name is "Zapier"; the "#" is Bullet's own template
+decoration escaping as text. Spotted while verifying H-05.
 
 ## Round 3 — 4 Sep 2026
 
