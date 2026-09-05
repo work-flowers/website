@@ -1,0 +1,21 @@
+Paste into the Bullet support chat widget at app.bullet.so.
+Plain text on purpose — Gist chat does not render markdown tables.
+Send as one message; the first line becomes the ticket subject.
+--------------------------------------------------------------------
+
+Hi! Could you purge the published output for two URLs on work.flowers so they return 410 (or 404)?
+
+https://www.work.flowers/webeeui-bullet-website-builder-kit/
+https://www.work.flowers/embed-test/
+
+Both pages were deleted from our Notion source and are gone from our sitemap.xml, but both still return a real 200 with full content. They're demo pages from a starter template and we need them out of Google.
+
+I think they're stale renders that a republish can't reach — since they're no longer in the Notion tree, the publish walk never revisits them. Two things point that way:
+
+1. We load a versioned stylesheet from jsDelivr. These two pages serve charm_style_sheet.css@2f915188, while every live page on the site serves @40c90de0 — so they're frozen several deploys back.
+
+2. They render only 2 data-bullet-head-type="global" nodes, where a live page like /components/ has 5. Our custom footer code never runs on them, which is also why we can't fix this ourselves with a client-side noindex — we shipped one scoped to these paths and confirmed it doesn't apply here.
+
+Deleting in Notion and republishing did work for the rest of the tree: 112 of the 113 pages under the WebeeUI kit now correctly 404. It's just these two roots left.
+
+If there's a way to do this from the dashboard I'm happy to — I just couldn't find one. Thanks!
