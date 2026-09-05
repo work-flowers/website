@@ -18,6 +18,7 @@ import hashlib
 import json
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import urllib.error
@@ -74,10 +75,37 @@ class Report:
                 print(f"      {DIM}{line}{RESET}")
 
 
+class Missing(Exception):
+    """The URL answered, but not with a 200."""
+
+
 def fetch(url, binary=False):
+    """Fetch a URL, preferring curl.
+
+    A Homebrew or python.org interpreter often has no CA bundle, so urllib
+    raises CERTIFICATE_VERIFY_FAILED on every https call while curl — using the
+    system trust store — is fine. Since this tool exists to be run without
+    ceremony, use curl when it is there and keep urllib as the fallback.
+    """
+    if shutil.which("curl"):
+        r = subprocess.run(
+            ["curl", "-sS", "--fail-with-body", "--max-time", "30",
+             "-A", UA, "-w", "\n%{http_code}", url],
+            capture_output=True)
+        body, _, code = r.stdout.rpartition(b"\n")
+        if r.returncode != 0 and not code.isdigit():
+            raise RuntimeError(r.stderr.decode(errors="replace").strip() or
+                               f"curl exit {r.returncode}")
+        if code != b"200":
+            raise Missing(f"HTTP {code.decode()}")
+        return body if binary else body.decode("utf-8", "replace")
+
     req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        raw = r.read()
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            raw = r.read()
+    except urllib.error.HTTPError as e:
+        raise Missing(f"HTTP {e.code}") from None
     return raw if binary else raw.decode("utf-8", "replace")
 
 
@@ -188,8 +216,8 @@ def main():
         url = CDN.format(sha=sha, path=f)
         try:
             got = fetch(url, binary=True)
-        except urllib.error.HTTPError as e:
-            rep.fail(f"{f} is served", f"{url}\nHTTP {e.code} — is the commit pushed to GitHub?")
+        except Missing as e:
+            rep.fail(f"{f} is served", f"{url}\n{e} — is the commit pushed to GitHub?")
             continue
         except Exception as e:
             rep.fail(f"{f} is served", f"{url}\n{e}")
@@ -213,7 +241,8 @@ def main():
     gen = subprocess.run([str(REPO / "scripts" / "bullet-head.sh"), sha],
                          capture_output=True, text=True, cwd=REPO)
     if gen.returncode != 0:
-        rep.fail("head paste matches scripts/bullet-head.sh", gen.stderr.strip())
+        rep.fail("head paste matches scripts/bullet-head.sh",
+                 re.sub(r"\033\[[0-9;]*m", "", gen.stderr).strip())
     else:
         want_tags = tag_set(gen.stdout)
         for path, html in pages.items():
@@ -320,7 +349,6 @@ def main():
                  "perl -0777 -ne 'print $1 if /<style id=\"bullet-theme\">(.*?)<\\/style>/s' "
                  f"> {THEME_BASELINE.name}")
 
-    print()
     rep.render()
     n_fail = sum(1 for s, _, _ in rep.rows if s == "fail")
     print()
