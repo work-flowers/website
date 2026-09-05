@@ -35,7 +35,9 @@ had to be kept in step by hand. History is in git.)
 The website content lives under the **Our Website** page in Notion:
 https://www.notion.so/work-flowers/Our-Website-1d791b0711ac80dca190cc3f88777447
 
-Key databases: Pages List, Point Reference Guide, Customer Reviews, Team.
+Databases that produce their own URLs: **Pages List**, **Posts**, **Supercut Recordings**,
+**Customer Reviews** — see below. Other databases in this tree (Point Reference Guide, Team)
+render inside pages and never get URLs of their own; none of them appears in `sitemap.xml`.
 
 ### What Bullet will publish
 
@@ -47,15 +49,21 @@ It then follows **linked database views embedded in those pages**, and publishes
 the databases behind them, each at its own path. That second hop is where the bulk of the site
 comes from, and it is not visible from Pages List alone:
 
-| Source | Published rows | Paths |
-|--------|---------------|-------|
-| Pages List | 12 | `/`, `/about-us`, `/privacy`, `/legal/…` |
-| Posts | 84 | `/blog/…` |
-| Supercut Recordings | 24 | `/supercut-recordings/…` |
-| Customer Reviews | 10 | `/customer-reviews/…` |
+| Source | URLs | Paths |
+|--------|------|-------|
+| Pages List | 12 | `/`, `/about-us`, `/legal/…`, and the `/blog` index |
+| Posts | 83 | `/blog/<slug>` |
+| Supercut Recordings | 24 | `/supercut-recordings/<slug>` |
+| Customer Reviews | 10 | `/customer-reviews/<slug>` |
+| Contact Form | 1 | `/contact-form` |
 
-Those four sum to exactly the 130 URLs in `sitemap.xml`, with nothing unaccounted for — which
-is the check to re-run if this table ever looks stale.
+That is exactly the 130 URLs in `sitemap.xml`, with nothing unaccounted for — the check to
+re-run whenever this table looks stale.
+
+`/contact-form` is the one exception to the rule above: it is **not** a Pages List row, but a
+plain page sitting as a direct child of Our Website. So a child page of Our Website can publish
+on its own. Treat it as the known exception rather than evidence that nesting is what selects
+pages generally — the other 129 URLs all arrive through Pages List and its linked views.
 
 So publication is a **chain**, not a property of a page: a Pages List row with `Publish` ticked,
 the linked view sitting inside it, and the database row behind that view. Break any link and
