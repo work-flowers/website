@@ -35,22 +35,52 @@ had to be kept in step by hand. History is in git.)
 The website content lives under the **Our Website** page in Notion:
 https://www.notion.so/work-flowers/Our-Website-1d791b0711ac80dca190cc3f88777447
 
-Key databases: Pages List, Point Reference Guide, Customer Reviews, Team.
+Databases that produce their own URLs: **Pages List**, **Posts**, **Supercut Recordings**,
+**Customer Reviews** — see below. Other databases in this tree (Point Reference Guide, Team)
+render inside pages and never get URLs of their own; none of them appears in `sitemap.xml`.
 
 ### What Bullet will publish
 
-Bullet publishes a page only if **both** hold: it is **public on the Notion side**, and it is
-**nested under Our Website** (page `1d791b07-11ac-80dc-a190-cc3f88777447`). A page failing
-either test is not so much unpublished as invisible to the publish walk.
+Not everything nested under Our Website. Bullet starts from the **Pages List** database and
+publishes the rows with `Publish` ticked — 12 of its 14 rows today, which are the site's
+top-level pages (`/`, `/about-us`, `/blog`, `/legal/msa`, …).
 
-**This matters more than it sounds, because breaking either condition strands the page rather
-than removing it.** Bullet drops it from `sitemap.xml`, but its last render stays on the CDN
+It then follows **linked database views embedded in those pages**, and publishes the rows of
+the databases behind them, each at its own path. That second hop is where the bulk of the site
+comes from, and it is not visible from Pages List alone:
+
+| Source | URLs | Paths |
+|--------|------|-------|
+| Pages List | 12 | `/`, `/about-us`, `/legal/…`, and the `/blog` index |
+| Posts | 83 | `/blog/<slug>` |
+| Supercut Recordings | 24 | `/supercut-recordings/<slug>` |
+| Customer Reviews | 10 | `/customer-reviews/<slug>` |
+| Contact Form | 1 | `/contact-form` |
+
+That is exactly the 130 URLs in `sitemap.xml`, with nothing unaccounted for — the check to
+re-run whenever this table looks stale.
+
+`/contact-form` is the one exception to the rule above: it is **not** a Pages List row, but a
+plain page sitting as a direct child of Our Website. So a child page of Our Website can publish
+on its own. Treat it as the known exception rather than evidence that nesting is what selects
+pages generally — the other 129 URLs all arrive through Pages List and its linked views.
+
+So publication is a **chain**, not a property of a page: a Pages List row with `Publish` ticked,
+the linked view sitting inside it, and the database row behind that view. Break any link and
+everything downstream of it leaves the publish walk at once. That is how one starter-kit row
+became 113 URLs (its `component-database` was reached exactly this way), and how deleting that
+one row removed all 113.
+
+**This matters more than it sounds, because breaking the chain strands the pages rather
+than removing them.** Bullet drops it from `sitemap.xml`, but its last render stays on the CDN
 still returning `200` — and since a republish can only walk pages it can still reach, that
 render is frozen. No future deploy, on any surface, will touch it again. The URL keeps serving
 whatever the page contained at the moment it left the tree.
 
 A stale jsDelivr pin in a page's `<head>` is the reliable tell that this has happened: compare
-its `charm_style_sheet.css@<sha>` against a page you know is live.
+its `charm_style_sheet.css@<sha>` against a page you know is live. Worth spot-checking one row
+from each database after any restructuring, since unpublishing a single *host* page would
+strand every row of the view it carried.
 
 **So: noindex first, unpublish second.** Get the directive into the render while the page is
 still reachable, then take it out of the tree. In that order a stranded copy is harmless — it
