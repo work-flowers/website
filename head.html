@@ -1,30 +1,175 @@
 <!-- ================================================================
-     work.flowers — Bullet.so custom HEAD code
+     work.flowers — Bullet.so global HEAD code
      ================================================================
-     Mirror of the font block pasted into Bullet → Settings → Custom
-     Code → Head. Like footer.html, this file does not deploy itself:
-     the repo copy is the source of truth, Bullet holds the live copy.
+     THIS IS A TEMPLATE, NOT THE PASTE. {{SHA}} below is substituted
+     with a real commit SHA by scripts/bullet-head.sh, which prints
+     the block to paste and puts it on the clipboard:
 
-     Paste this ABOVE the jsDelivr <link>/<script> pins for
-     charm_style_sheet.css and filed_index.js — leave those pins as
-     they are, they are unrelated to this block.
+         scripts/bullet-head.sh              # origin/main
+         scripts/bullet-head.sh <sha|ref>    # anything else
 
-     SEO audit M-01 (TKT-850). Replaces three font requests with one:
-       1. the fonts.bunny.net <link> (Inter 100–900) — DELETE it from
-          Bullet's head code when pasting this in;
-       2. the @import at charm_style_sheet.css:12 — removed from the
-          repo, because an @import inside a stylesheet cannot start
-          until that stylesheet has downloaded, serialising the font
-          request behind the CSS instead of running alongside it;
-       3. the malformed @import at jtbd_widget.html:27 — removed.
+     Paste the whole output into Bullet -> Settings -> Custom Code ->
+     Head, replacing everything already there, then run
+     scripts/verify-live.py. Nothing in this block should ever be
+     hand-edited in the Bullet dashboard: edit this file, merge, and
+     re-run the generator.
 
-     Weights are the ones the stylesheet actually sets, no more:
-       Inter          400, 500, 600, 700, 800   (900 was never used)
-       JetBrains Mono 400, 500, 600, 700        (700 is used in ~14
-                      rules and was NOT in the old import — the
-                      browser has been synthesising a fake bold)
+     WHY SHA PINS AND NOT @main. jsDelivr serves a branch ref with
+     cache-control: max-age=604800, s-maxage=43200, against
+     max-age=31536000, immutable for a SHA. A moving ref means
+     returning visitors keep stale CSS for up to a week, and the
+     purge API cannot reach a browser cache. Keep the pins; the fix
+     for mistyping them is to stop typing them, not to drop them.
+
+     ---- WHAT IS IN HERE AND WHY ---------------------------------
+
+     Fonts (SEO audit M-01, TKT-850). One request, not three. The
+     weights are the ones the stylesheet actually sets:
+       Inter          400, 500, 600, 700, 800
+       JetBrains Mono 400, 500, 600, 700
+     The @import that used to sit in charm_style_sheet.css and the
+     malformed one in jtbd_widget.html are both gone: an @import
+     inside a stylesheet cannot start until that stylesheet has
+     downloaded, serialising the font request behind the CSS.
+
+     charm_style_sheet.css — the site stylesheet.
+
+     bullet_bundle.js — every piece of runtime behaviour on the site
+     (GA4, JSON-LD, the noindex rules, the H1 retag, the /about-us/
+     testimonial widget). Replaces the old 38 KB footer paste and the
+     separate /about-us/ filed_index.js pin. `defer` runs it after
+     the document parses, which is where the footer paste ran anyway.
+
+     Organization / ProfessionalService JSON-LD — audit C-05. Kept
+     here as literal markup rather than folded into the bundle, so
+     it is server-rendered. Injecting the site's primary entity from
+     JavaScript would make Google's view of it depend on a render
+     pass that is delayed and not guaranteed.
+
+     The agent-embed <script> is the chat widget. It is not ours and
+     has no repo copy; it is reproduced verbatim so that the paste is
+     complete and nothing survives in Bullet by accident.
      ================================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/work-flowers/website@{{SHA}}/charm_style_sheet.css">
+<script src="https://cdn.jsdelivr.net/gh/work-flowers/website@{{SHA}}/bullet_bundle.js" defer></script>
+
+<script src="https://agent-embed.work.flowers/api/public/widget/405e9b36-2a9b-460d-8164-0e057096e5de/embed" async></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://www.work.flowers/#organization",
+      "name": "workFlowers",
+      "legalName": "Company Flow Pte. Ltd.",
+      "alternateName": "work.flowers",
+      "url": "https://www.work.flowers/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://firebasestorage.googleapis.com/v0/b/digital-axon-366208.appspot.com/o/sites%2FIsbw6XlCS35Ea2JF9Kaj%2Flogo%2FTransparent%20Logo%20Cropped.png?alt=media&token=048b8590-b364-41f1-9c92-3a4fdbfeace8"
+      },
+      "description": "Operations consultancy for lean teams: workflow automation and AI agents, analytics and BI stacks, and AI enablement. Singapore, serving Asia Pacific.",
+      "slogan": "Ops on demand for lean teams.",
+      "foundingDate": "2024-10-12",
+      "founder": {
+        "@type": "Person",
+        "name": "Dennis Chiuten",
+        "jobTitle": "Founder",
+        "url": "https://www.work.flowers/about-us/"
+      },
+      "identifier": {
+        "@type": "PropertyValue",
+        "propertyID": "UEN",
+        "value": "202442050M",
+        "description": "Singapore Unique Entity Number (ACRA)"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "160 Robinson Road, #14-04, SBF Center",
+        "addressLocality": "Singapore",
+        "postalCode": "068914",
+        "addressCountry": "SG"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "email": "dennis@work.flowers",
+        "url": "https://www.work.flowers/contact/",
+        "availableLanguage": ["en"]
+      },
+      "areaServed": [
+        { "@type": "Country", "name": "Singapore" },
+        { "@type": "Place", "name": "Asia Pacific" }
+      ],
+      "knowsAbout": [
+        "Workflow automation",
+        "Zapier",
+        "Notion",
+        "AI agents",
+        "Model Context Protocol",
+        "Business intelligence",
+        "Data warehousing",
+        "SOC 2",
+        "ISO 27001"
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/company/work-flowers/",
+        "https://www.youtube.com/@work.flowers",
+        "https://github.com/work-flowers",
+        "https://www.reddit.com/user/work-flowers/"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Automation",
+              "description": "Autonomous workflows and AI agents that remove manual work: inbox triage, invoice processing, lead enrichment, approvals.",
+              "serviceType": "Business process automation",
+              "provider": { "@id": "https://www.work.flowers/#organization" }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Analytics",
+              "description": "A full BI stack — warehouse, models and dashboards — turning scattered operational data into numbers teams and investors use.",
+              "serviceType": "Business intelligence and analytics",
+              "provider": { "@id": "https://www.work.flowers/#organization" }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI enablement",
+              "description": "Custom Skills, MCP connectors, agents and API integrations so AI assistants can read and write real business systems.",
+              "serviceType": "AI enablement and integration",
+              "provider": { "@id": "https://www.work.flowers/#organization" }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.work.flowers/#website",
+      "url": "https://www.work.flowers/",
+      "name": "workFlowers",
+      "inLanguage": "en-SG",
+      "publisher": { "@id": "https://www.work.flowers/#organization" }
+    }
+  ]
+}
+</script>

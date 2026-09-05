@@ -1366,8 +1366,10 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
 /* ================================================================
   21. LEGAL / FREESTANDING PAGES
    Long-form pages (MSA, DPA, privacy, etc.) styled with the same
-   editorial paper voice as blog articles. Activated by adding
-   `body.legal` via Bullet's per-page body code.
+   editorial paper voice as blog articles. Activated by `body.legal`,
+   which the body-class shim in bullet_bundle.js adds — the pages that
+   take it are listed in BODY_CLASS there, /privacy/ included, because
+   the set is editorial rather than a /legal/ path rule.
    ================================================================ */
 
 /* Outer page frame: keep Bullet's normal gutter, but cap the article
@@ -1804,8 +1806,9 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
 }
 
 /* 19.6 Filed Index — testimonial spotlight widget
-   Replaces the WebeeUI gallery on About Us. JS (filed_index.js) reads
-   the existing Notion gallery cards and rewrites them into this layout. */
+   Replaces the WebeeUI gallery on About Us. The Filed Index section of
+   bullet_bundle.js reads the existing Notion gallery cards and rewrites
+   them into this layout. */
 body.about-us .wf-filed-index {
   border-top: 1px solid var(--wf-rule);
   border-bottom: 1px solid var(--wf-rule);
@@ -1926,8 +1929,9 @@ body.about-us .wf-filed-index__name {
   color: var(--wf-indigo);
 }
 /* Review date — sits at the far end of the attribution row. Rendered by
-   filed_index.js from the Review Date property, which has to be a shown
-   property on the Notion gallery view for Bullet to emit it. */
+   the Filed Index section of bullet_bundle.js from the Review Date
+   property, which has to be a shown property on the Notion gallery view
+   for Bullet to emit it. */
 body.about-us .wf-filed-index__date {
   margin-left: auto;
   font-family: var(--wf-mono);
@@ -2072,8 +2076,9 @@ body.about-us .wf-filed-index[data-paused="true"] .wf-filed-index__row-progress 
    A linked gallery view of Pages List embedded on the homepage,
    filtered to Page Type = Blog, Publish = Yes, Featured = checked.
    Bullet renders it as .notion-collection-card gallery markup (same
-   markup family filed_index.js consumes on About Us). Scoped to
-   body.home, which footer.html adds on the root path.
+   markup family the Filed Index widget consumes on About Us). Scoped
+   to body.home, which the body-class shim in bullet_bundle.js adds
+   from Bullet's native <body id="page-index">.
    Cards restyled to match the blog index (§20): cover image with
    soft shadow + hover lift, bold title, mono ochre date, clamped
    description excerpt. Notion view settings should expose only one
@@ -2263,8 +2268,8 @@ body.home .notion-collection .notion-collection-card .notion-property-text {
    Each recording page uses the Supercut video thumbnail as its Notion
    cover, then embeds the same video in the body — pure duplication.
    Self-scope in CSS: hide the cover on any page whose scroller also
-   contains a Supercut embed. This needs no body-class hook (so no
-   footer.html change and it survives Bullet's client-side navigation),
+   contains a Supercut embed. This needs no body-class hook (so it does
+   not depend on the shim, and it survives Bullet's client-side nav),
    and targets exactly the duplication case. The page's own top padding
    keeps the title spaced; no cover-driven offset remains to compensate.
    ================================================================ */
