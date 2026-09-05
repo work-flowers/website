@@ -1,0 +1,24 @@
+Follow-up to send into the SAME Bullet chat thread as the original message.
+Revises the ask downward — we found a workaround, so this is now a small request.
+Plain text; Gist chat does not render markdown.
+--------------------------------------------------------------------
+
+Quick update from our side, and it makes this a much smaller ask than my last message.
+
+I found Settings > Redirects and pointed both paths at /, which worked — they're returning 302 now instead of 200, so they've stopped serving the demo content. That solves the urgent half and you don't need to do anything on my original request.
+
+The one thing I'd still like, whenever it's convenient:
+
+Those redirects come out as 302, and I need a permanent signal so Google actually drops the URLs. A 302 reads as temporary, so the pages can stay indexed. Either of these would do it:
+
+1. Make the redirects 301 rather than 302 — is there a way to choose the type that I've missed in the dashboard?
+
+2. Or purge the stored output for these two paths so they return 410:
+   https://www.work.flowers/webeeui-bullet-website-builder-kit/
+   https://www.work.flowers/embed-test/
+
+Option 1 is easier for me if it's possible at all. No rush on either — the content is no longer being served, which was the urgent part.
+
+One thing worth flagging for your team: the redirect worked on pages that no republish could reach, which was genuinely useful. Since the redirect layer sits in front of the stored render, it's the only lever a customer has once a page has left the Notion tree. Might be worth documenting — I couldn't find it, and only tried it on a hunch.
+
+Thanks!
