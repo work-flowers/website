@@ -407,17 +407,34 @@
   setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', title);
   setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description);
 
-  // ---- NOINDEX (currently OFF) ----------------------------------
-  // Dennis's call. These 36 archives are thin listing pages over a
+  // ---- NOINDEX (ON since 5 Sep 2026 — TKT-849) -------------------
+  // Decided on. These 36 archives are thin listing pages over a
   // 55-post blog that earns ~150 organic sessions in five months
-  // (audit H-06); two of the three author archives belong to people
-  // who have left. Keeping them out of the index is the tidier
-  // long-term answer than 36 synthesised titles competing with
-  // /blog/. Titles above still matter either way — they fix the
-  // browser tab and link previews, which noindex does not.
+  // (audit H-06); two of the four author archives belong to people
+  // who have left. Where they do rank they engage badly:
+  // /blog/tags/case-studies/ took 10 organic sessions with 2
+  // engaged (20%) against the site's 49.7% organic average.
   //
-  // To switch on, change NOINDEX_ARCHIVES to true.
-  var NOINDEX_ARCHIVES = false;
+  // The deciding evidence: the titles above are written by THIS
+  // script, so the server-rendered title is still bare
+  // "workFlowers". Google only sees the good one after rendering —
+  // a delayed second pass, not guaranteed. So "they have real
+  // titles now, let them rank" was weaker than it looked.
+  //
+  // Titles still matter either way: they fix the browser tab and
+  // link previews, which noindex does not touch.
+  //
+  // "follow" is deliberate — link equity keeps flowing to the posts.
+  // Google eventually treats links on long-term-noindex pages as
+  // nofollow, which is fine here: /blog/ and sitemap.xml list every
+  // post directly, so discovery never depended on these archives.
+  //
+  // Known loose end: Bullet still lists 28 of these in sitemap.xml,
+  // so we submit URLs we are asking Google not to index. Wasteful
+  // rather than harmful, and the sitemap is Bullet-generated.
+  //
+  // To switch off, change NOINDEX_ARCHIVES to false.
+  var NOINDEX_ARCHIVES = true;
   if (NOINDEX_ARCHIVES) {
     setMeta('meta[name="robots"]', 'name', 'robots', 'noindex, follow');
   }
