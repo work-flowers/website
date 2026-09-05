@@ -6,7 +6,8 @@ Scope: live crawl of 141 indexable URLs (3 Sep 2026), sitemap.xml (254 entries),
 "Our Website" source (page 1d791b07 + Pages List / Posts / Customer Reviews databases),
 GA4 property 532585399 (12 Apr – 3 Sep 2026), and the repo's CSS/HTML snippets.
 
-**Status as at 5 Sep 2026 (end of round 4): 33 findings — 17 closed · 1 withdrawn · 15 open**
+**Status as at 5 Sep 2026 (round 4 deployed and verified): 33 findings — 16 closed · 1 closed in
+the repo but not yet fully live (M-01) · 1 withdrawn · 15 open**
 (2 critical · 1 high · 8 medium · 4 low open, plus 7 verified clean)
 
 **Now tracked as a Notion project:** "work.flowers SEO remediation"
@@ -30,14 +31,26 @@ Everything deployed was read back off the rendered DOM, not inferred from the re
 | `/blog/tags/zapier/` | title "Zapier — Articles & Guides \| workFlowers"; H1 "Zapier", hash gone |
 | `/about-us/` | AboutPage + AggregateRating 5/5 from 11 + 11 Review nodes; one visible H1 (hero copy); phantom H1 now a `<div>`; date renders with `datetime="2026-02-02"` |
 | `/customer-reviews/deep-insights/` | `robots: noindex, follow`; no review schema leaking onto it |
+| `/` (round 4) | one Google Fonts `<link>` + preconnects, marked `data-bullet-head-type="global"`; no `@import` in the served CSS; widget's malformed import gone; `.wf-pp` carries the full fallback stack |
+| `/about-us/` (round 4) | both jsDelivr pins on `ea789b8` — CSS *and* `filed_index.js`, same SHA |
 
 **Deploy mechanics, worth remembering:** `charm_style_sheet.css` and `filed_index.js` are pinned
 to jsDelivr by commit SHA (`cdn.jsdelivr.net/gh/work-flowers/website@<sha>/…`), so a repo change is
 invisible until both pins move. `footer.html` is pasted inline into Bullet's custom footer and does
 *not* move with them. The two pins were on different commits (CSS `2f91518`, JS `f437808`) — pin
 both to the same SHA each deploy so a script change cannot outrun its stylesheet. Round 3 shipped
-at `a51ca4c`. Round 4 adds a fourth surface: Bullet's custom **head** code, now mirrored in the
-repo as `head.html` and pasted the same way the footer is.
+at `a51ca4c`, round 4 at `ea789b8`. Round 4 found **two more surfaces**, bringing the total to five:
+
+1. jsDelivr pins — `charm_style_sheet.css`, `filed_index.js`. Move both, same SHA.
+2. Bullet custom **footer** code — `footer.html` pasted inline. Mirror only.
+3. Bullet custom **head** code — `head.html` pasted inline. Mirror only. *(new in round 4)*
+4. The **Notion custom-code block** on the homepage — `jtbd_widget.html` pasted inline. Mirror
+   only, and easy to forget: it looks like a repo file but nothing in the repo moves it. It was
+   missed on the first round-4 deploy and needed a second pass. *(new in round 4)*
+5. Bullet's **theme settings** — the Appearance font picker emits its own `<link>` tags. Not code
+   at all, and invisible to every check that only reads the repo. *(new in round 4)*
+
+Notion property and view changes still need no deploy.
 
 **One decision outstanding:** `NOINDEX_ARCHIVES` for the 36 tag and author archives. Confirmed
 still off — those pages carry no robots directive.
@@ -100,6 +113,39 @@ regression.
 code (removing the bunny.net link), then move the `charm_style_sheet.css` and `filed_index.js`
 jsDelivr pins to this commit, together as always. Done when the network panel on a homepage load
 shows one font host, no 404, and no request for Inter 900.
+
+### Deploy verification, same day — three of four surfaces landed, and the fourth moved
+
+Read back off the live site at `ea789b8`. The head paste, both pin bumps and (after a second pass)
+the widget re-paste are all confirmed live. Google Fonts is serving JetBrains Mono 700, so the
+synthesised fake bold is genuinely gone.
+
+**Two corrections to what round 4 assumed.**
+
+*The widget needed its own paste.* `jtbd_widget.html` is a Notion custom-code block, not a repo
+asset — the deploy note listed the head paste and the pin bumps but not this, so the first deploy
+left the malformed `@import` live on the homepage. It has been added to the deploy-mechanics list
+above as surface 4.
+
+*The bunny.net link is not in Bullet's head code, and never was.* The instruction to delete it
+could not be followed. Bullet emits it itself, from the Appearance font picker:
+
+- neither bunny line carries `data-bullet-head-type="global"`, which every custom-head-code line does;
+- both sit immediately after Bullet's generated `<style>` block ending
+  `--primary-font:'Inter', sans-serif;--secondary-font:'Inter', sans-serif`;
+- it requests Inter 100–900, every weight — a font picker's signature, not a hand-written link.
+
+The remedy is a **theme setting**, not a code change: point Bullet's font picker away from Inter.
+That is safe, because `charm_style_sheet.css:23` already sets `--primary-font: "Inter" !important`
+and every other rule uses `--wf-sans` / `--wf-mono` rather than Bullet's variables — nothing about
+the rendered page changes.
+
+Until that setting moves, the site loads **both** font sets: five Inter weights from Google plus
+nine from bunny.net. The expensive half of M-01 is fixed; the second host is not.
+
+**The generalisable lesson:** a repo-only audit cannot see a surface that is a setting rather than
+a file. Round 4 wrote a deploy instruction for a `<link>` it had only ever seen in rendered HTML,
+and assumed it must have come from the one place in Bullet where hand-written HTML lives.
 
 ## Round 3, third pass — 4 Sep 2026
 
@@ -337,10 +383,13 @@ then US (100), Australia (33), India (27).
 
 ## Medium
 
-- **M-01 Fonts load from three sources.** *Closed round 4 — awaiting the head-code paste.*
-  fonts.bunny.net (Inter ×9 weights) + a render-blocking `@import` at charm_style_sheet.css:12
-  + a malformed third request at jtbd_widget.html:27 where Notion's angle brackets leaked into
-  the URL (`@import url('<https://...>')`) → 404s. Now one Google Fonts `<link>` in `head.html`.
+- **M-01 Fonts load from three sources.** *Two of three closed and verified live at `ea789b8`;
+  the third is a Bullet theme setting, not code.* The render-blocking `@import` at
+  charm_style_sheet.css:12 and the malformed request at jtbd_widget.html:27 (Notion's angle
+  brackets leaked into the URL → 404 on every homepage load) are both gone, replaced by one
+  Google Fonts `<link>` in `head.html`. **Still open:** fonts.bunny.net (Inter ×9 weights) is
+  emitted by Bullet's Appearance font picker, not by the head code — point the picker away from
+  Inter to drop it. Safe: `charm_style_sheet.css:23` already forces `--primary-font: "Inter"`.
 - **M-02 All 12 homepage images are PNG with no width/height.** No WebP/AVIF. Alt text is fine.
 - **M-03 GA4 counts your own Bullet editor sessions.** `/site/Isbw6XlCS35Ea2JF9Kaj/pages?mode=code`
   and similar appear as landing pages. No internal traffic filter. Direct (60%) is inflated.
