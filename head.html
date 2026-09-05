@@ -1,0 +1,30 @@
+<!-- ================================================================
+     work.flowers — Bullet.so custom HEAD code
+     ================================================================
+     Mirror of the font block pasted into Bullet → Settings → Custom
+     Code → Head. Like footer.html, this file does not deploy itself:
+     the repo copy is the source of truth, Bullet holds the live copy.
+
+     Paste this ABOVE the jsDelivr <link>/<script> pins for
+     charm_style_sheet.css and filed_index.js — leave those pins as
+     they are, they are unrelated to this block.
+
+     SEO audit M-01 (TKT-850). Replaces three font requests with one:
+       1. the fonts.bunny.net <link> (Inter 100–900) — DELETE it from
+          Bullet's head code when pasting this in;
+       2. the @import at charm_style_sheet.css:12 — removed from the
+          repo, because an @import inside a stylesheet cannot start
+          until that stylesheet has downloaded, serialising the font
+          request behind the CSS instead of running alongside it;
+       3. the malformed @import at jtbd_widget.html:27 — removed.
+
+     Weights are the ones the stylesheet actually sets, no more:
+       Inter          400, 500, 600, 700, 800   (900 was never used)
+       JetBrains Mono 400, 500, 600, 700        (700 is used in ~14
+                      rules and was NOT in the old import — the
+                      browser has been synthesising a fake bold)
+     ================================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap">

@@ -24,7 +24,10 @@ if (!host) return requestAnimationFrame(mount);
 
 // 1) Push styles to <head> so callout sanitisation/overflow doesn't nuke them
 const css = `
-  @import url('<https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap>');
+  /* No font @import here: Inter is loaded once, sitewide, by the <link>
+     in Bullet's head code (see head.html). The import this replaces had
+     Notion's angle brackets baked into the URL, so it 404'd on every
+     homepage load. (SEO audit M-01) */
 
   /* Remove any spacing from Bullet's wrapper */
   .notion-custom-code {
@@ -42,7 +45,7 @@ const css = `
 
   /* Reset font-size for the actual widget */
   .wf-pp {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     font-size: initial; /* Reset font-size */
     background: transparent;
     border-radius: 16px;
