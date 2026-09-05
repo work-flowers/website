@@ -85,7 +85,28 @@ strand every row of the view it carried.
 **So: noindex first, unpublish second.** Get the directive into the render while the page is
 still reachable, then take it out of the tree. In that order a stranded copy is harmless — it
 keeps serving `noindex` and leaves the index by itself. In the other order the page is stuck in
-Google's index with no lever left, and only Bullet support can clear it. That is audit finding
-C-04, and it is why `/webeeui-bullet-website-builder-kit/` and `/embed-test/` are still live.
+Google's index with the render frozen against you. That is audit finding C-04, and it is why
+`/webeeui-bullet-website-builder-kit/` and `/embed-test/` served demo content for months.
 
 Unpublishing is not a way to remove a page from Google. It is a way to lose control of it.
+
+### Recovering a stranded page
+
+There is one lever left, and it is not in this repo: **Settings → Redirects** in the Bullet
+dashboard. Redirects resolve at Bullet's routing layer, *in front of* the stored render, so they
+reach pages that no deploy can — which is exactly the property `footer.html` lacks. Adding
+`/old-path/ → /` stops a stranded URL serving its frozen content immediately.
+
+Two things to know before relying on it:
+
+- **Bullet emits `302`, not `301`.** The form has no type selector. A 302 reads as *temporary*,
+  so Google may keep the URL indexed rather than dropping it. It reliably ends the content being
+  served; it does not reliably deindex. For that, ask Bullet support to purge the path so it
+  returns `410`.
+- It is a repair, not a substitute for the ordering above. Noindex-first still costs nothing and
+  still works on its own; reach for a redirect only once a page is already stranded.
+
+Precedent in the redirect list: `/html-test`, `/test-post-1/`, `/newhome` and a raw Notion page
+id `/1d991b0711ac80d1b9e2c741a04521bb/` all point at `/` — earlier orphans, cleared this way.
+`/webeeui-bullet-website-builder-kit/` and `/embed-test/` joined them on 6 Sep 2026, and both
+now return `302 → /` instead of `200`.
