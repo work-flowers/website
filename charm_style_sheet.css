@@ -20,7 +20,15 @@
 :root {
   /* ── Bullet overrides (still need !important to beat #bullet-theme) ── */
   --border-radius: 5px !important;
-  --primary-font: "Inter" !important;
+  /* Bullet hangs headings off --primary-font and body copy off
+     --secondary-font (main.min.css: body + .notion-text, and --notion-font
+     derives from it). Pin BOTH to our own stack, so the rendered page no
+     longer depends on Bullet's Typography font picker — that picker only
+     decides which webfont Bullet requests, not what the site looks like.
+     Bare "Inter" here also had no fallback: if Inter failed, headings
+     dropped to the browser default serif. (SEO audit M-01) */
+  --primary-font: var(--wf-sans) !important;
+  --secondary-font: var(--wf-sans) !important;
 
   /* Foreground / background */
   --fg-color-h: 0 !important;

@@ -17,6 +17,19 @@ Content is managed in **Notion** and published via **Bullet.so**. This repo hold
 | `notocat_custom.css` | Email newsletter styles (Notocat), based on the site's brand tokens |
 | `Original Logo.png` | Logo asset |
 
+## SEO audit and remediation
+
+Findings, status and deploy notes live in the Notion project **SEO Remediation** (WF-27),
+which is the source of truth:
+https://www.notion.so/3d191b0711ac819d8689f0b285d3d742
+
+That page also documents the five separate surfaces a change has to travel through to go
+live — worth reading before deploying anything here, because three of them are manual
+pastes and one is a Bullet theme setting rather than code.
+
+(The former `seo-audit-2026-09.md` was removed on 5 Sep 2026; it was a second copy that
+had to be kept in step by hand. History is in git.)
+
 ## Notion source
 
 The website content lives under the **Our Website** page in Notion:
