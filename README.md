@@ -12,7 +12,7 @@ Content is managed in **Notion** and published via **Bullet.so**. This repo hold
 |------|---------|
 | `charm_style_sheet.css` | Main site stylesheet — CSS custom properties, Notion/Bullet class overrides, blog typography, responsive breakpoints |
 | `head.html` | Pasted into Bullet's custom head code: font preconnects + the single Google Fonts `<link>` (Inter, JetBrains Mono) |
-| `footer.html` | Injected into every page footer: GA4, LinkedIn Insight tag, callout-height equaliser script |
+| `footer.html` | Pasted into Bullet's custom footer code: GA4, callout-height equaliser, JSON-LD schema, archive/page metadata and the `noindex` rules |
 | `jtbd_widget.html` | Auto-scrolling "pain points" chat-bubble widget embedded on the homepage |
 | `notocat_custom.css` | Email newsletter styles (Notocat), based on the site's brand tokens |
 | `Original Logo.png` | Logo asset |
@@ -36,3 +36,26 @@ The website content lives under the **Our Website** page in Notion:
 https://www.notion.so/work-flowers/Our-Website-1d791b0711ac80dca190cc3f88777447
 
 Key databases: Pages List, Point Reference Guide, Customer Reviews, Team.
+
+### What Bullet will publish
+
+Bullet publishes a page only if **both** hold: it is **public on the Notion side**, and it is
+**nested under Our Website** (page `1d791b07-11ac-80dc-a190-cc3f88777447`). A page failing
+either test is not so much unpublished as invisible to the publish walk.
+
+**This matters more than it sounds, because breaking either condition strands the page rather
+than removing it.** Bullet drops it from `sitemap.xml`, but its last render stays on the CDN
+still returning `200` — and since a republish can only walk pages it can still reach, that
+render is frozen. No future deploy, on any surface, will touch it again. The URL keeps serving
+whatever the page contained at the moment it left the tree.
+
+A stale jsDelivr pin in a page's `<head>` is the reliable tell that this has happened: compare
+its `charm_style_sheet.css@<sha>` against a page you know is live.
+
+**So: noindex first, unpublish second.** Get the directive into the render while the page is
+still reachable, then take it out of the tree. In that order a stranded copy is harmless — it
+keeps serving `noindex` and leaves the index by itself. In the other order the page is stuck in
+Google's index with no lever left, and only Bullet support can clear it. That is audit finding
+C-04, and it is why `/webeeui-bullet-website-builder-kit/` and `/embed-test/` are still live.
+
+Unpublishing is not a way to remove a page from Google. It is a way to lose control of it.
