@@ -9,7 +9,10 @@
    as mocked.
    ================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Fonts are loaded by a <link> in Bullet's head code — see head.html.
+   Deliberately NOT an @import here: an @import inside a stylesheet cannot
+   start until this file has downloaded, which serialises the font request
+   behind the CSS instead of running it in parallel. (SEO audit M-01) */
 
 /* ================================================================
    1. TOKENS — brand palette + type scale

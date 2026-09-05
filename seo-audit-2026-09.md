@@ -6,8 +6,8 @@ Scope: live crawl of 141 indexable URLs (3 Sep 2026), sitemap.xml (254 entries),
 "Our Website" source (page 1d791b07 + Pages List / Posts / Customer Reviews databases),
 GA4 property 532585399 (12 Apr – 3 Sep 2026), and the repo's CSS/HTML snippets.
 
-**Status as at 4 Sep 2026 (end of round 3): 33 findings — 16 closed · 1 withdrawn · 16 open**
-(2 critical · 1 high · 9 medium · 4 low open, plus 7 verified clean)
+**Status as at 5 Sep 2026 (end of round 4): 33 findings — 17 closed · 1 withdrawn · 15 open**
+(2 critical · 1 high · 8 medium · 4 low open, plus 7 verified clean)
 
 **Now tracked as a Notion project:** "work.flowers SEO remediation"
 (`3d191b07-11ac-819d-8689-f0b285d3d742`, Projects data source
@@ -36,7 +36,8 @@ to jsDelivr by commit SHA (`cdn.jsdelivr.net/gh/work-flowers/website@<sha>/…`)
 invisible until both pins move. `footer.html` is pasted inline into Bullet's custom footer and does
 *not* move with them. The two pins were on different commits (CSS `2f91518`, JS `f437808`) — pin
 both to the same SHA each deploy so a script change cannot outrun its stylesheet. Round 3 shipped
-at `a51ca4c`.
+at `a51ca4c`. Round 4 adds a fourth surface: Bullet's custom **head** code, now mirrored in the
+repo as `head.html` and pasted the same way the footer is.
 
 **One decision outstanding:** `NOINDEX_ARCHIVES` for the 36 tag and author archives. Confirmed
 still off — those pages carry no robots directive.
@@ -69,6 +70,36 @@ community, so every tagged link fell through. Direct's share did fall (65.2% →
 Direct per day rose (11.9 → 13.2) — the share moved because other channels grew, not because
 tagging worked. Script now emits social/email/referral with the distinctions in utm_content.
 Forward-only; the 142 historical Unassigned sessions need a GA4 custom channel group.
+
+## Round 4 — 5 Sep 2026
+
+**M-01 closed — one font host, one request, correct weights.** Inter was being fetched three
+times from two hosts, one of which failed. All three requests are gone, replaced by a single
+Google Fonts `<link>` with `preconnect` hints, mirrored in the repo as `head.html`:
+
+- The `@import` at `charm_style_sheet.css:12` is removed. It was the expensive one — an `@import`
+  inside a stylesheet cannot begin until that stylesheet has downloaded, so the font request was
+  serialised behind the CSS rather than running alongside it. A `<link>` in the head starts both
+  at once.
+- The `@import` at `jtbd_widget.html:27` is removed. Notion's angle brackets had leaked into the
+  URL string, so it 404'd on every homepage load. The widget now inherits the sitewide Inter, and
+  its `font-family` carries the same system fallback stack as `--wf-sans` instead of bare
+  `sans-serif`.
+- The `fonts.bunny.net` `<link>` (Inter 100–900) must be **deleted** from Bullet's head code when
+  `head.html` is pasted in. Consolidating on Google Fonts drops a DNS lookup and a connection,
+  since JetBrains Mono was already coming from there.
+
+**Weights are now the ones the stylesheet actually sets.** Inter 400/500/600/700/800 — 900 was
+loaded but never used. The interesting half is the other direction: **JetBrains Mono 700 is set
+in roughly a dozen rules and was never loaded**, because the old import asked for 400/500/600
+only. Every bold monospace label on the site has been a browser-synthesised fake bold. It is now
+requested properly, so mono headings will render slightly differently — that is the fix, not a
+regression.
+
+**Deploying this one takes both a paste and a pin bump.** Paste `head.html` into Bullet's head
+code (removing the bunny.net link), then move the `charm_style_sheet.css` and `filed_index.js`
+jsDelivr pins to this commit, together as always. Done when the network panel on a homepage load
+shows one font host, no 404, and no request for Inter 900.
 
 ## Round 3, third pass — 4 Sep 2026
 
@@ -306,9 +337,10 @@ then US (100), Australia (33), India (27).
 
 ## Medium
 
-- **M-01 Fonts load from three sources.** fonts.bunny.net (Inter ×9 weights) + a render-blocking
-  `@import` at charm_style_sheet.css:12 + a malformed third request at jtbd_widget.html:27
-  where Notion's angle brackets leaked into the URL (`@import url('<https://...>')`) → 404s.
+- **M-01 Fonts load from three sources.** *Closed round 4 — awaiting the head-code paste.*
+  fonts.bunny.net (Inter ×9 weights) + a render-blocking `@import` at charm_style_sheet.css:12
+  + a malformed third request at jtbd_widget.html:27 where Notion's angle brackets leaked into
+  the URL (`@import url('<https://...>')`) → 404s. Now one Google Fonts `<link>` in `head.html`.
 - **M-02 All 12 homepage images are PNG with no width/height.** No WebP/AVIF. Alt text is fine.
 - **M-03 GA4 counts your own Bullet editor sessions.** `/site/Isbw6XlCS35Ea2JF9Kaj/pages?mode=code`
   and similar appear as landing pages. No internal traffic filter. Direct (60%) is inflated.
