@@ -39,18 +39,40 @@ Key databases: Pages List, Point Reference Guide, Customer Reviews, Team.
 
 ### What Bullet will publish
 
-Bullet publishes a page only if **both** hold: it is **public on the Notion side**, and it is
-**nested under Our Website** (page `1d791b07-11ac-80dc-a190-cc3f88777447`). A page failing
-either test is not so much unpublished as invisible to the publish walk.
+Not everything nested under Our Website. Bullet starts from the **Pages List** database and
+publishes the rows with `Publish` ticked — 12 of its 14 rows today, which are the site's
+top-level pages (`/`, `/about-us`, `/blog`, `/legal/msa`, …).
 
-**This matters more than it sounds, because breaking either condition strands the page rather
-than removing it.** Bullet drops it from `sitemap.xml`, but its last render stays on the CDN
+It then follows **linked database views embedded in those pages**, and publishes the rows of
+the databases behind them, each at its own path. That second hop is where the bulk of the site
+comes from, and it is not visible from Pages List alone:
+
+| Source | Published rows | Paths |
+|--------|---------------|-------|
+| Pages List | 12 | `/`, `/about-us`, `/privacy`, `/legal/…` |
+| Posts | 84 | `/blog/…` |
+| Supercut Recordings | 24 | `/supercut-recordings/…` |
+| Customer Reviews | 10 | `/customer-reviews/…` |
+
+Those four sum to exactly the 130 URLs in `sitemap.xml`, with nothing unaccounted for — which
+is the check to re-run if this table ever looks stale.
+
+So publication is a **chain**, not a property of a page: a Pages List row with `Publish` ticked,
+the linked view sitting inside it, and the database row behind that view. Break any link and
+everything downstream of it leaves the publish walk at once. That is how one starter-kit row
+became 113 URLs (its `component-database` was reached exactly this way), and how deleting that
+one row removed all 113.
+
+**This matters more than it sounds, because breaking the chain strands the pages rather
+than removing them.** Bullet drops it from `sitemap.xml`, but its last render stays on the CDN
 still returning `200` — and since a republish can only walk pages it can still reach, that
 render is frozen. No future deploy, on any surface, will touch it again. The URL keeps serving
 whatever the page contained at the moment it left the tree.
 
 A stale jsDelivr pin in a page's `<head>` is the reliable tell that this has happened: compare
-its `charm_style_sheet.css@<sha>` against a page you know is live.
+its `charm_style_sheet.css@<sha>` against a page you know is live. Worth spot-checking one row
+from each database after any restructuring, since unpublishing a single *host* page would
+strand every row of the view it carried.
 
 **So: noindex first, unpublish second.** Get the directive into the render while the page is
 still reachable, then take it out of the tree. In that order a stranded copy is harmless — it
