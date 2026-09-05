@@ -514,6 +514,89 @@
 </script>
 
 <!-- ============================================================
+     Non-public pages — SEO audit C-04 (TKT-847) and M-06 (TKT-854)
+
+     Five URLs that were never meant for search: the WebeeUI Bullet
+     starter-kit root, Bullet's own /components/ gallery, an agent
+     embed test, an internal note to ourselves about where form
+     submissions land, and the form thank-you page. All returned a
+     real 200 with a self-canonical and no robots directive.
+
+     Plain "noindex", not "noindex, follow" — these are meant to be
+     gone, not to pass equity onward.
+
+     ---- WHICH OF THE FIVE THIS ACTUALLY REACHES ----------------
+     Only three. Verified 5 Sep 2026 by fetching each URL and
+     looking for the global body paste (<div
+     id="bullet-custom-global-body">) and the sitewide JSON-LD:
+
+       /components/     global footer present  -> this works
+       /contact-form/   global footer present  -> this works
+       /submitted/      global footer present  -> this works
+       /webeeui-bullet-website-builder-kit/   global body EMPTY
+       /embed-test/                           global body EMPTY
+
+     Those last two are stale artifacts, not live pages. The giveaway
+     is the jsDelivr pin in their <head>: they carry
+     charm_style_sheet.css@2f915188 while every live page carries
+     @40c90de0. They were rendered at an older deploy and have not
+     been re-rendered since, because they are no longer in the Notion
+     tree for a publish to walk. Nothing pasted into the footer can
+     ever reach them — they need Bullet to purge the orphaned output
+     so the URLs 404/410. Their paths are listed below anyway, so
+     that if Bullet ever does re-render them they land noindexed
+     rather than silently returning to the index.
+
+     ---- ORDERING, WHICH MATTERS MORE THAN IT LOOKS -------------
+     Do NOT unpublish these in Notion first. That is what created
+     C-04: deleting the WebeeUI pages in Notion took them out of
+     sitemap.xml but left the root serving a stale, un-noindexable
+     200. Unpublishing removes our only lever before the page has
+     left the index.
+
+     The order is: noindex (here) -> wait for Google to drop them ->
+     then unpublish in Notion -> then Disallow in robots.txt. Each
+     step is only safe once the previous one has taken effect.
+
+     Set NOINDEX_NON_PUBLIC to false to revert; the URLs keep working
+     either way, they just leave the index.
+     ============================================================ -->
+<script>
+(function () {
+  var NOINDEX_NON_PUBLIC = true;
+  if (!NOINDEX_NON_PUBLIC) return;
+
+  // Prefixes: the path itself and anything beneath it.
+  var PREFIXES = [
+    '/webeeui-bullet-website-builder-kit',
+    '/components',
+    '/embed-test',
+    '/contact-form',
+    '/submitted'
+  ];
+
+  var path = window.location.pathname.replace(/\/+$/, '');
+
+  var match = false;
+  for (var i = 0; i < PREFIXES.length; i++) {
+    if (path === PREFIXES[i] || path.indexOf(PREFIXES[i] + '/') === 0) {
+      match = true;
+      break;
+    }
+  }
+  if (!match) return;
+
+  var tag = document.querySelector('meta[name="robots"]');
+  if (!tag) {
+    tag = document.createElement('meta');
+    tag.setAttribute('name', 'robots');
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute('content', 'noindex');
+}());
+</script>
+
+<!-- ============================================================
      One meaningful H1 per page — SEO audit C-02, L-02, L-05
 
      charm_style_sheet.css:130 hides .notion-title sitewide, so every
