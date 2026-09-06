@@ -26,14 +26,22 @@ and JS that Bullet loads, plus the snippets that have to be pasted somewhere by 
 Three commands, one paste:
 
 ```bash
-git fetch origin                    # 1. make sure origin/main is current
-scripts/bullet-head.sh              # 2. prints the block, copies it to the clipboard
-scripts/verify-live.py              # 3. after pasting: proves the site matches
+scripts/bullet-head.sh              # 1. prints the block, copies it to the clipboard
+                                    # 2. paste into Bullet, then publish
+scripts/verify-live.py              # 3. proves the live site matches
 ```
 
-Step 2 resolves `origin/main` to a full commit SHA, fills it into both jsDelivr pins and
-copies the result. Paste that into **Bullet → Settings → Custom Code → Head**, replacing
-everything already there. Nothing else moves.
+Step 1 fetches `origin`, resolves `origin/main` to a full commit SHA, fills it into both
+jsDelivr pins and copies the result. Paste that into **Bullet → Settings → Custom Code →
+Head**, replacing everything already there, and publish — Bullet serves a stored render,
+so custom-code edits only reach the CDN on a publish. Nothing else moves.
+
+Every merged change to the stylesheet or the bundle needs this, because the commit SHA is
+in both pins and moves whenever either file does.
+
+Both scripts fetch `origin` themselves rather than trusting the local ref. That is not
+convenience: a stale `origin/main` would make them agree with each other on the *previous*
+commit and call a one-commit-behind site green.
 
 ### Why the SHA pins stay
 
