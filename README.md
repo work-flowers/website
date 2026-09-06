@@ -4,18 +4,92 @@ Custom styles, scripts, and assets for the [work.flowers](https://work.flowers) 
 
 ## Stack
 
-Content is managed in **Notion** and published via **Bullet.so**. This repo holds the CSS and HTML snippets that are injected through Bullet's custom code settings.
+Content is managed in **Notion** and published via **Bullet.so**. This repo holds the CSS
+and JS that Bullet loads, plus the snippets that have to be pasted somewhere by hand.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
 | `charm_style_sheet.css` | Main site stylesheet — CSS custom properties, Notion/Bullet class overrides, blog typography, responsive breakpoints |
-| `head.html` | Pasted into Bullet's custom head code: font preconnects + the single Google Fonts `<link>` (Inter, JetBrains Mono) |
-| `footer.html` | Pasted into Bullet's custom footer code: GA4, callout-height equaliser, JSON-LD schema, archive/page metadata and the `noindex` rules |
-| `jtbd_widget.html` | Auto-scrolling "pain points" chat-bubble widget embedded on the homepage |
-| `notocat_custom.css` | Email newsletter styles (Notocat), based on the site's brand tokens |
-| `Original Logo.png` | Logo asset |
+| `bullet_bundle.js` | Every piece of runtime behaviour on the site: body classes, GA4, JSON-LD, the `noindex` rules, the H1 retag, the `/about-us/` testimonial widget. Loaded once from the head, pinned by SHA |
+| `head.html` | Template for the one block pasted into Bullet's custom **head** code. `{{SHA}}` is filled in by `scripts/bullet-head.sh` — do not paste this file directly |
+| `bullet_theme_baseline.css` | Snapshot of Bullet's `#bullet-theme` block, so the verifier can tell when someone changes a theme setting in the dashboard |
+| `jtbd_widget.html` | Auto-scrolling "pain points" chat-bubble widget. Pasted into a Notion custom-code block on the homepage, not deployed from here |
+| `newsletter_embed.html` | Email newsletter signup embed |
+| `reviews-schema/` | `customer-reviews.json` plus `build_review_schema.py`, which rewrites the generated review-JSON-LD region of `bullet_bundle.js` in place |
+| `scripts/bullet-head.sh` | Prints (and copies) the head block for a given commit |
+| `scripts/verify-live.py` | Checks the live site actually matches a given commit |
+
+## Deploying
+
+Three commands, one paste:
+
+```bash
+git fetch origin                    # 1. make sure origin/main is current
+scripts/bullet-head.sh              # 2. prints the block, copies it to the clipboard
+scripts/verify-live.py              # 3. after pasting: proves the site matches
+```
+
+Step 2 resolves `origin/main` to a full commit SHA, fills it into both jsDelivr pins and
+copies the result. Paste that into **Bullet → Settings → Custom Code → Head**, replacing
+everything already there. Nothing else moves.
+
+### Why the SHA pins stay
+
+Pinning to `@main`, or to a moving `@live` tag, would remove the paste entirely. It is
+still wrong. jsDelivr serves a branch ref with `cache-control: max-age=604800,
+s-maxage=43200`, against `max-age=31536000, immutable` for a SHA. A moving ref means
+returning visitors keep stale CSS for up to a week, and the purge API cannot clear a
+browser cache. The pins are correct; typing them by hand was the problem, and that is
+what `bullet-head.sh` removes.
+
+### What the verifier actually proves
+
+Reading the live page tells you a pin is *present*. It cannot tell you the pin is
+*right* — a stale or mistyped SHA looks identical in the HTML. So the load-bearing check
+is the hash comparison: `verify-live.py` fetches what jsDelivr serves for each pin and
+compares it byte for byte against the repo at the expected commit. Around that it checks
+the head paste is complete, that the JSON-LD parses, that no leftover paste is running a
+second copy of anything, that the body ids the class shim keys off still exist, that the
+homepage still matches `jtbd_widget.html`, and that nobody has changed a Bullet theme
+setting. It exits non-zero with a checklist.
+
+Both scripts default to `origin/main`; pass a ref or SHA to work against something else.
+
+### Surfaces that still move by hand
+
+Down from five to three, and only one of them is code:
+
+| Surface | State |
+|---------|-------|
+| Bullet global **head** | one generated paste — the only manual code step |
+| `jtbd_widget.html` (Notion custom-code block) | manual, but the verifier fails when the live homepage stops matching the repo copy |
+| Bullet **theme settings** | a setting, not code — the verifier diffs the served `#bullet-theme` against `bullet_theme_baseline.css` |
+
+Bullet's global **footer** and the per-page custom code on `/about-us/`, `/legal/msa/`,
+`/legal/dpa/` and `/privacy/` are no longer surfaces at all: they should be empty, and
+`verify-live.py` fails if anything comes back. Everything they held now rides
+`bullet_bundle.js`.
+
+The one thing deliberately *not* in the bundle is the sitewide Organization /
+ProfessionalService JSON-LD. It stays literal markup in the head paste so it is
+server-rendered. Injecting the site's primary entity from JavaScript would make Google's
+view of it depend on a render pass that is delayed and not guaranteed — the same weakness
+the archive-title section of the bundle documents about itself.
+
+### Body classes
+
+The stylesheet is written against `body.home`, `body.about-us` and `body.legal` — 133
+selectors. Bullet emits `<body id="page-<slug>">` server-side and no classes at all, so
+each of those pages used to carry a hand-pasted inline script adding its own class. The
+`BODY_CLASS` table at the top of `bullet_bundle.js` does it in one place instead.
+
+The mapping is written out rather than derived, because it is editorial: `/privacy/`
+takes `body.legal` without living under `/legal/`. Adding a page that needs one of these
+classes means adding a row there. `verify-live.py` checks the body ids the table keys off
+still exist, so a renamed Notion slug fails loudly instead of silently dropping a page's
+styling.
 
 ## SEO audit and remediation
 
@@ -23,9 +97,8 @@ Findings, status and deploy notes live in the Notion project **SEO Remediation**
 which is the source of truth:
 https://www.notion.so/3d191b0711ac819d8689f0b285d3d742
 
-That page also documents the five separate surfaces a change has to travel through to go
-live — worth reading before deploying anything here, because three of them are manual
-pastes and one is a Bullet theme setting rather than code.
+Its **How deploys work** section describes the five-surface deploy that TKT-864 replaced.
+The loop above is the current one; three of those surfaces are gone.
 
 (The former `seo-audit-2026-09.md` was removed on 5 Sep 2026; it was a second copy that
 had to be kept in step by hand. History is in git.)
