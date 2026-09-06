@@ -4,7 +4,7 @@
 # with the jsDelivr pins resolved to a real commit SHA. Copies it to the
 # clipboard on macOS.
 #
-#   scripts/bullet-head.sh            # origin/main (what you want after a merge)
+#   scripts/bullet-head.sh            # origin/main, fetched first (use this)
 #   scripts/bullet-head.sh <ref>      # any branch, tag or SHA
 #
 # head.html is the template. Edit that, never the paste, and never the copy
@@ -23,11 +23,23 @@ warn() { printf '\033[33mwarning\033[0m  %s\n' "$*" >&2; }
 
 [[ -f head.html ]] || die "head.html not found — run this from inside the repo."
 
+# --- Refresh the remote ref ------------------------------------------------
+# Without this the whole tool can be confidently wrong. Merge the PR in the
+# GitHub UI, skip the fetch, and origin/main here is a commit behind: this
+# script pins the OLD commit, and verify-live.py then compares the live site
+# against that same old ref and reports all green. Two tools agreeing with each
+# other and both wrong is exactly the failure this repo exists to stop, so do
+# not make the fetch the operator's job.
+if [[ "$REF" == origin/* ]]; then
+  git fetch --quiet origin 2>/dev/null \
+    || warn "could not reach origin — '$REF' may be stale."
+fi
+
 # --- Resolve the ref -------------------------------------------------------
 # Only a full 40-char SHA goes into the pin. jsDelivr accepts short ones, but a
 # full SHA is what makes the pin unambiguous and diffable against the live page.
 SHA="$(git rev-parse --verify "$REF^{commit}" 2>/dev/null)" \
-  || die "'$REF' is not a commit. Try 'git fetch origin' first."
+  || die "'$REF' is not a commit."
 
 # --- Refuse to pin something jsDelivr cannot serve -------------------------
 # jsDelivr reads GitHub, so a SHA that exists only locally produces a pin that
@@ -37,7 +49,7 @@ if ! git merge-base --is-ancestor "$SHA" origin/main 2>/dev/null; then
     warn "$(git rev-parse --short "$SHA") is not on origin/main."
     warn "jsDelivr serves from GitHub — push it before pasting, or the pins will 404."
   else
-    warn "No origin/main to check against; run 'git fetch origin'."
+    warn "No origin/main to check against."
   fi
 fi
 
