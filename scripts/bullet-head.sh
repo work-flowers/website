@@ -47,16 +47,50 @@ for f in "${PINNED[@]}"; do
 done
 
 # --- Render ----------------------------------------------------------------
-# Strip the template's HTML comments first, so the SHA note inside them cannot
-# be substituted into the output, then fill in the pins.
-BLOCK="$(
-  perl -0777 -pe 's/<!--.*?-->\n*//gs' head.html \
-    | perl -0777 -pe 's/\{\{SHA\}\}/'"$SHA"'/g' \
-    | perl -0777 -pe 's/\A\n+//; s/\n+\z/\n/'
-)"
+RENDER=$(cat <<'RENDER_PY'
+import json, re, sys
 
-grep -q '{{SHA}}' <<<"$BLOCK" && die "a {{SHA}} placeholder survived rendering."
+sha = sys.argv[1]
+block = open("head.html", encoding="utf-8").read()
 
+# Strip the template comments first, so the {{SHA}} mentioned inside one of
+# them cannot be substituted into the output.
+block = re.sub(r"<!--.*?-->\n*", "", block, flags=re.S)
+block = block.replace("{{SHA}}", sha)
+if "{{SHA}}" in block:
+    sys.exit("a {{SHA}} placeholder survived rendering.")
+
+# Re-emit the JSON-LD with every non-ASCII character as a \\uXXXX escape.
+#
+# This paste travels through a clipboard and a web form, and that path has
+# mangled UTF-8 before: on 6 Sep 2026 the two em dashes in the Analytics
+# description reached the live site as CP1252 mojibake, having been decoded
+# as the wrong charset somewhere in between. Bullet itself is fine -- the old
+# footer paste carried the same character correctly for months -- but the
+# journey is not. A \\u escape is plain ASCII, survives any re-encoding, and
+# parses back to exactly the same string, so the failure cannot recur.
+def ascii_json(m):
+    try:
+        data = json.loads(m.group(2))
+    except json.JSONDecodeError as e:
+        sys.exit(f"the JSON-LD in head.html does not parse: {e}")
+    return m.group(1) + json.dumps(data, indent=2, ensure_ascii=True) + m.group(3)
+
+block, n = re.subn(r"(<script type=\"application/ld\+json\">\n)(.*?)(\n</script>)",
+                   ascii_json, block, flags=re.S)
+if n != 1:
+    sys.exit(f"expected exactly one JSON-LD block in head.html, found {n}.")
+
+block = block.strip("\n") + "\n"
+if not block.isascii():
+    bad = sorted({c for c in block if not c.isascii()})
+    sys.exit("non-ASCII survived rendering: " + " ".join(f"U+{ord(c):04X}" for c in bad))
+
+sys.stdout.write(block)
+RENDER_PY
+)
+
+BLOCK="$(python3 -c "$RENDER" "$SHA")" || die "could not render head.html (see above)."
 printf '%s\n' "$BLOCK"
 
 if command -v pbcopy >/dev/null 2>&1; then
