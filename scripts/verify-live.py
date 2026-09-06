@@ -167,10 +167,19 @@ def main():
                     help="commit the live site is expected to be pinned to")
     args = ap.parse_args()
 
+    # Refresh the remote ref before resolving it. A stale origin/main would make
+    # this tool agree with a stale bullet-head.sh and call a one-commit-behind
+    # site green -- a silent mismatch, which is the one thing it exists to catch.
+    if args.ref.startswith("origin/"):
+        if subprocess.run(["git", "fetch", "--quiet", "origin"],
+                          cwd=REPO, capture_output=True).returncode != 0:
+            print(f"  {YELLOW}!{RESET} could not reach origin — "
+                  f"{args.ref} may be stale\n")
+
     r = subprocess.run(["git", "rev-parse", "--verify", f"{args.ref}^{{commit}}"],
                        capture_output=True, text=True, cwd=REPO)
     if r.returncode != 0:
-        sys.exit(f"error  '{args.ref}' is not a commit. Try 'git fetch origin' first.")
+        sys.exit(f"error  '{args.ref}' is not a commit.")
     sha = r.stdout.strip()
 
     print(f"\nverifying {SITE} against {sha[:8]} ({args.ref})\n")
