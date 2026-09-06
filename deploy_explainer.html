@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>How the work.flowers deploy works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* ============================================================
+   workFlowers design tokens — inlined so this file is
+   self-contained and can be opened straight from the repo.
+   Source: work-flowers-design skill, tokens/*.css
+   ============================================================ */
+:root {
+  --wf-persian-indigo: #2E1B88;
+  --wf-azure:          #1479E1;
+  --wf-non-photo-blue: #9CE1FC;
+  --wf-russian-violet: #4E1B61;
+  --wf-ochre:          #E17A14;
+  --wf-peach:          #F6C696;
+  --wf-eerie-black:    #1F1F1F;
+  --wf-white:          #FFFFFF;
+
+  --wf-bg:             #FFFFFF;
+  --wf-bg-tint:        #F5FAFE;
+  --wf-anchor:         var(--wf-persian-indigo);
+  --wf-interactive:    var(--wf-azure);
+  --wf-interactive-hi: #0E63BE;
+  --wf-button-hi:      #241468;
+  --wf-cta:            var(--wf-ochre);
+  --wf-fg:             var(--wf-eerie-black);
+  --wf-fg-muted:       #4B4B4B;
+  --wf-fg-subtle:      #6B6B6B;
+  --wf-border:         rgba(31, 31, 31, 0.12);
+  --wf-border-strong:  rgba(31, 31, 31, 0.24);
+  --wf-divider:        rgba(31, 31, 31, 0.08);
+  --wf-alert-bg:       #FFF1DE;
+  --wf-alert-fg:       #A85A0D;
+  --wf-ok-bg:          #E9F7EE;
+  --wf-ok-fg:          #1B6B39;
+
+  --wf-shadow-sm: 0 1px 2px rgba(31,31,31,0.06);
+  --wf-shadow-md: 0 2px 8px rgba(31,31,31,0.10);
+  --wf-shadow-lg: 0 10px 30px rgba(46,27,136,0.14);
+
+  --wf-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --wf-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --wf-sp-1: 4px;   --wf-sp-2: 8px;   --wf-sp-3: 12px;  --wf-sp-4: 16px;
+  --wf-sp-5: 20px;  --wf-sp-6: 24px;  --wf-sp-8: 32px;  --wf-sp-10: 40px;
+  --wf-sp-12: 48px; --wf-sp-16: 64px; --wf-sp-20: 80px;
+
+  --wf-radius-sm: 5px; --wf-radius-md: 8px; --wf-radius-lg: 12px; --wf-radius-pill: 999px;
+  --wf-ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --wf-dur-fast: 120ms; --wf-dur-med: 220ms;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--wf-bg);
+  color: var(--wf-fg);
+  font-family: var(--wf-font-sans);
+  font-size: 1.063rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { letter-spacing: -0.015em; line-height: 1.2; margin: 0; }
+p { margin: 0; }
+code, kbd { font-family: var(--wf-font-mono); }
+
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 var(--wf-sp-6); }
+
+/* ---------- lockup ---------- */
+.wf-lockup {
+  display: inline-flex; align-items: center; gap: 0.54em;
+  font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em;
+  color: #fff; text-decoration: none; white-space: nowrap;
+}
+.wf-lockup svg { width: 1.85em; height: 1.85em; flex: none; }
+
+/* ---------- header / hero ---------- */
+.hero {
+  background: var(--wf-anchor);
+  color: #fff;
+  padding: var(--wf-sp-6) 0 var(--wf-sp-16);
+}
+.hero__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--wf-sp-4); flex-wrap: wrap; }
+.hero__meta { font-family: var(--wf-font-mono); font-size: 0.75rem; color: rgba(255,255,255,0.62); letter-spacing: 0.02em; }
+.hero__body { margin-top: var(--wf-sp-16); max-width: 46rem; }
+.eyebrow {
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--wf-non-photo-blue); margin-bottom: var(--wf-sp-3);
+}
+.hero h1 { font-size: clamp(2rem, 5.4vw, 3.5rem); font-weight: 700; letter-spacing: -0.02em; }
+.hero h1 em { font-style: italic; color: var(--wf-non-photo-blue); }
+.hero__lead { margin-top: var(--wf-sp-5); font-size: 1.25rem; line-height: 1.6; color: rgba(255,255,255,0.86); }
+.hero__quip { margin-top: var(--wf-sp-4); font-size: 1.0rem; color: var(--wf-peach); font-weight: 500; }
+
+/* ---------- tldr ---------- */
+.tldr {
+  margin-top: calc(var(--wf-sp-12) * -1);
+  background: #fff;
+  border: 1px solid var(--wf-border);
+  border-top: 4px solid var(--wf-ochre);
+  border-radius: var(--wf-radius-sm);
+  box-shadow: var(--wf-shadow-lg);
+  padding: var(--wf-sp-8);
+}
+.tldr h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--wf-ochre); }
+.tldr p { margin-top: var(--wf-sp-3); font-size: 1.125rem; color: var(--wf-fg-muted); }
+
+/* ---------- sections ---------- */
+section { padding: var(--wf-sp-20) 0 0; }
+.sec-head { max-width: 44rem; margin-bottom: var(--wf-sp-8); }
+.sec-head h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; }
+.sec-head p { margin-top: var(--wf-sp-3); color: var(--wf-fg-muted); }
+
+/* ---------- code ---------- */
+pre {
+  margin: 0; background: #17123F; color: #E8E6F5;
+  border-radius: var(--wf-radius-sm); padding: var(--wf-sp-5) var(--wf-sp-6);
+  font-family: var(--wf-font-mono); font-size: 0.875rem; line-height: 1.75;
+  overflow-x: auto;
+}
+pre .c { color: #9CA3C4; }
+pre .k { color: var(--wf-non-photo-blue); }
+code.inline {
+  background: var(--wf-bg-tint); border: 1px solid rgba(20,121,225,0.18);
+  border-radius: 4px; padding: 0.08em 0.36em; font-size: 0.88em; white-space: nowrap;
+}
+
+/* ---------- stepper ---------- */
+.steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--wf-sp-2); }
+.step {
+  appearance: none; text-align: left; cursor: pointer; font: inherit;
+  background: #fff; color: var(--wf-fg);
+  border: 1px solid var(--wf-border); border-radius: var(--wf-radius-sm);
+  padding: var(--wf-sp-4);
+  transition: border-color var(--wf-dur-fast) var(--wf-ease), box-shadow var(--wf-dur-fast) var(--wf-ease), transform var(--wf-dur-fast) var(--wf-ease);
+}
+.step:hover { border-color: var(--wf-border-strong); transform: translateY(-2px); }
+.step[aria-selected="true"] { border-color: var(--wf-anchor); box-shadow: 0 0 0 2px rgba(46,27,136,0.14); }
+.step:focus-visible { outline: 3px solid var(--wf-azure); outline-offset: 2px; }
+.step__n {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: var(--wf-radius-pill);
+  background: var(--wf-bg-tint); color: var(--wf-anchor);
+  font-family: var(--wf-font-mono); font-size: 0.7rem; font-weight: 500;
+}
+.step[aria-selected="true"] .step__n { background: var(--wf-anchor); color: #fff; }
+.step__t { display: block; margin-top: var(--wf-sp-2); font-weight: 600; font-size: 0.9375rem; line-height: 1.3; }
+.step__w { display: block; margin-top: 2px; font-size: 0.75rem; color: var(--wf-fg-subtle); }
+
+.panel {
+  margin-top: var(--wf-sp-4);
+  border: 1px solid var(--wf-border); border-left: 4px solid var(--wf-anchor);
+  border-radius: var(--wf-radius-sm); background: #fff;
+  padding: var(--wf-sp-6); box-shadow: var(--wf-shadow-sm);
+}
+.panel h3 { font-size: 1.25rem; }
+.panel__who {
+  display: inline-block; margin-bottom: var(--wf-sp-3);
+  font-family: var(--wf-font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+  text-transform: uppercase; padding: 0.2em 0.6em; border-radius: var(--wf-radius-pill);
+}
+.who--you { background: var(--wf-alert-bg); color: var(--wf-alert-fg); }
+.who--auto { background: var(--wf-bg-tint); color: var(--wf-interactive-hi); }
+.panel p + p, .panel pre { margin-top: var(--wf-sp-4); }
+.panel .note {
+  margin-top: var(--wf-sp-4); padding-left: var(--wf-sp-4);
+  border-left: 2px solid var(--wf-peach); color: var(--wf-fg-muted); font-size: 0.9375rem;
+}
+
+/* ---------- surfaces toggle ---------- */
+.toggle { display: inline-flex; background: var(--wf-bg-tint); border: 1px solid rgba(20,121,225,0.18); border-radius: var(--wf-radius-pill); padding: 3px; gap: 2px; }
+.toggle button {
+  appearance: none; cursor: pointer; font: inherit; font-size: 0.875rem; font-weight: 600;
+  border: none; background: transparent; color: var(--wf-fg-muted);
+  padding: 0.4em 1.1em; border-radius: var(--wf-radius-pill);
+  transition: background var(--wf-dur-fast) var(--wf-ease), color var(--wf-dur-fast) var(--wf-ease);
+}
+.toggle button[aria-pressed="true"] { background: var(--wf-anchor); color: #fff; }
+.toggle button:focus-visible { outline: 3px solid var(--wf-azure); outline-offset: 2px; }
+
+.surfaces { margin-top: var(--wf-sp-6); display: grid; gap: var(--wf-sp-3); }
+.surface {
+  display: grid; grid-template-columns: 30px 1fr auto; gap: var(--wf-sp-4); align-items: start;
+  border: 1px solid var(--wf-border); border-radius: var(--wf-radius-sm);
+  padding: var(--wf-sp-4) var(--wf-sp-5); background: #fff;
+  transition: opacity var(--wf-dur-med) var(--wf-ease), border-color var(--wf-dur-med) var(--wf-ease);
+}
+.surface__icon { font-family: var(--wf-font-mono); font-size: 0.8rem; color: var(--wf-fg-subtle); padding-top: 2px; }
+.surface__name { font-weight: 600; }
+.surface__desc { font-size: 0.9375rem; color: var(--wf-fg-muted); margin-top: 2px; }
+.tag { font-family: var(--wf-font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.25em 0.6em; border-radius: var(--wf-radius-pill); white-space: nowrap; }
+.tag--hand { background: var(--wf-alert-bg); color: var(--wf-alert-fg); }
+.tag--auto { background: var(--wf-ok-bg); color: var(--wf-ok-fg); }
+.tag--gone { background: rgba(31,31,31,0.06); color: var(--wf-fg-subtle); }
+.surface.is-gone { opacity: 0.5; }
+.surface.is-gone .surface__name { text-decoration: line-through; text-decoration-color: var(--wf-border-strong); }
+
+/* ---------- failure explorer ---------- */
+.fx { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: var(--wf-sp-6); align-items: start; }
+.fx__list { display: grid; gap: var(--wf-sp-2); }
+.fx__btn {
+  appearance: none; cursor: pointer; font: inherit; text-align: left;
+  background: #fff; border: 1px solid var(--wf-border); border-radius: var(--wf-radius-sm);
+  padding: var(--wf-sp-3) var(--wf-sp-4); font-size: 0.9375rem; line-height: 1.4;
+  transition: border-color var(--wf-dur-fast) var(--wf-ease), background var(--wf-dur-fast) var(--wf-ease);
+}
+.fx__btn:hover { border-color: var(--wf-border-strong); }
+.fx__btn[aria-selected="true"] { background: var(--wf-anchor); border-color: var(--wf-anchor); color: #fff; }
+.fx__btn:focus-visible { outline: 3px solid var(--wf-azure); outline-offset: 2px; }
+
+.fx__out { border: 1px solid var(--wf-border); border-radius: var(--wf-radius-sm); background: #fff; box-shadow: var(--wf-shadow-sm); overflow: hidden; }
+.fx__term { background: #17123F; padding: var(--wf-sp-5) var(--wf-sp-6); font-family: var(--wf-font-mono); font-size: 0.84rem; line-height: 1.85; color: #E8E6F5; overflow-x: auto; }
+.fx__term .fail { color: #FF9A8B; }
+.fx__term .pass { color: #7EE0A8; }
+.fx__term .dim  { color: #9CA3C4; }
+.fx__why { padding: var(--wf-sp-5) var(--wf-sp-6); }
+.fx__why h4 { margin: 0 0 var(--wf-sp-2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--wf-ochre); font-weight: 600; }
+.fx__why p { color: var(--wf-fg-muted); font-size: 0.9375rem; }
+.fx__why p + p { margin-top: var(--wf-sp-3); }
+
+/* ---------- callout ---------- */
+.callout {
+  background: var(--wf-bg-tint); border: 1px solid rgba(20,121,225,0.18);
+  border-radius: var(--wf-radius-sm); padding: var(--wf-sp-6);
+}
+.callout h3 { font-size: 1.125rem; }
+.callout p { margin-top: var(--wf-sp-3); color: var(--wf-fg-muted); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--wf-sp-4); }
+
+/* ---------- footer ---------- */
+footer { margin-top: var(--wf-sp-20); background: var(--wf-anchor); color: rgba(255,255,255,0.72); padding: var(--wf-sp-12) 0; font-size: 0.9375rem; }
+footer a { color: var(--wf-non-photo-blue); }
+footer .wrap > * + * { margin-top: var(--wf-sp-3); }
+
+@media (max-width: 860px) {
+  .steps { grid-template-columns: repeat(2, 1fr); }
+  .fx { grid-template-columns: 1fr; }
+  .grid2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .steps { grid-template-columns: 1fr; }
+  .surface { grid-template-columns: 1fr; }
+  .hero__body { margin-top: var(--wf-sp-10); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .step:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <span class="wf-lockup"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="20 173.17826082649418 535.0083971696804 228.64347834701164"><rect height="100%" width="100%" x="20" y="173.17826082649418" fill="rgba(255, 255, 255, 1)"></rect> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="90" y="243.17826082649418" viewBox="3.6731646060943604 3.673722743988037 83.36225128173828 83.36117553710938" xml:space="preserve" height="88.64347834701165" width="88.64425126354399" preserveAspectRatio="xMinYMin" enable-background="new 0 0 90.7087 90.7087" style="overflow: visible;"><g style=""></g><path class="st230" d="M81.8309,47.3991c-0.4658-1.1248-0.4658-2.9651,0-4.0898l4.8735-11.7656   c0.916-2.2114-0.1343-4.7466-2.3457-5.6626l-11.7656-4.8735c-1.125-0.4658-2.4263-1.7673-2.8921-2.8921L64.889,6.4982   c-0.3843-0.9287-1.0293-1.7502-1.9043-2.2449c-1.1963-0.6765-2.583-0.7625-3.8198-0.2488L47.3993,8.8781   c-0.5352,0.2217-1.29,0.3325-2.0449,0.3325s-1.5098-0.1108-2.0449-0.3325L31.5438,4.0045   c-1.2368-0.5137-2.624-0.4277-3.8198,0.2488c-0.875,0.4946-1.52,1.3162-1.9048,2.2449l-4.8115,11.6172   c-0.4658,1.1248-1.7676,2.4263-2.8921,2.8921L6.3499,25.881c-2.2114,0.916-3.2617,3.4512-2.3457,5.6626l4.8735,11.7656   c0.4658,1.1248,0.4658,2.9651,0,4.0898L4.0716,59.0018c-0.3862,0.9326-0.5142,1.9744-0.2461,2.9475   c0.3657,1.3267,1.2871,2.366,2.5249,2.8784l11.7646,4.8735c1.125,0.4661,2.4268,1.7681,2.8931,2.8931l4.8154,11.6257   c0.3843,0.928,1.0313,1.7476,1.9067,2.2397c1.1963,0.6724,2.5796,0.7568,3.8135,0.2444l11.7656-4.8735   c0.5352-0.2217,1.29-0.3325,2.0449-0.3325s1.5098,0.1108,2.0449,0.3325l11.7656,4.8735c1.2339,0.5125,2.6167,0.428,3.813-0.2444   c0.876-0.4922,1.5229-1.3118,1.9072-2.2397l4.8159-11.6267c0.4658-1.1245,1.7671-2.4258,2.8916-2.8916l11.6055-4.8076   c0.9326-0.3862,1.7593-1.0327,2.2568-1.9106c0.6787-1.197,0.7617-2.5825,0.249-3.8193L81.8309,47.3991z M82.2215,56.182   c0.2188,0.5281-0.3936,1.0115-0.8564,0.676l-11.6895-8.4644c-0.6675-0.4834-0.3257-1.5391,0.4985-1.5391h7.2983   c0.6445,0,1.1895,0.4424,1.3682,1.0618c0.0635,0.22,0.1362,0.4312,0.2188,0.6306L82.2215,56.182z M70.9647,23.5533   c0.1606,0.084,0.3208,0.1594,0.4805,0.2256l9.5737,3.9658c0.5112,0.2117,0.4473,0.9551-0.0923,1.0767L63.578,32.7272   c-0.521,0.1174-0.9004-0.4851-0.5693-0.9043l6.2041-7.8564C69.6297,23.4384,70.3685,23.2411,70.9647,23.5533z M62.2542,10.7545   c0.0654-0.582,0.8628-0.6948,1.0869-0.1536l3.5884,8.6628c0.1069,0.2588,0.2402,0.519,0.3936,0.7781   c0.2988,0.5051,0.2646,1.1414-0.0991,1.6021l-4.7617,6.03c-0.707,0.895-2.144,0.304-2.0166-0.8293L62.2542,10.7545z    M82.4891,31.5448c0.4482-0.1011,0.8242,0.3455,0.6484,0.77l-4.0781,9.8464c-0.083,0.1997-0.1558,0.4111-0.2192,0.6311   c-0.1782,0.6199-0.7231,1.0623-1.3682,1.0623H64.3255c-0.5972,0-1.1787-0.1885-1.6626-0.5388l-4.3569-3.155   c-0.6528-0.4727-0.7808-1.3936-0.2813-2.0261l0.4165-0.5276c0.4028-0.5098,0.9683-0.866,1.6021-1.0088L82.4891,31.5448z    M48.5477,11.6495l8.8848-3.6807c0.9971-0.4128,2.0713,0.3955,1.9507,1.4678l-2.8398,25.2646   c-0.0405,0.3569-0.1797,0.6956-0.4023,0.9773c-0.5752,0.7288-1.6841,0.7166-2.2432-0.0242l-3.4189-4.5283   c-0.5732-0.7593-0.9463-1.6506-1.0845-2.592l-2.4165-16.4529C47.5413,11.9872,48.076,11.8449,48.5477,11.6495z M37.6805,9.7936   l4.4805,1.856c0.5317,0.2202,1.1455,0.3682,1.7886,0.4597l1.4077,9.5835c0.1279,0.8708-0.9897,1.3386-1.52,0.636l-7.8301-10.3718   C35.137,10.8043,36.3465,9.2408,37.6805,9.7936z M23.7791,19.2638l3.0586-7.3848c0.8389-2.0251,3.5605-2.3726,4.8813-0.6233   l10.0601,13.3259c0.6748,0.8931-0.2158,2.1196-1.2739,1.7551l-17.3267-5.97C23.4168,20.0009,23.6273,19.6305,23.7791,19.2638z    M6.7762,30.3961c-0.2822-0.6812,0.0415-1.4619,0.7222-1.7439l11.7651-4.8733c0.229-0.095,0.46-0.2102,0.6899-0.342   c0.7012-0.4023,1.5459-0.4761,2.3105-0.2126l23.356,8.0476c1.0664,0.3672,1.9985,1.0442,2.6782,1.9441l1.043,1.3818   c1.3096,1.7344,0.2607,4.2368-1.8945,4.5188l-33.5015,4.385c-0.9756,0.1274-1.915-0.4165-2.29-1.3262l-0.0059-0.0142   L6.7762,30.3961z M7.9701,57.4305l3.6792-8.8835c0.0215-0.0518,0.042-0.1042,0.062-0.1577   c0.377-0.9985,1.2417-1.7324,2.3003-1.8711l31.6104-4.1372c1.3853-0.1814,2.1694,1.5391,1.124,2.4658l-6.6025,5.8525   c-0.3252,0.2886-0.7129,0.4985-1.1323,0.613L9.6532,59.34C8.5164,59.6508,7.5189,58.5192,7.9701,57.4305z M19.9574,67.274   c-0.231-0.1326-0.4634-0.2485-0.6938-0.3442l-6.5107-2.6968c-1.2476-0.5168-1.1343-2.3203,0.1685-2.6765l15.793-4.3186   c1.4463-0.3955,2.436,1.4331,1.314,2.4277l-8.4102,7.4548C21.1576,67.5284,20.491,67.5802,19.9574,67.274z M29.4764,78.7457   c-0.4341,1.2236-2.1484,1.2678-2.645,0.0684l-3.0522-7.3691c-0.0688-0.1665-0.1484-0.3335-0.2373-0.5007   c-0.3159-0.5962-0.2192-1.325,0.2852-1.7722l9.9053-8.7803c0.8765-0.7769,2.2124,0.1238,1.8208,1.2278L29.4764,78.7457z    M44.4071,76.902c-0.2266,0.9326-0.9063,1.7068-1.8198,2.0012c-0.147,0.0474-0.2891,0.0994-0.4263,0.156l-8.3257,3.4487   c-1.1343,0.47-2.2886-0.6262-1.8779-1.7832l9.4648-26.678c0.1606-0.4519,0.4326-0.8555,0.7915-1.1736l6.8408-6.064   c1.0391-0.9207,2.645,0.0461,2.3174,1.395L44.4071,76.902z M66.9295,71.4449l-4.873,11.7651   c-0.1353,0.3267-0.3926,0.582-0.7236,0.7192s-0.6934,0.1387-1.0205,0.0034l-11.7646-4.8735l-0.0137-0.0056   c-0.8169-0.3367-1.2656-1.2192-1.0571-2.0779l7.4575-30.727c0.4751-1.9583,2.7847-2.8091,4.417-1.6274l1.853,1.3418   c0.2632,0.1904,0.4526,0.4656,0.5371,0.7793l6.2017,23.0171C67.5203,70.308,67.1634,70.8807,66.9295,71.4449z M82.4129,62.3868   c0,0-7.2676,3.0417-10.4849,4.4233c-0.793,0.3406-1.6997-0.1016-1.9243-0.9348l-3.9082-14.5049   c-0.2085-0.7737,0.6709-1.3799,1.3198-0.9099l15.1133,10.9431C82.8875,61.6639,82.8226,62.2169,82.4129,62.3868z" style="fill: #1D3799; fill-opacity: 0;"></path><path class="st230" d="M86.7038,59.1642L81.8308,47.399c-0.4658-1.1247-0.4658-2.9651,0-4.0898l4.8734-11.7655   c0.916-2.2114-0.1341-4.7467-2.3456-5.6627L72.593,21.0074c-1.1248-0.4659-2.4262-1.7674-2.8921-2.8922L64.8892,6.498   c-0.3846-0.9285-1.0297-1.7501-1.9045-2.2448c-1.1962-0.6764-2.5833-0.7624-3.8199-0.2488L47.3992,8.878   c-0.5352,0.2217-1.29,0.3325-2.0449,0.3325s-1.5098-0.1108-2.0449-0.3325L31.5437,4.0045   C30.307,3.4909,28.92,3.5769,27.7237,4.2533c-0.8748,0.4946-1.5199,1.3163-1.9045,2.2448l-4.8117,11.6172   c-0.4659,1.1248-1.7673,2.4263-2.8921,2.8922L6.3498,25.881c-2.2114,0.916-3.2616,3.4513-2.3456,5.6627l4.8734,11.7655   c0.4659,1.1247,0.4659,2.9651,0,4.0898L4.0718,59.0019c-0.3863,0.9326-0.5144,1.9742-0.2463,2.9474   c0.3656,1.3268,1.2869,2.366,2.5248,2.8785l11.7646,4.8735c1.1251,0.4661,2.427,1.768,2.893,2.8931l4.8154,11.6257   c0.3844,0.928,1.0314,1.7476,1.9071,2.2398c1.1962,0.6723,2.5792,0.7568,3.8132,0.2443l11.7656-4.8735   c0.5352-0.2217,1.29-0.3325,2.0449-0.3325s1.5098,0.1108,2.0449,0.3325l11.7656,4.8735c1.234,0.5125,2.617,0.428,3.8132-0.2443   c0.8756-0.4922,1.5227-1.3118,1.9071-2.2398l4.8159-11.6267c0.4658-1.1246,1.767-2.4258,2.8916-2.8917l11.6055-4.8076   c0.9325-0.3863,1.7591-1.0328,2.257-1.9108C87.1337,61.7865,87.2166,60.4009,86.7038,59.1642z" style="fill: #1D3799; fill-opacity: 1;"></path><path class="st11" d="M79.0593,42.1612c-0.0828,0.1997-0.1555,0.411-0.2189,0.6311c-0.1785,0.6198-0.7235,1.0622-1.3685,1.0622    l-13.1464,0c-0.5971,0-1.1789-0.1885-1.6625-0.5387l-4.3571-3.155c-0.6528-0.4727-0.7805-1.3938-0.2811-2.0263l0.4165-0.5275    c0.4026-0.5099,0.9682-0.866,1.6021-1.0087l22.4458-5.0537c0.4483-0.1009,0.8242,0.3455,0.6483,0.77L79.0593,42.1612z" style="fill: #62D4F9;"></path><path class="st11" d="M71.4451,23.7789l9.5739,3.9657c0.5112,0.2117,0.4473,0.9553-0.0924,1.0769l-17.3484,3.9057    c-0.5211,0.1173-0.9005-0.4852-0.5694-0.9044l6.2042-7.8564c0.417-0.5281,1.1558-0.7252,1.752-0.4131    C71.1252,23.6372,71.2855,23.7128,71.4451,23.7789z" style="fill: #62D4F9;"></path><path class="st11" d="M66.9294,19.2638c0.1072,0.2587,0.2402,0.5191,0.3935,0.7781c0.2989,0.5051,0.2646,1.1413-0.0991,1.602    l-4.7616,6.0302c-0.7068,0.895-2.144,0.304-2.0166-0.8293l1.8085-16.0902c0.0654-0.5821,0.863-0.6948,1.0872-0.1536    L66.9294,19.2638z" style="fill: #62D4F9;"></path><path class="st44" d="M48.5476,11.6495l8.8848-3.6805c0.997-0.413,2.0714,0.3953,1.9509,1.4678l-2.8402,25.2646    c-0.0401,0.3569-0.1793,0.6954-0.4019,0.9773v0c-0.5753,0.7286-1.6841,0.7166-2.2435-0.0243l-3.4187-4.5281    c-0.5733-0.7593-0.9463-1.6507-1.0845-2.5921l-2.4167-16.4529C47.5412,11.9872,48.0759,11.8448,48.5476,11.6495z" style="fill: #9BE0FD;"></path><path class="st44" d="M43.9494,12.1092l1.4079,9.5835c0.128,0.871-0.9896,1.3386-1.5201,0.636L36.007,11.9569    c-0.8702-1.1526,0.3393-2.7161,1.6736-2.1634l4.4803,1.856C42.6926,11.8697,43.3064,12.0177,43.9494,12.1092z" style="fill: #9BE0FD;"></path><path class="st44" d="M26.8378,11.879c0.8388-2.0252,3.5605-2.3727,4.8812-0.6232l10.0604,13.3257    c0.6744,0.8933-0.216,2.1198-1.2743,1.7552l-17.3266-5.9699c0.2383-0.366,0.4487-0.7363,0.6006-1.103L26.8378,11.879z" style="fill: #9BE0FD;"></path><path class="st79" d="M6.7761,30.3961c-0.2821-0.6811,0.0413-1.4618,0.7224-1.7439l11.7649-4.8732    c0.2293-0.0949,0.4599-0.2102,0.6898-0.3421c0.7016-0.4024,1.546-0.476,2.3107-0.2125l23.3562,8.0474    c1.0661,0.3673,1.9984,1.0442,2.6778,1.9441l1.0434,1.382c1.3095,1.7344,0.2604,4.2366-1.8944,4.5187l-33.5016,4.3849    c-0.9756,0.1277-1.9152-0.4163-2.2902-1.3259l-0.0059-0.0143L6.7761,30.3961z" style="fill: #017AE3;"></path><path class="st79" d="M11.6492,48.547c0.0215-0.0517,0.0422-0.1043,0.0623-0.1576c0.3767-0.9986,1.2417-1.7326,2.2999-1.8711    l31.6103-4.1374c1.3853-0.1813,2.1696,1.5392,1.1241,2.4659l-6.6023,5.8526c-0.3255,0.2886-0.7131,0.4983-1.1327,0.613    L9.6531,59.34c-1.1367,0.3108-2.1342-0.8207-1.6833-1.9095L11.6492,48.547z" style="fill: #017AE3;"></path><path class="st79" d="M19.2634,66.9298l-6.5106-2.6968c-1.2477-0.5168-1.1342-2.3204,0.1685-2.6766l15.7928-4.3185    c1.4466-0.3956,2.4362,1.433,1.314,2.4277l-8.41,7.4547c-0.4603,0.408-1.1269,0.4597-1.6605,0.1537    C19.7262,67.1415,19.494,67.0254,19.2634,66.9298z" style="fill: #017AE3;"></path><path class="st79" d="M23.779,71.4449c-0.069-0.1664-0.1485-0.3336-0.2371-0.5008c-0.3159-0.5961-0.2196-1.3248,0.2852-1.7723    l9.905-8.78c0.8767-0.7771,2.2124,0.1236,1.8207,1.2276l-6.0765,17.1261c-0.4342,1.2236-2.1483,1.268-2.6452,0.0684    L23.779,71.4449z" style="fill: #017AE3;"></path><path class="st37" d="M42.1609,79.0592l-8.3255,3.4489c-1.1342,0.4698-2.2887-0.6263-1.8782-1.7833l9.4652-26.678    c0.1603-0.4517,0.4325-0.8555,0.7912-1.1734l6.841-6.0639c1.0388-0.9208,2.6449,0.046,2.3175,1.3949l-6.9652,28.6976    c-0.2264,0.9327-0.9059,1.7069-1.8194,2.0013C42.4404,78.9505,42.2979,79.0025,42.1609,79.0592z" style="fill: #1099E7;"></path><path class="st37" d="M81.365,56.8581l-11.6894-8.4643c-0.6678-0.4836-0.3257-1.5392,0.4987-1.5392l7.2979,0    c0.6448,0,1.1898,0.4422,1.3684,1.0618c0.0634,0.2199,0.1361,0.4311,0.2186,0.6305l3.162,7.635    C82.4401,56.7102,81.8281,57.1934,81.365,56.8581z" style="fill: #1099E7;"></path><path class="st37" d="M62.0564,83.2101c-0.1353,0.3267-0.3926,0.582-0.7236,0.7192s-0.6934,0.1387-1.0205,0.0034l-11.7646-4.8735    l-0.0134-0.0055c-0.8169-0.3369-1.266-1.2193-1.0576-2.078l7.4577-30.727c0.4753-1.9583,2.7848-2.8093,4.4171-1.6274l1.853,1.3417    c0.2631,0.1905,0.4528,0.4656,0.5373,0.7793l6.2014,23.0171c-0.4229,0.5486-0.7798,1.1213-1.0137,1.6855L62.0564,83.2101z" style="fill: #1099E7;"></path><path class="st37" d="M70.0037,65.8753l-3.9082-14.5047c-0.2085-0.7737,0.6709-1.3799,1.3199-0.91l15.113,10.9432    c0.3592,0.2601,0.2942,0.8133-0.1155,0.983c0,0-7.2677,3.0418-10.4848,4.4235C71.135,67.1508,70.2282,66.7086,70.0037,65.8753z" style="fill: #1099E7;"></path></svg> <svg x="198.87839228686792" y="269.2982774595635" viewBox="2.240000009536743 21.31999969482422 286.1300048828125 36.40999984741211" height="36.40999984741211" width="286.1300048828125" style="overflow: visible;"><g fill="#383539" fill-opacity="1" style=""><path d="M14.15 57.21L8.74 57.21L2.24 32.55L7.90 32.55L12.17 50.50L17.01 35.57L17.01 32.55L21.32 32.55L26.68 50.50L30.94 32.55L36.56 32.55L30.11 57.21L24.75 57.21L19.50 41.08L14.15 57.21ZM51.54 57.73L51.54 57.73Q44.88 57.73 41.79 54.40Q38.69 51.07 38.69 44.88L38.69 44.88Q38.69 38.69 41.81 35.36Q44.93 32.03 51.54 32.03L51.54 32.03Q58.19 32.03 61.31 35.36Q64.43 38.69 64.43 44.88L64.43 44.88Q64.43 51.07 61.34 54.40Q58.25 57.73 51.54 57.73ZM51.54 52.94L51.54 52.94Q55.44 52.94 57.08 51.04Q58.71 49.14 58.71 44.88L58.71 44.88Q58.71 40.62 57.08 38.74Q55.44 36.87 51.54 36.87L51.54 36.87Q47.69 36.87 46.05 38.74Q44.41 40.62 44.41 44.88L44.41 44.88Q44.41 49.14 46.05 51.04Q47.69 52.94 51.54 52.94ZM75.61 57.21L69.95 57.21L69.95 32.55L75.15 32.55L75.46 35.42Q77.23 34.27 79.67 33.33Q82.12 32.40 84.51 32.03L84.51 32.03L84.51 36.35Q83.05 36.61 81.36 37.11Q79.67 37.60 78.16 38.20Q76.65 38.80 75.61 39.42L75.61 39.42L75.61 57.21ZM94.28 57.21L88.62 57.21L88.62 22.15L94.28 22.15L94.28 42.44L104.63 32.55L111.13 32.55L101.10 42.49L111.71 57.21L105.73 57.21L97.56 45.50L94.28 48.62L94.28 57.21ZM120.29 57.21L115.50 57.21L115.50 52.78L120.29 52.78L120.29 57.21ZM132.98 57.21L127.36 57.21L127.36 36.98L123.77 36.98L123.77 32.55L127.36 32.55L127.36 29.54Q127.36 25.85 129.41 23.58Q131.47 21.32 135.52 21.32L135.52 21.32Q137.03 21.32 138.28 21.56Q139.53 21.79 140.57 22.21L140.57 22.21L140.57 26.26Q138.96 25.69 137.29 25.69L137.29 25.69Q134.85 25.69 133.91 26.57Q132.98 27.46 132.98 29.59L132.98 29.59L132.98 32.55L139.42 32.55L139.16 36.98L132.98 36.98L132.98 57.21ZM150.71 57.73L150.71 57.73Q147.69 57.73 146.13 56.24Q144.57 54.76 144.57 51.33L144.57 51.33L144.57 22.15L150.24 22.15L150.24 50.81Q150.24 52.26 150.76 52.78Q151.28 53.30 152.32 53.30L152.32 53.30Q153.57 53.30 154.71 52.99L154.71 52.99L154.71 57.10Q153.73 57.47 152.82 57.60Q151.91 57.73 150.71 57.73ZM170.94 57.73L170.94 57.73Q164.28 57.73 161.19 54.40Q158.09 51.07 158.09 44.88L158.09 44.88Q158.09 38.69 161.21 35.36Q164.33 32.03 170.94 32.03L170.94 32.03Q177.60 32.03 180.72 35.36Q183.84 38.69 183.84 44.88L183.84 44.88Q183.84 51.07 180.74 54.40Q177.65 57.73 170.94 57.73ZM170.94 52.94L170.94 52.94Q174.84 52.94 176.48 51.04Q178.12 49.14 178.12 44.88L178.12 44.88Q178.12 40.62 176.48 38.74Q174.84 36.87 170.94 36.87L170.94 36.87Q167.09 36.87 165.45 38.74Q163.81 40.62 163.81 44.88L163.81 44.88Q163.81 49.14 165.45 51.04Q167.09 52.94 170.94 52.94ZM197.88 57.21L192.47 57.21L185.97 32.55L191.64 32.55L195.90 50.50L200.74 35.57L200.74 32.55L205.05 32.55L210.41 50.50L214.68 32.55L220.29 32.55L213.84 57.21L208.49 57.21L203.23 41.08L197.88 57.21ZM235.94 57.73L235.94 57.73Q229.50 57.73 225.96 54.55Q222.42 51.38 222.42 44.83L222.42 44.83Q222.42 38.90 225.44 35.47Q228.46 32.03 234.59 32.03L234.59 32.03Q240.21 32.03 243.04 34.97Q245.88 37.91 245.88 42.54L245.88 42.54L245.88 47.12L227.83 47.12Q228.25 50.70 230.43 52.06Q232.62 53.41 237.09 53.41L237.09 53.41Q238.96 53.41 240.94 53.04Q242.91 52.68 244.37 52.11L244.37 52.11L244.37 56.27Q242.71 57.00 240.55 57.36Q238.39 57.73 235.94 57.73ZM227.83 43.42L227.83 43.42L240.89 43.42L240.89 41.71Q240.89 39.16 239.48 37.73Q238.08 36.30 234.75 36.30L234.75 36.30Q230.80 36.30 229.31 38.02Q227.83 39.73 227.83 43.42ZM257.06 57.21L251.39 57.21L251.39 32.55L256.59 32.55L256.90 35.42Q258.67 34.27 261.12 33.33Q263.56 32.40 265.95 32.03L265.95 32.03L265.95 36.35Q264.50 36.61 262.81 37.11Q261.12 37.60 259.61 38.20Q258.10 38.80 257.06 39.42L257.06 39.42L257.06 57.21ZM278.02 57.73L278.02 57.73Q275.47 57.73 273.15 57.36Q270.84 57.00 269.33 56.48L269.33 56.48L269.33 51.69Q271.10 52.37 273.23 52.73Q275.36 53.10 277.29 53.10L277.29 53.10Q280.20 53.10 281.45 52.58Q282.70 52.06 282.70 50.55L282.70 50.55Q282.70 49.46 281.94 48.83Q281.19 48.21 279.71 47.69Q278.22 47.17 275.94 46.44L275.94 46.44Q273.75 45.71 272.14 44.85Q270.53 44.00 269.64 42.64Q268.76 41.29 268.76 39.11L268.76 39.11Q268.76 35.73 271.20 33.88Q273.65 32.03 279.06 32.03L279.06 32.03Q281.19 32.03 283.11 32.35Q285.04 32.66 286.39 33.13L286.39 33.13L286.39 37.86Q284.93 37.29 283.19 36.98Q281.45 36.66 279.94 36.66L279.94 36.66Q277.24 36.66 275.86 37.13Q274.48 37.60 274.48 39.00L274.48 39.00Q274.48 40.46 275.91 41.06Q277.34 41.66 280.51 42.70L280.51 42.70Q283.43 43.58 285.14 44.57Q286.86 45.56 287.61 46.93Q288.37 48.31 288.37 50.50L288.37 50.50Q288.37 54.14 285.71 55.93Q283.06 57.73 278.02 57.73Z" transform="translate(0, 0)"></path></g></svg></svg>workFlowers</span>
+      <span class="hero__meta">TKT-864 &middot; internal</span>
+    </div>
+    <div class="hero__body">
+      <p class="eyebrow">Deploying work.flowers</p>
+      <h1>Five surfaces, three of them by hand.<br><em>Now one paste.</em></h1>
+      <p class="hero__lead">The site is Notion content published by Bullet.so, styled and scripted from this repo. Getting a change live used to mean touching five places and retyping a commit SHA into two of them. Here is what replaced that, and what checks it.</p>
+      <p class="hero__quip">Stop deploying across five surfaces from memory. Like an animal.</p>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tldr">
+    <h2>TL;DR</h2>
+    <p>Merge. Run <code class="inline">scripts/bullet-head.sh</code>. Paste one block into Bullet&rsquo;s head and publish. Run <code class="inline">scripts/verify-live.py</code> to prove it landed. The SHA is never typed by hand, and the verifier fails loudly when the live site does not match the repo.</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ================= THE LOOP ================= -->
+  <section id="loop">
+    <div class="sec-head">
+      <h2>The loop</h2>
+      <p>Five steps. Two are yours, three are the tooling&rsquo;s. Select one to see what actually happens.</p>
+    </div>
+
+    <div class="steps" role="tablist" aria-label="Deploy steps">
+      <button class="step" role="tab" id="tab-1" aria-controls="p-1" aria-selected="true">
+        <span class="step__n">1</span><span class="step__t">Merge the PR</span><span class="step__w">on GitHub</span>
+      </button>
+      <button class="step" role="tab" id="tab-2" aria-controls="p-2" aria-selected="false">
+        <span class="step__n">2</span><span class="step__t">Generate the paste</span><span class="step__w">bullet-head.sh</span>
+      </button>
+      <button class="step" role="tab" id="tab-3" aria-controls="p-3" aria-selected="false">
+        <span class="step__n">3</span><span class="step__t">Paste into Bullet</span><span class="step__w">Custom Code &rarr; Head</span>
+      </button>
+      <button class="step" role="tab" id="tab-4" aria-controls="p-4" aria-selected="false">
+        <span class="step__n">4</span><span class="step__t">Publish</span><span class="step__w">Bullet dashboard</span>
+      </button>
+      <button class="step" role="tab" id="tab-5" aria-controls="p-5" aria-selected="false">
+        <span class="step__n">5</span><span class="step__t">Verify</span><span class="step__w">verify-live.py</span>
+      </button>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-1" aria-labelledby="tab-1">
+      <span class="panel__who who--you">You</span>
+      <h3>Merge the PR</h3>
+      <p>Nothing about the live site changes yet. jsDelivr serves files by commit SHA, so the moment the merge commit exists on GitHub, the new <code class="inline">charm_style_sheet.css</code> and <code class="inline">bullet_bundle.js</code> are fetchable &mdash; they are simply not referenced by any page.</p>
+      <div class="note">Both scripts run <code class="inline">git fetch origin</code> themselves. Merging in the GitHub web UI and forgetting to fetch used to leave your local <code class="inline">origin/main</code> a commit behind &mdash; and both tools would then agree with each other on the wrong commit.</div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-2" aria-labelledby="tab-2" hidden>
+      <span class="panel__who who--auto">Tooling</span>
+      <h3>Generate the paste</h3>
+      <p><code class="inline">scripts/bullet-head.sh</code> resolves <code class="inline">origin/main</code> to a full 40-character SHA, fills it into both jsDelivr pins in <code class="inline">head.html</code>, strips the template&rsquo;s comments, and copies the result to your clipboard.</p>
+<pre><span class="c"># after a merge</span>
+scripts/bullet-head.sh
+<span class="c"># or against anything else</span>
+scripts/bullet-head.sh <span class="k">&lt;ref|sha&gt;</span></pre>
+      <p>It refuses to pin a commit that is not on <code class="inline">origin/main</code>, because jsDelivr reads from GitHub &mdash; a local-only SHA produces a pin that 404s for every visitor. It also re-emits the JSON-LD with every non-ASCII character escaped as <code class="inline">\uXXXX</code>, so the block is pure ASCII.</p>
+      <div class="note">That escaping is not fussiness. On 6 Sep 2026 two em dashes reached the live site as mojibake, having been decoded as the wrong charset somewhere between the clipboard and the Bullet form.</div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-3" aria-labelledby="tab-3" hidden>
+      <span class="panel__who who--you">You</span>
+      <h3>Paste into Bullet</h3>
+      <p><strong>Settings &rarr; Custom Code &rarr; Head</strong>, replacing everything already there. Paste straight from the clipboard &mdash; do not route it through another editor and do not copy it back out of Bullet to check it. That round trip is what corrupts it.</p>
+      <p>The block carries both jsDelivr pins, the font links, the chat-widget script, and the sitewide Organization JSON-LD. The JSON-LD stays literal markup rather than moving into the bundle, so it is server-rendered: injecting the site&rsquo;s primary entity from JavaScript would make Google&rsquo;s view of it depend on a render pass that is delayed and not guaranteed.</p>
+      <div class="note">Never hand-edit this in the dashboard. Edit <code class="inline">head.html</code>, merge, and re-run the generator &mdash; otherwise the repo stops being the source of truth and you are back to mirrors that drift.</div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-4" aria-labelledby="tab-4" hidden>
+      <span class="panel__who who--you">You</span>
+      <h3>Publish from Bullet</h3>
+      <p>Bullet serves a <strong>stored render</strong>, not a live one. Custom-code edits sit in the dashboard until a publish regenerates the pages and pushes them to the CDN. Skip this and the site is unchanged, however correct your paste was.</p>
+      <div class="note">Same mechanic as stranded pages: a page removed from the Notion tree keeps serving its last render forever, because a republish can only walk pages it can still reach. See <em>What Bullet will publish</em> in the README.</div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-5" aria-labelledby="tab-5" hidden>
+      <span class="panel__who who--auto">Tooling</span>
+      <h3>Verify</h3>
+      <p>Reading the live page tells you a pin is <em>present</em>. It cannot tell you the pin is <em>right</em> &mdash; a stale or mistyped SHA looks identical in the HTML. So the load-bearing check is a hash comparison: fetch what jsDelivr actually serves for each pin and compare it byte for byte against the repo at the expected commit.</p>
+<pre>scripts/verify-live.py
+<span class="c">→ 22 checks, non-zero exit with a checklist of what is wrong</span></pre>
+      <p>Around that it checks the head paste is complete, that the JSON-LD deep-equals the repo&rsquo;s, that no retired paste has come back, that the body ids the class shim keys off still exist, that the homepage still matches <code class="inline">jtbd_widget.html</code>, and that nobody has changed a Bullet theme setting.</p>
+    </div>
+  </section>
+
+  <!-- ================= SURFACES ================= -->
+  <section id="surfaces-section">
+    <div class="sec-head">
+      <h2>What a change has to travel through</h2>
+      <p>A change is only live when the surface carrying it moves. Toggle to compare.</p>
+    </div>
+
+    <div class="toggle" role="group" aria-label="Compare deploy surfaces">
+      <button id="btn-before" aria-pressed="false">Before</button>
+      <button id="btn-after" aria-pressed="true">After TKT-864</button>
+    </div>
+
+    <div class="surfaces" id="surface-list"></div>
+  </section>
+
+  <!-- ================= FAILURE EXPLORER ================= -->
+  <section id="failures">
+    <div class="sec-head">
+      <h2>What if I get it wrong?</h2>
+      <p>Every one of these has happened, or nearly did. Pick one to see which check catches it.</p>
+    </div>
+
+    <div class="fx">
+      <div class="fx__list" role="tablist" aria-label="Failure scenarios" id="fx-list"></div>
+      <div class="fx__out">
+        <div class="fx__term" id="fx-term" role="tabpanel" aria-live="polite"></div>
+        <div class="fx__why"><h4 id="fx-label">Why</h4><div id="fx-why"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PINS ================= -->
+  <section id="pins">
+    <div class="sec-head">
+      <h2>Why the SHA pins stay</h2>
+    </div>
+    <div class="grid2">
+      <div class="callout">
+        <h3>Pinning to <code class="inline">@main</code> looks like the fix</h3>
+        <p>It would remove the paste entirely. It is still wrong: jsDelivr serves a branch ref with <code class="inline">max-age=604800</code>, so returning visitors keep stale CSS for up to a week &mdash; and the purge API cannot clear a browser cache.</p>
+      </div>
+      <div class="callout">
+        <h3>A SHA is immutable</h3>
+        <p>Pinned paths serve <code class="inline">max-age=31536000, immutable</code>. Every visitor gets the right bytes the moment the pin moves, with no purge and no cache window. Typing the SHA was the problem &mdash; not pinning it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STILL MANUAL ================= -->
+  <section id="manual">
+    <div class="sec-head">
+      <h2>Still by hand</h2>
+      <p>Two surfaces cannot be deployed from this repo. Detecting drift is the achievable goal there, and the verifier does that.</p>
+    </div>
+    <div class="grid2">
+      <div class="callout">
+        <h3><code class="inline">jtbd_widget.html</code></h3>
+        <p>Pasted into a Notion custom-code block on the homepage. It looks like a repo file, but nothing in the repo moves it. The verifier fails when the live homepage stops carrying all 15 prompts.</p>
+      </div>
+      <div class="callout">
+        <h3>Bullet theme settings</h3>
+        <p>Not code at all &mdash; the Appearance picker emits its own tags. The verifier diffs the served <code class="inline">#bullet-theme</code> block against <code class="inline">bullet_theme_baseline.css</code> and flags any change.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><strong style="color:#fff">work.flowers deploy guide</strong> &mdash; generated for TKT-864, 6 Sep 2026.</p>
+    <p>Source of truth is the repo: <code style="color:#9CE1FC">README.md</code> for the loop, <code style="color:#9CE1FC">head.html</code> and <code style="color:#9CE1FC">bullet_bundle.js</code> for what deploys, <code style="color:#9CE1FC">scripts/</code> for the tooling. If this page and the README disagree, the README wins.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- stepper ---------------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.step'));
+
+  function select(tab) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { select(tab); });
+    tab.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var next = tabs[(i + d + tabs.length) % tabs.length];
+      next.focus();
+      select(next);
+    });
+  });
+
+  /* ---------------- surfaces ---------------- */
+  var BEFORE = [
+    ['1', 'jsDelivr pins &times;2', 'charm_style_sheet.css and filed_index.js, each pinned by SHA. Both retyped by hand, nothing checking they matched.', 'hand'],
+    ['2', 'Bullet global footer', 'footer.html &mdash; a 38&nbsp;KB paste. A partial paste looked fine until something silently stopped running.', 'hand'],
+    ['3', 'Bullet global head', 'head.html, pasted inline. Only identified as a separate surface during round 4.', 'hand'],
+    ['4', 'Page-level code &times;4', '/about-us/, /legal/msa/, /legal/dpa/ and /privacy/ each hand-added a body class. Not even counted at the time.', 'hand'],
+    ['5', 'Bullet theme settings', 'The Appearance font picker emits its own tags. Not code, and invisible to any repo-only check.', 'hand']
+  ];
+  var AFTER = [
+    ['1', 'Bullet global head', 'One generated block. Carries both pins and the Organization JSON-LD. The only manual code step.', 'hand'],
+    ['2', 'jtbd_widget.html', 'Still pasted into Notion &mdash; but the verifier fails when the live homepage stops matching the repo.', 'auto'],
+    ['3', 'Bullet theme settings', 'Still a setting &mdash; but diffed against a committed baseline on every run.', 'auto'],
+    ['&times;', 'Bullet global footer', 'Gone. Folded into bullet_bundle.js, which rides the SHA pin like the CSS does.', 'gone'],
+    ['&times;', 'Page-level code &times;4', 'Gone. The BODY_CLASS table in the bundle replaces all four pastes.', 'gone']
+  ];
+
+  var TAGS = { hand: ['tag--hand', 'by hand'], auto: ['tag--auto', 'drift detected'], gone: ['tag--gone', 'removed'] };
+  var host = document.getElementById('surface-list');
+
+  function render(rows) {
+    host.innerHTML = rows.map(function (r) {
+      var t = TAGS[r[3]];
+      return '<div class="surface' + (r[3] === 'gone' ? ' is-gone' : '') + '">' +
+        '<div class="surface__icon">' + r[0] + '</div>' +
+        '<div><div class="surface__name">' + r[1] + '</div><div class="surface__desc">' + r[2] + '</div></div>' +
+        '<span class="tag ' + t[0] + '">' + t[1] + '</span></div>';
+    }).join('');
+  }
+
+  var before = document.getElementById('btn-before');
+  var after = document.getElementById('btn-after');
+
+  function mode(isAfter) {
+    after.setAttribute('aria-pressed', isAfter ? 'true' : 'false');
+    before.setAttribute('aria-pressed', isAfter ? 'false' : 'true');
+    render(isAfter ? AFTER : BEFORE);
+  }
+
+  before.addEventListener('click', function () { mode(false); });
+  after.addEventListener('click', function () { mode(true); });
+  mode(true);
+
+  /* ---------------- failure explorer ---------------- */
+  var CASES = [
+    {
+      q: 'I pasted, but forgot to publish',
+      term: [['fail', '✗ jsDelivr pins are on the expected commit'],
+             ['dim', '    /: charm_style_sheet.css pinned to 40c90de0, expected 75a47ca6'],
+             ['pass', '✓ charm_style_sheet.css served bytes match the repo']],
+      why: ['Bullet serves a stored render. Your paste is saved in the dashboard but has not reached the CDN, so every page still carries the previous commit&rsquo;s pins.',
+            'The asset check still passes, because jsDelivr is serving the new files correctly &mdash; nothing is pointing at them yet.']
+    },
+    {
+      q: 'A line went missing from the paste',
+      term: [['fail', '✗ head paste is complete on /'],
+             ['dim', '    missing: rel=preconnect href=https://fonts.googleapis.com'],
+             ['pass', '✓ jsDelivr pins are on the expected commit']],
+      why: ['The check compares the set of tags Bullet rendered against the set the generator produced, so a dropped line is caught even when everything else is right.',
+            'This is a real one: the first cutover attempt lost the opening preconnect to a terminal selection that had scrolled.']
+    },
+    {
+      q: 'An em dash arrived as mojibake',
+      term: [['fail', '✗ Organization JSON-LD server-rendered on /'],
+             ['pass', '✓ all JSON-LD parses'],
+             ['pass', '✓ head paste is complete on /']],
+      why: ['The instructive failure. Mojibake is still <em>valid JSON</em> and the tags are all present, so both of those checks pass &mdash; only the deep-equal against the repo notices that a string differs.',
+            'Fixed at the source: the generator now escapes non-ASCII as <code class="inline">\\uXXXX</code>, so the paste is pure ASCII and cannot be re-encoded in transit.']
+    },
+    {
+      q: 'I edited the footer paste in Bullet',
+      term: [['fail', '✗ Bullet global footer is empty'],
+             ['dim', '    /: Bullet’s global footer still holds 10 script block(s)'],
+             ['dim', '    running both means duplicate GA4 and JSON-LD']],
+      why: ['Everything the footer used to hold now rides <code class="inline">bullet_bundle.js</code>. Leaving code in the footer means two copies of GA4 firing and duplicate JSON-LD on every page.',
+            'The fix is always the same: put the change in the repo and let it ride the pin.']
+    },
+    {
+      q: 'A Notion page slug got renamed',
+      term: [['fail', '✗ body ids match the class shim'],
+             ['dim', '    /privacy/: expected id=‘page-privacy’, got &lt;body id=‘page-privacy-policy’&gt;'],
+             ['dim', '    BODY_CLASS keys off these']],
+      why: ['Bullet derives <code class="inline">&lt;body id&gt;</code> from the page slug, and the bundle&rsquo;s <code class="inline">BODY_CLASS</code> table maps those ids to the classes the stylesheet is written against.',
+            'Rename a slug and that page silently loses its styling. This check turns a silent regression into a loud one.']
+    },
+    {
+      q: 'I changed the widget but not Notion',
+      term: [['fail', '✗ jtbd widget matches the repo'],
+             ['dim', '    3/15 prompts missing from the live homepage'],
+             ['dim', '    this block is pasted into Notion, not deployed from here']],
+      why: ['<code class="inline">jtbd_widget.html</code> looks like a repo file but nothing in the repo deploys it &mdash; it lives in a Notion custom-code block.',
+            'This is the surface that made round 4 ship twice. It cannot be automated from here, so the verifier detects the drift instead.']
+    },
+    {
+      q: 'Someone changed a theme setting',
+      term: [['fail', '✗ Bullet theme settings unchanged'],
+             ['dim', '    the theme is a Bullet setting, not code'],
+             ['dim', '    someone changed it in the dashboard']],
+      why: ['Bullet&rsquo;s Appearance panel emits its own CSS block. A repo-only check cannot see it, which is how the font consolidation stalled halfway through round 4.',
+            'The served <code class="inline">#bullet-theme</code> block is diffed against <code class="inline">bullet_theme_baseline.css</code>. If the change was intended, update the baseline and commit it.']
+    },
+    {
+      q: 'I merged on GitHub and skipped git fetch',
+      term: [['pass', '✓ jsDelivr pins are on the expected commit'],
+             ['pass', '✓ all checks passed'],
+             ['dim', '    … and both tools were wrong']],
+      why: ['This one used to pass while being wrong. A stale local <code class="inline">origin/main</code> made the generator pin the previous commit and the verifier compare against that same previous commit &mdash; two tools agreeing with each other, and the change you merged never went live.',
+            'Both scripts now fetch <code class="inline">origin</code> themselves, so a stale ref cannot produce a confidently wrong answer.']
+    }
+  ];
+
+  var list = document.getElementById('fx-list');
+  var term = document.getElementById('fx-term');
+  var why = document.getElementById('fx-why');
+
+  CASES.forEach(function (c, i) {
+    var b = document.createElement('button');
+    b.className = 'fx__btn';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    b.innerHTML = c.q;
+    b.addEventListener('click', function () { show(i); });
+    list.appendChild(b);
+  });
+
+  function show(i) {
+    var c = CASES[i];
+    Array.prototype.forEach.call(list.children, function (b, j) {
+      b.setAttribute('aria-selected', i === j ? 'true' : 'false');
+    });
+    term.innerHTML = '<div class="dim">$ scripts/verify-live.py</div>' +
+      c.term.map(function (l) { return '<div class="' + l[0] + '">' + l[1] + '</div>'; }).join('');
+    why.innerHTML = c.why.map(function (p) { return '<p>' + p + '</p>'; }).join('');
+  }
+
+  show(0);
+})();
+</script>
+
+</body>
+</html>
