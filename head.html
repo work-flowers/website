@@ -14,6 +14,16 @@
      hand-edited in the Bullet dashboard: edit this file, merge, and
      re-run the generator.
 
+     Write real characters here -- the em dashes below are real em
+     dashes. The generator escapes every non-ASCII character in the
+     JSON-LD as \uXXXX on the way out, so what you paste is pure
+     ASCII. That is deliberate: on 6 Sep 2026 these two em dashes
+     reached the live site as CP1252 mojibake, decoded as the wrong
+     charset somewhere between the clipboard and the Bullet form.
+     Bullet stores UTF-8 correctly -- the old footer paste carried
+     the same character for months -- but the journey does not, and
+     a \u escape cannot be mangled that way.
+
      WHY SHA PINS AND NOT @main. jsDelivr serves a branch ref with
      cache-control: max-age=604800, s-maxage=43200, against
      max-age=31536000, immutable for a SHA. A moving ref means
