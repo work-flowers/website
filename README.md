@@ -57,12 +57,21 @@ what `bullet-head.sh` removes.
 
 Reading the live page tells you a pin is *present*. It cannot tell you the pin is
 *right* — a stale or mistyped SHA looks identical in the HTML. So the load-bearing check
-is the hash comparison: `verify-live.py` fetches what jsDelivr serves for each pin and
-compares it byte for byte against the repo at the expected commit. Around that it checks
+is the hash comparison: `verify-live.py` fetches what jsDelivr serves **for the pin the
+page actually carries** and compares it byte for byte against the repo at that commit.
+Following the live pin rather than the expected one is the whole point; fetching the
+commit you hoped for compares the repo against itself and passes while the site serves
+something else. Around that it checks
 the head paste is complete, that the JSON-LD parses, that no leftover paste is running a
 second copy of anything, that the body ids the class shim keys off still exist, that the
 homepage still matches `jtbd_widget.html`, and that nobody has changed a Bullet theme
 setting. It exits non-zero with a checklist.
+
+A pin behind `origin/main` is not automatically a problem. If every file a deploy
+carries — the stylesheet, the bundle and `head.html` — is byte-identical at both commits,
+visitors already have what `main` says they should, so that is a **warning** and the run
+still exits zero. Re-paste only to make the line green. If any of the three did change,
+it is a hard failure naming which.
 
 Both scripts default to `origin/main`; pass a ref or SHA to work against something else.
 

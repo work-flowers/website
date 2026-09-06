@@ -196,33 +196,73 @@ def main():
         rep.render()
         sys.exit(1)
 
-    # ---- 1. pins ----------------------------------------------------------
-    bad, extra = [], []
+    # ---- 1. what the live site pins --------------------------------------
+    # Two separate questions, kept separate because a stale pin used to fail
+    # every SHA-bearing check at once and report one cause as seven problems:
+    #   (a) is the pin on the commit we expect?
+    #   (b) if not, does the difference actually change what visitors get?
+    live_shas, missing, extra = set(), [], []
     for path, html in pages.items():
         pins = head_pins(html)
         if not pins:
-            bad.append(f"{path}: no jsDelivr pin at all")
+            missing.append(f"{path}: no jsDelivr pin at all")
             continue
         for pin_sha, pin_file in pins:
-            if not sha.startswith(pin_sha):
-                bad.append(f"{path}: {pin_file} pinned to {pin_sha[:8]}, expected {sha[:8]}")
+            live_shas.add(pin_sha)
             if pin_file not in PINNED:
                 extra.append(f"{path}: unexpected pin {pin_file}@{pin_sha[:8]}")
-    if bad:
-        rep.fail("jsDelivr pins are on the expected commit", "\n".join(bad))
-    else:
-        rep.ok("jsDelivr pins are on the expected commit", f"{sha[:8]} on all {len(pages)} pages")
+
     if extra:
         rep.fail("no leftover pins", "\n".join(extra) +
                  "\nfiled_index.js rides bullet_bundle.js now — clear the /about-us/ page paste.")
 
-    # ---- 2. served bytes match the repo ----------------------------------
+    live_sha = None
+    if missing:
+        rep.fail("every page carries the jsDelivr pins", "\n".join(missing))
+    elif len(live_shas) > 1:
+        rep.fail("the whole site is on one commit",
+                 "pages disagree: " + ", ".join(sorted(x[:8] for x in live_shas)) +
+                 "\na half-applied paste, or a page that left the publish walk.")
+    else:
+        live_sha = live_shas.pop()
+
+    if live_sha == sha:
+        rep.ok("jsDelivr pins are on the expected commit", f"{sha[:8]} on all {len(pages)} pages")
+    elif live_sha:
+        # Behind origin/main is not automatically wrong. A commit that touched
+        # only docs or tooling leaves the deployed bytes identical, and there is
+        # nothing to re-paste. Decide by content, not by SHA.
+        carried = PINNED + ["head.html"]
+        if any(git_show(live_sha, f) is None for f in carried):
+            rep.fail("jsDelivr pins are on the expected commit",
+                     f"pinned to {live_sha[:8]}, expected {sha[:8]}\n"
+                     f"{live_sha[:8]} is not in this repo — force-pushed away, or never fetched.")
+        else:
+            drifted = [f for f in carried if git_show(live_sha, f) != git_show(sha, f)]
+            if drifted:
+                rep.fail("jsDelivr pins are on the expected commit",
+                         f"pinned to {live_sha[:8]}, expected {sha[:8]}\n"
+                         "changed since the pinned commit: " + ", ".join(drifted) +
+                         "\nre-paste: scripts/bullet-head.sh, then publish.")
+            else:
+                rep.warn("jsDelivr pins are on the expected commit",
+                         f"pinned to {live_sha[:8]}, expected {sha[:8]} — behind, but harmless.\n"
+                         "every file a deploy carries is byte-identical at both commits,\n"
+                         "so visitors already have what origin/main says they should.\n"
+                         "re-paste only to make this line green.")
+
+    # ---- 2. the bytes visitors actually load ------------------------------
+    # Follow the pin the PAGE carries, not the commit we hoped for. Fetching
+    # the expected SHA would compare the repo against itself and pass while the
+    # site served something else entirely — which is the failure this check
+    # exists to catch.
+    audit_sha = live_sha or sha
     for f in PINNED:
-        want = git_show(sha, f)
+        want = git_show(audit_sha, f)
         if want is None:
-            rep.fail(f"{f} exists at {sha[:8]}", "not in the commit being verified")
+            rep.fail(f"{f} exists at {audit_sha[:8]}", "not in the commit the site pins")
             continue
-        url = CDN.format(sha=sha, path=f)
+        url = CDN.format(sha=audit_sha, path=f)
         try:
             got = fetch(url, binary=True)
         except Missing as e:
@@ -231,15 +271,17 @@ def main():
         except Exception as e:
             rep.fail(f"{f} is served", f"{url}\n{e}")
             continue
+        note = "" if audit_sha == sha else f"  (at the pinned {audit_sha[:8]})"
         if got == want:
-            rep.ok(f"{f} served bytes match the repo", f"sha256:{sha256(want)}  {len(want):,} bytes")
+            rep.ok(f"{f} served bytes match the repo",
+                   f"sha256:{sha256(want)}  {len(want):,} bytes{note}")
         else:
             rep.fail(f"{f} served bytes match the repo",
                      f"repo sha256:{sha256(want)} ({len(want):,} B)\n"
-                     f"cdn  sha256:{sha256(got)} ({len(got):,} B)")
+                     f"cdn  sha256:{sha256(got)} ({len(got):,} B){note}")
 
     # ---- 3. served CSS carries no @import --------------------------------
-    css = git_show(sha, "charm_style_sheet.css")
+    css = git_show(audit_sha, "charm_style_sheet.css")
     if css and re.search(rb"^\s*@import", css, re.M):
         rep.fail("no @import in the stylesheet",
                  "an @import cannot start until the stylesheet has downloaded (audit M-01)")
@@ -247,7 +289,7 @@ def main():
         rep.ok("no @import in the stylesheet")
 
     # ---- 4. the head paste matches what the generator produces -----------
-    gen = subprocess.run([str(REPO / "scripts" / "bullet-head.sh"), sha],
+    gen = subprocess.run([str(REPO / "scripts" / "bullet-head.sh"), audit_sha],
                          capture_output=True, text=True, cwd=REPO)
     if gen.returncode != 0:
         rep.fail("head paste matches scripts/bullet-head.sh",
@@ -360,11 +402,16 @@ def main():
 
     rep.render()
     n_fail = sum(1 for s, _, _ in rep.rows if s == "fail")
+    n_warn = sum(1 for s, _, _ in rep.rows if s == "warn")
     print()
     if rep.failed:
         print(f"{RED}{n_fail} check(s) failed{RESET} — the live site does not match {sha[:8]}.\n")
         sys.exit(1)
-    print(f"{GREEN}all checks passed{RESET} — live site matches {sha[:8]}.\n")
+    # A warning is a thing worth knowing that is not worth blocking on, so it
+    # does not change the exit code — scripts and habits can trust green.
+    tail = f" ({n_warn} warning{'s' if n_warn != 1 else ''})" if n_warn else ""
+    served = live_sha[:8] if live_sha else sha[:8]
+    print(f"{GREEN}all checks passed{RESET}{tail} — live site is serving {served}.\n")
 
 
 if __name__ == "__main__":
