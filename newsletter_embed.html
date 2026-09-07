@@ -95,6 +95,18 @@
   .wf-newsletter-form input[type="submit"]:hover {
     background: #C36810 !important;          /* --wf-ochre-hover */
   }
+  /* Honeypot. Visually and programmatically hidden from people; bots that
+     fill every field they parse trip it and the submit handler drops them. */
+  .wf-newsletter-form .wf-nl-hp {
+    position: absolute !important;
+    left: -9999px !important;
+    top: auto !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
   @media (max-width: 600px) {
     .wf-newsletter-form input[type="submit"] {
       flex: 1 1 100% !important;
@@ -109,11 +121,60 @@
     action="https://buttondown.com/api/emails/embed-subscribe/workflowers"
     method="post"
     target="popupwindow"
-    onsubmit="window.open('https://buttondown.com/workflowers', 'popupwindow')"
     class="wf-newsletter-form embeddable-buttondown-form"
+    id="wf-newsletter-form"
   >
     <label for="wf-bd-email">Enter your email</label>
     <input type="email" name="email" id="wf-bd-email" placeholder="you@yourcompany.com" required />
+
+    <!-- Tags every signup from this embed, so bot batches can be found and
+         bulk-deleted in Buttondown instead of picked out of the list by hand. -->
+    <input type="hidden" name="tag" value="blog-embed" />
+    <input type="hidden" name="embed" value="1" />
+
+    <!-- Decoy. Never shown, never filled by a person. -->
+    <div class="wf-nl-hp" aria-hidden="true">
+      <label for="wf-bd-website">Website</label>
+      <input type="text" name="website" id="wf-bd-website" tabindex="-1" autocomplete="off" />
+    </div>
+
     <input type="submit" value="Subscribe" />
   </form>
 </div>
+
+<script>
+  /* Client-side gate on the signup form.
+     Two cheap checks that cost a person nothing and stop a crawler that
+     parses and submits the form it finds on the page:
+       1. the honeypot above came back filled, or
+       2. the form was submitted before a person could plausibly have read it.
+
+     Both are advisory only. The form posts cross-origin straight to
+     Buttondown's public embed-subscribe endpoint, so a bot that skips this
+     page and posts to that URL directly never runs this code. Double opt-in
+     and Buttondown's own blocklist are what actually hold the line. */
+  (function () {
+    var form = document.getElementById('wf-newsletter-form');
+    if (!form) return;
+
+    /* Measured from when this script runs, not from first focus. Someone who
+       pastes an address and hits enter can beat a focus-based timer, and
+       silently dropping a real signup is worse than letting spam through.
+       Nobody reaches the embed and submits within 2s of load; a crawler
+       that fetches and posts in one go does. */
+    var MIN_DWELL_MS = 2000;
+    var loadedAt = Date.now();
+
+    form.addEventListener('submit', function (event) {
+      var honeypot = form.querySelector('[name="website"]');
+      var tooFast = Date.now() - loadedAt < MIN_DWELL_MS;
+
+      if ((honeypot && honeypot.value !== '') || tooFast) {
+        event.preventDefault();
+        return;
+      }
+
+      window.open('https://buttondown.com/workflowers', 'popupwindow');
+    });
+  })();
+</script>
