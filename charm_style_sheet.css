@@ -356,6 +356,15 @@ body {
   max-width: 640px;
   color: rgba(255,255,255,0.88) !important;
 }
+/* Hero imagery aligns to the copy, not to the band's centre. Bullet makes
+   figure.notion-asset-wrapper a COLUMN flex container and puts
+   align-self:center on the inner div as an inline style — so the cross
+   axis is horizontal and the image centres itself in the full band width.
+   Beating an inline style needs !important. Scoped to the hero: a centred
+   figure is right elsewhere (e.g. the homepage's partner badge row). */
+.notion-page-content-inner > .notion-blue_background_co:first-of-type figure.notion-asset-wrapper-image > div {
+  align-self: flex-start !important;
+}
 .notion-page-content-inner > .notion-blue_background_co:first-of-type .notion-text strong {
   color: #fff !important;
   font-weight: 700;
@@ -521,6 +530,53 @@ body {
 .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-default-callout {
   background: var(--wf-paper);
   border: 1px solid var(--wf-rule);
+}
+
+/* ...and make that row a real 2x2. Notion columns are two independent
+   vertical stacks, so the second card in each column starts wherever the
+   first one ends and the middle seam never lines up — the one thing no
+   amount of card-level CSS can fix. `display: contents` promotes the
+   callouts to grid items; `grid-auto-flow: column` keeps them in their
+   Notion pairing (left column's cards stay the left column) instead of
+   reflowing row-major and scrambling the reading order. Equal cells, one
+   row height per row.
+
+   The media query is load-bearing, not housekeeping: `display: grid`
+   overrides whatever stacking Bullet does at narrow widths, and without
+   it the row stays two columns of ~185px cards on a phone. */
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(2, 1fr);
+  grid-auto-flow: column;
+  gap: 28px 32px;
+  align-items: stretch;
+}
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) > .notion-column {
+  display: contents;
+}
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) > .notion-spacer {
+  display: none;
+}
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) > .notion-column > .notion-callout {
+  margin: 0 !important;
+  height: 100%;
+}
+/* One step down from the §4 section scale. At --heading3 (34.5px at
+   1440) all four card titles wrap to two lines inside a ~410px text
+   column, which inflates every card and widens the height spread the
+   grid then has to absorb. */
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) .notion-h3 {
+  font-size: 1.375rem;
+  margin-top: 0;
+}
+
+@media screen and (max-width: 800px) {
+  .notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-flow: row;
+  }
 }
 /* Inner 2-cols (e.g. inside the brown band) — no extra horizontal
    padding; the band's 100px already insets content to match the
