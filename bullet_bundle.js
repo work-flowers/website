@@ -387,6 +387,54 @@ if (window.top === window.self && wfIsSite && !wfIsEditor) {
 })();
 
 /* =======================================================================
+   Unlaunched pages — noindex
+   =======================================================================
+   A page has to be published in Bullet before anyone can see how it
+   actually renders: Bullet serves a stored render, and the local preview
+   harness can only approximate its markup. That review copy is live and,
+   unlike the blog archives above, nothing else would keep it out of the
+   index — Bullet's robots.txt ships no Disallow and its generated
+   sitemap.xml lists every published page.
+
+   So: publish, review, launch. This list covers the middle step.
+
+   ONE ENTRY, ONE LIFECYCLE. Add a path when you publish for review;
+   delete it when the page launches. A path that has been in here for
+   weeks is a page somebody forgot to launch, which is the point of
+   keeping the list short and dated.
+
+   HOW STRONG THIS IS. Not very, and deliberately not oversold. The tag
+   is injected by JavaScript, so Google only honours it once it renders
+   the page — the delayed second pass this file warns about twice above.
+   Googlebot does render almost everything now, but the first crawl can
+   land before the render, so treat this as "very likely not indexed"
+   rather than "cannot be indexed". If a page must not be indexed, put a
+   server-rendered <meta name="robots" content="noindex"> in that page's
+   Bullet page-level custom code and delete it at launch; this list is
+   then the safety net for the paste nobody remembers to add.
+
+   nofollow, unlike the archives' "noindex, follow": an unannounced draft
+   should not be passing link equity anywhere yet, and nothing depends on
+   it for discovery.
+   ======================================================================= */
+(function () {
+  var UNLAUNCHED = [
+    '/zapier-consulting-singapore'   // published for review 9 Sep 2026
+  ];
+
+  var path = window.location.pathname.replace(/\/+$/, '');
+  if (UNLAUNCHED.indexOf(path) === -1) return;
+
+  var tag = document.querySelector('meta[name="robots"]');
+  if (!tag) {
+    tag = document.createElement('meta');
+    tag.setAttribute('name', 'robots');
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute('content', 'noindex, nofollow');
+}());
+
+/* =======================================================================
    Customer review markup (JSON-LD) — SEO audit H-04
 
    GENERATED FILE. Do not hand-edit: change customer-reviews.json

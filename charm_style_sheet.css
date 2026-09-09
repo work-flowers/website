@@ -356,6 +356,15 @@ body {
   max-width: 640px;
   color: rgba(255,255,255,0.88) !important;
 }
+/* Hero imagery aligns to the copy, not to the band's centre. Bullet makes
+   figure.notion-asset-wrapper a COLUMN flex container and puts
+   align-self:center on the inner div as an inline style — so the cross
+   axis is horizontal and the image centres itself in the full band width.
+   Beating an inline style needs !important. Scoped to the hero: a centred
+   figure is right elsewhere (e.g. the homepage's partner badge row). */
+.notion-page-content-inner > .notion-blue_background_co:first-of-type figure.notion-asset-wrapper-image > div {
+  align-self: flex-start !important;
+}
 .notion-page-content-inner > .notion-blue_background_co:first-of-type .notion-text strong {
   color: #fff !important;
   font-weight: 700;
@@ -389,8 +398,31 @@ body {
    8. EYEBROW LABELS
    In Notion: any line beginning with "● " becomes an eyebrow via
    first-letter trick. We also style any inline-code at start as eyebrow.
+
+   WHY THE SELECTOR IS TWO-PRONGED. The test we want is "this paragraph
+   is nothing but one inline-code span". `> code:first-child:last-child`
+   expresses that, and it never matched: Bullet renders every text block
+   as
+
+       <div class="notion-text"><code>…</code>
+         <div class="notion-text-children"></div></div>
+
+   so the <code> is always followed by that empty children div and is
+   never :last-child. Every eyebrow on the site was therefore falling
+   through to Notion's default red inline-code pill. The second prong
+   accepts the real markup — one <code> plus the trailing children div —
+   and the first is kept for any block Bullet emits without it.
+
+   Repeated verbatim wherever this shape is tested (§9 pillar numbers,
+   §10 process strip, §16 blog opt-out, §19 About Us), because CSS has
+   no way to name a selector fragment. Change them together.
+
+   Still inherited from the original: a paragraph of prose that happens
+   to be entirely one inline-code span is indistinguishable from an
+   eyebrow, because text nodes are invisible to selectors. That is what
+   the §16 blog opt-out exists for.
    ================================================================ */
-.notion-text:has(> code:first-child:last-child) {
+.notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children) {
   font-family: var(--wf-mono);
   font-size: 13px;
   font-weight: 700;
@@ -399,7 +431,7 @@ body {
   color: var(--wf-ochre);
   margin-bottom: 1.5em;
 }
-.notion-text:has(> code:first-child:last-child) > code {
+.notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children) > code {
   background: transparent !important;
   padding: 0 !important;
   font-family: inherit !important;
@@ -407,12 +439,12 @@ body {
   color: inherit !important;
 }
 /* Eyebrow on dark blocks → peach */
-.notion-blue_background_co .notion-text:has(> code:first-child:last-child),
-.notion-gray_background_co .notion-text:has(> code:first-child:last-child) {
+.notion-blue_background_co .notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children),
+.notion-gray_background_co .notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children) {
   color: var(--wf-peach) !important;
 }
-.notion-blue_background_co .notion-text:has(> code:first-child:last-child) > code,
-.notion-gray_background_co .notion-text:has(> code:first-child:last-child) > code {
+.notion-blue_background_co .notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children) > code,
+.notion-gray_background_co .notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children) > code {
   color: var(--wf-peach) !important;
 }
 
@@ -465,6 +497,86 @@ body {
   align-items: center;
   gap: 64px;
   padding: 64px 100px !important;
+}
+
+/* Card-style bare 2-cols → top-align. The centring above is for a row of
+   one paragraph beside a widget, where the two sides read as one thought.
+   When each column is instead a stack of heading+body (or of callout
+   cards), centring offsets the two columns by half their height
+   difference and the first headings no longer line up. Detected by the
+   column leading with a heading or a callout rather than a paragraph. */
+.notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)):has(> .notion-column > .notion-h:first-child, > .notion-column > .notion-callout:first-child) {
+  align-items: start;
+}
+
+/* Callout-as-card inside a column. §13's band rules assume a coloured
+   callout is a full-bleed page section: 96px/100px padding, align-self
+   stretch. Nested in a ~480px column that leaves barely half the width
+   for text and makes the card twice its siblings' height, while an
+   uncoloured callout beside it gets no charm rule at all and falls
+   through to Bullet's default 17px/12.75px — a 7.8x difference in
+   horizontal padding across one row. Put every card in the row on one
+   scale. Scoped to the direct child chain so the page-level bands and
+   the §10 process strip are untouched. */
+.notion-page-content-inner > .bullet-2-column > .notion-column > .notion-callout {
+  padding: 28px 32px !important;
+  margin: 0 0 24px !important;
+  align-self: auto;
+  box-shadow: var(--wf-shadow-sm);
+}
+.notion-page-content-inner > .bullet-2-column > .notion-column > .notion-callout:last-child {
+  margin-bottom: 0 !important;
+}
+.notion-page-content-inner > .bullet-2-column > .notion-column > .notion-default-callout {
+  background: var(--wf-paper);
+  border: 1px solid var(--wf-rule);
+}
+
+/* ...and make that row a real 2x2. Notion columns are two independent
+   vertical stacks, so the second card in each column starts wherever the
+   first one ends and the middle seam never lines up — the one thing no
+   amount of card-level CSS can fix. `display: contents` promotes the
+   callouts to grid items; `grid-auto-flow: column` keeps them in their
+   Notion pairing (left column's cards stay the left column) instead of
+   reflowing row-major and scrambling the reading order. Equal cells, one
+   row height per row.
+
+   The media query is load-bearing, not housekeeping: `display: grid`
+   overrides whatever stacking Bullet does at narrow widths, and without
+   it the row stays two columns of ~185px cards on a phone. */
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(2, 1fr);
+  grid-auto-flow: column;
+  gap: 28px 32px;
+  align-items: stretch;
+}
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) > .notion-column {
+  display: contents;
+}
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) > .notion-spacer {
+  display: none;
+}
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) > .notion-column > .notion-callout {
+  margin: 0 !important;
+  height: 100%;
+}
+/* One step down from the §4 section scale. At --heading3 (34.5px at
+   1440) all four card titles wrap to two lines inside a ~410px text
+   column, which inflates every card and widens the height spread the
+   grid then has to absorb. */
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) .notion-h3 {
+  font-size: 1.375rem;
+  margin-top: 0;
+}
+
+@media screen and (max-width: 800px) {
+  .notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-flow: row;
+  }
 }
 /* Inner 2-cols (e.g. inside the brown band) — no extra horizontal
    padding; the band's 100px already insets content to match the
@@ -520,8 +632,8 @@ body {
 }
 
 /* Numbered eyebrow inside pillars: "01 / Automation" */
-.notion-page-content-inner > .bullet-2-column .notion-text:first-child:has(> code:only-child),
-.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-text:first-child:has(> code:only-child) {
+.notion-page-content-inner > .bullet-2-column .notion-text:first-child:has(> code:only-child, > code:first-child:nth-last-child(2) + .notion-text-children),
+.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-text:first-child:has(> code:only-child, > code:first-child:nth-last-child(2) + .notion-text-children) {
   font-family: var(--wf-mono);
   font-size: 13px;
   letter-spacing: 0.04em;
@@ -529,8 +641,8 @@ body {
   color: var(--wf-fg-subtle);
   margin-bottom: 12px;
 }
-.notion-page-content-inner > .bullet-2-column .notion-text:first-child:has(> code:only-child) > code,
-.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-text:first-child:has(> code:only-child) > code {
+.notion-page-content-inner > .bullet-2-column .notion-text:first-child:has(> code:only-child, > code:first-child:nth-last-child(2) + .notion-text-children) > code,
+.notion-page-content-inner > .notion-brown_background_co .bullet-2-column .notion-text:first-child:has(> code:only-child, > code:first-child:nth-last-child(2) + .notion-text-children) > code {
   background: transparent;
   color: var(--wf-fg-subtle);
   padding: 0;
@@ -561,7 +673,7 @@ body {
   border-top: 1.5px dashed rgba(255,255,255,0.4);
   z-index: 0;
 }
-.notion-blue_background_co .bullet-4-column .notion-text:first-child:has(> code:only-child) {
+.notion-blue_background_co .bullet-4-column .notion-text:first-child:has(> code:only-child, > code:first-child:nth-last-child(2) + .notion-text-children) {
   background: var(--wf-indigo);  /* match the band so it "erases" the line behind text */
   display: inline-block;
   padding: 0 12px;
@@ -1010,7 +1122,7 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
    invisible to selectors), so on blog pages we keep all paragraphs
    rendering as normal blog body type and leave the inline code chip
    styling above to handle the code element. Use the eyebrow elsewhere. */
-.blog_main .notion-text:has(> code:first-child:last-child) {
+.blog_main .notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children) {
   font-family: inherit;
   font-size: 18px;
   font-weight: inherit;
@@ -1018,7 +1130,7 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   text-transform: none;
   color: var(--wf-ink);
 }
-.blog_main .notion-text:has(> code:first-child:last-child) > code {
+.blog_main .notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children) > code {
   background: var(--wf-paper-tint) !important;
   color: var(--wf-indigo) !important;
   font-family: var(--wf-mono) !important;
@@ -1568,7 +1680,7 @@ body.about-us .notion-page-content-inner:not(:has(> .notion-blue_background_co:f
    contains an inline-code eyebrow (e.g. WHO WE WORK WITH). Identifying
    by content rather than `+` adjacency to the H1 avoids Bullet's
    sibling wrapping. Overrides §9 pillar treatment. */
-body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)):has(> .notion-column .notion-text > code:first-child:last-child) {
+body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)):has(> .notion-column .notion-text > code:first-child:last-child, > .notion-column .notion-text > code:first-child:nth-last-child(2) + .notion-text-children) {
   margin-top: 64px;
   padding: 0 100px !important;
   width: auto !important;
@@ -1579,7 +1691,7 @@ body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.noti
 }
 /* Sidebar pull-out: any column inside that 2-col whose first paragraph
    is a single inline-code eyebrow gets the ochre left border. */
-body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)) > .notion-column:has(> .notion-text:first-child > code:first-child:last-child) {
+body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.notion-asset-wrapper-image)) > .notion-column:has(> .notion-text:first-child > code:first-child:last-child, > .notion-text:first-child > code:first-child:nth-last-child(2) + .notion-text-children) {
   border-left: 2px solid var(--wf-ochre);
   padding-left: 32px;
 }
@@ -1592,7 +1704,7 @@ body.about-us .notion-page-content-inner > .bullet-2-column:not(:has(figure.noti
 body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) {
   background: var(--wf-paper-tint) !important;
 }
-body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type):has(.bullet-2-column .notion-text:first-child > code:only-child) .bullet-2-column {
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type):has(.bullet-2-column .notion-text:first-child > code:only-child, .bullet-2-column .notion-text:first-child > code:first-child:nth-last-child(2) + .notion-text-children) .bullet-2-column {
   align-items: start;
   column-gap: 80px;
   row-gap: 48px;
@@ -1604,7 +1716,7 @@ body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:firs
   margin-bottom: 48px;
 }
 /* Numbered eyebrow → 64px outline ring (mirrors React mock .num-marker) */
-body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column .notion-text:first-child:has(> code:only-child) {
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column .notion-text:first-child:has(> code:only-child, > code:first-child:nth-last-child(2) + .notion-text-children) {
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
@@ -1613,7 +1725,7 @@ body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:firs
   color: inherit;
   margin-bottom: 16px;
 }
-body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column .notion-text:first-child:has(> code:only-child) > code {
+body.about-us .notion-page-content-inner > .notion-brown_background_co:not(:first-of-type) .bullet-2-column .notion-text:first-child:has(> code:only-child, > code:first-child:nth-last-child(2) + .notion-text-children) > code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1721,20 +1833,20 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
   line-height: 1.04;
   color: var(--wf-ink);
 }
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child)) {
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children)) {
   font-size: 1.1875rem;
   line-height: 1.6;
   max-width: 680px;
 }
 /* Team-row eyebrow ("FOUNDER", "NOTION CONSULTANT") → violet (overrides
    §8's default ochre eyebrow on About Us only, for palette variety). */
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:has(> code:first-child:last-child),
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:has(> code:first-child:last-child) > code {
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children),
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children) > code {
   color: var(--wf-violet) !important;
 }
 
 /* Inline-code chips inside team bios — base shape (palette rotates below) */
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child)) code {
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children)) code {
   display: inline-block;
   font-family: var(--wf-mono);
   font-size: 14px;
@@ -1746,15 +1858,15 @@ body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-as
 }
 /* Chip palette rotation — indigo/white → npb/indigo → paper-tint/azure
    (no ochre/peach; ochre is reserved for the Chat With CTA buttons). */
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child)) code:nth-of-type(3n+1) {
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children)) code:nth-of-type(3n+1) {
   background: var(--wf-indigo);
   color: #fff;
 }
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child)) code:nth-of-type(3n+2) {
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children)) code:nth-of-type(3n+2) {
   background: var(--wf-npb);
   color: var(--wf-indigo);
 }
-body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child)) code:nth-of-type(3n+3) {
+body.about-us .notion-page-content-inner > .bullet-2-column:has(figure.notion-asset-wrapper-image) .notion-text:not(:has(> code:first-child:last-child, > code:first-child:nth-last-child(2) + .notion-text-children)) code:nth-of-type(3n+3) {
   background: var(--wf-paper-tint);
   color: var(--wf-azure);
   box-shadow: inset 0 0 0 1px rgba(20,121,225,0.18);
