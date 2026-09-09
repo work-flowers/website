@@ -80,6 +80,7 @@
   --heading1: clamp(4.5rem, 8vw, 8rem);    /* hero display ≈ 72–128px */
   --heading2: clamp(2.5rem, 5vw, 4.5rem);  /* section display ≈ 40–72px */
   --heading3: clamp(1.5rem, 2.4vw, 2.25rem);
+  --heading4: clamp(1.125rem, 1.5vw, 1.375rem);  /* sub-heading inside a card or column */
 
   /* Bullet's notion-color tokens — repointed to brand */
   --notion-blue-h:  214 !important;
@@ -254,6 +255,19 @@ body {
   letter-spacing: -0.02em;
   margin: 1.4em 0 0.5em;
 }
+/* H4 was missing from this ladder until Sep 2026, so every Notion H4 fell
+   through to Bullet's default — 20.4px/600 against an H2 at 65.55px/800 on
+   the same page, which reads as bold body copy rather than a heading. No
+   existing page used one, so the first page to reach for H4 found the hole.
+   The ladder continues as it started: weight up, letter-spacing tighter,
+   line-height looser, margins smaller. */
+.notion-h4 {
+  font-size: var(--heading4);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 1.2em 0 0.4em;
+}
 .notion-text {
   line-height: 1.6;
   margin-bottom: 0.75em;
@@ -263,7 +277,8 @@ body {
    .notion-callout-text { word-break: break-word } chop words mid-char. */
 .notion-callout .notion-h1,
 .notion-callout .notion-h2,
-.notion-callout .notion-h3 {
+.notion-callout .notion-h3,
+.notion-callout .notion-h4 {
   word-break: normal;
   overflow-wrap: normal;
 }
@@ -566,7 +581,8 @@ body {
    1440) all four card titles wrap to two lines inside a ~410px text
    column, which inflates every card and widens the height spread the
    grid then has to absorb. */
-.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) .notion-h3 {
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) .notion-h3,
+.notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) .notion-h4 {
   font-size: 1.375rem;
   margin-top: 0;
 }
