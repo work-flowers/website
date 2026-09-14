@@ -1270,6 +1270,13 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   margin: 2.5em 0;
 }
 
+/* Reading progress bar — Bullet fixes .bullet-blog-scroll at top: 60px, which
+   floats it inside our 88px navbar (§3). Drop it to the navbar's bottom edge so
+   the orange fill reads as a rule under the nav as you scroll the article. */
+.bullet-blog-scroll {
+  top: 88px;
+}
+
 /* Sticky sidebar offset — Bullet defaults the navigator to top: 60px, which
    tucks it under our 88px navbar (§3). Match the navbar height plus a 16px
    gap so the table of contents parks just below the nav instead of behind it. */
