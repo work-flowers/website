@@ -830,9 +830,10 @@ body {
   padding-inline-start: 120px;
 }
 
-summary { list-style: none; width: 100%; }
+summary { list-style: none; width: 100%; cursor: pointer; }
+summary::-webkit-details-marker { display: none; }
 summary:before { content: "+"; left: 0; position: absolute; top: 8px; }
-details[open] summary:before { content: "-"; }
+details[open] summary:before { content: "\2212"; }
 .notion-toggle {
   font-size: 17px;
   font-weight: 500;
@@ -842,6 +843,45 @@ details[open] summary:before { content: "-"; }
 }
 .notion-toggle .notion-h3 { margin-top: 0; }
 .notion-toggle > div > div { font-size: 1rem; }
+
+/* Top-level toggles (the FAQ pattern). Bullet emits
+   <details.notion-toggle><summary><h4.notion-h3>…</h4></summary><div>…</div>.
+   The generic .notion-toggle padding above beats the §2 page gutter (same
+   specificity, later in the file), so an unscoped toggle spans the viewport
+   with its marker on the left edge. Put it back on the gutter and hang the
+   marker off the summary so it sits on the heading's baseline. Blog
+   toggles keep their own disclosure-marker treatment in §18. */
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle {
+  padding: 24px 100px;
+  border-top: 1px solid var(--wf-rule);
+}
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle + .notion-toggle { margin-top: 0; }
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle:has(+ :not(.notion-toggle)),
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle:last-child {
+  border-bottom: 1px solid var(--wf-rule);
+}
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle > summary {
+  position: relative;
+  padding-left: 2.25rem;
+}
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle > summary:before {
+  top: 0;
+  font-size: var(--heading3);
+  line-height: 1.15;
+  font-weight: 400;
+  color: var(--wf-ochre);
+}
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle .notion-h3 { margin: 0; }
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle > div {
+  padding-left: 2.25rem;
+  padding-top: 12px;
+  max-width: 44rem;
+}
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle > div > div {
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+.notion-page-content-inner:not(.blog_main *) > .notion-toggle > div > .notion-text:last-child { margin-bottom: 0; }
 
 /* ================================================================
   16. IMAGES
@@ -862,9 +902,13 @@ img.notion-page-icon { border-radius: unset; }
   }
   .notion-blue_background_co { padding: 64px 32px; }
   .notion-page-content-inner > * { padding: 0 32px; }
+  .notion-page-content-inner:not(.blog_main *) > .notion-toggle { padding: 20px 32px; }
 }
 @media screen and (max-width: 800px) {
   .notion-page-content-inner > * { padding: 0 20px; }
+  .notion-page-content-inner:not(.blog_main *) > .notion-toggle { padding: 16px 20px; }
+  .notion-page-content-inner:not(.blog_main *) > .notion-toggle > summary,
+  .notion-page-content-inner:not(.blog_main *) > .notion-toggle > div { padding-left: 1.75rem; }
   .notion-page-content-inner > .notion-yellow_background_co { margin: 12px 20px !important; }
   .notion-divider { margin: 40px 20px; }
   .notion-blue_background_co .bullet-4-column::before { display: none; }
