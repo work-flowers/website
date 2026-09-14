@@ -1270,6 +1270,13 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   margin: 2.5em 0;
 }
 
+/* Sticky sidebar offset — Bullet defaults the navigator to top: 60px, which
+   tucks it under our 88px navbar (§3). Match the navbar height plus a 16px
+   gap so the table of contents parks just below the nav instead of behind it. */
+.blog_main .blog_navigator {
+  top: calc(88px + 16px);
+}
+
 /* Table of contents — quiet indigo ledger */
 .blog_main .toc {
   font-family: var(--wf-mono);
