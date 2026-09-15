@@ -56,6 +56,10 @@
    table and not a rule: it takes body.legal without living under /legal/.
    The mapping is editorial, so it is written down rather than derived.
 
+   body.guide is the same long-form treatment as body.legal (the CSS
+   selects :is(body.legal, body.guide)); it exists so a how-to page is
+   not filed as "legal" here.
+
    Retargeting the CSS to body#page-index et al was the other option. It
    would raise 133 selectors from class to ID specificity, changing which
    later rules can still override them, for no gain over three lines here.
@@ -66,7 +70,8 @@
     'page-about-us': 'about-us',
     'page-legal-msa': 'legal',
     'page-legal-dpa': 'legal',
-    'page-privacy': 'legal'
+    'page-privacy': 'legal',
+    'page-inviting-us-to-zapier': 'guide'
   };
 
   var cls = BODY_CLASS[document.body.id];

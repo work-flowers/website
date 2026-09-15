@@ -44,6 +44,7 @@ PAGES = {
     "/legal/msa/": "page-legal-msa",
     "/legal/dpa/": "page-legal-dpa",
     "/privacy/": "page-privacy",
+    "/inviting-us-to-zapier/": "page-inviting-us-to-zapier",
     "/blog/": "page-blog",
 }
 
