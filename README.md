@@ -104,8 +104,10 @@ each of those pages used to carry a hand-pasted inline script adding its own cla
 `BODY_CLASS` table at the top of `bullet_bundle.js` does it in one place instead.
 
 The mapping is written out rather than derived, because it is editorial: `/privacy/`
-takes `body.legal` without living under `/legal/`. Adding a page that needs one of these
-classes means adding a row there. `verify-live.py` checks the body ids the table keys off
+takes `body.legal` without living under `/legal/`. `body.guide` is an alias for the
+`body.legal` treatment (the CSS selects `:is(body.legal, body.guide)`) so how-to pages
+such as `/inviting-us-to-zapier/` get the long-form document style without being filed
+as legal. Adding a page that needs one of these classes means adding a row there. `verify-live.py` checks the body ids the table keys off
 still exist, so a renamed Notion slug fails loudly instead of silently dropping a page's
 styling.
 
