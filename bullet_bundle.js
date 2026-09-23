@@ -227,10 +227,12 @@ if (window.top === window.self && wfIsSite && !wfIsEditor) {
     }).join(' ');
   }
 
-  // Intermediate crumbs only get a URL if that section actually resolves.
+  // Intermediate crumbs are only emitted if that section actually resolves.
   // /customer-reviews/ and /blog/tag/ are synthetic path segments with no
   // page behind them (audit C-03, H-05), so linking them would point Google
-  // at a 404. A crumb with a name and no item is still valid schema.
+  // at a 404. They are dropped rather than left without a URL: Google only
+  // allows a missing "item" on the last crumb, and flags any other one as
+  // 'Missing field "item" (in "itemListElement")' in Search Console.
   var LINKABLE_SECTIONS = { '/blog': true, '/about-us': true };
 
   var items = [{
@@ -244,6 +246,7 @@ if (window.top === window.self && wfIsSite && !wfIsEditor) {
   segments.forEach(function (segment, index) {
     built += '/' + segment;
     var isLast = index === segments.length - 1;
+    if (!isLast && !LINKABLE_SECTIONS[built]) return;
     var name = label(segment);
 
     if (isLast) {
@@ -256,15 +259,12 @@ if (window.top === window.self && wfIsSite && !wfIsEditor) {
       }
     }
 
-    var crumb = {
+    items.push({
       '@type': 'ListItem',
-      position: index + 2,
-      name: name
-    };
-    if (isLast || LINKABLE_SECTIONS[built]) {
-      crumb.item = 'https://www.work.flowers' + built + '/';
-    }
-    items.push(crumb);
+      position: items.length + 1,
+      name: name,
+      item: 'https://www.work.flowers' + built + '/'
+    });
   });
 
   var node = document.createElement('script');
