@@ -703,6 +703,84 @@ if (window.top === window.self && wfIsSite && !wfIsEditor) {
 })();
 
 /* =======================================================================
+   Blog post heading hierarchy — TKT-855
+
+   Posts go H1 (title) -> H3, skipping H2, because authors use Notion's
+   "Heading 2" for top-level sections and Bullet renders Notion headings
+   one level down: notion-h1 -> h2, notion-h2 -> h3, notion-h3 -> h4.
+   "Related Posts" then appears as an H2 below the body, so the outline
+   reads H1, H3, H4 ... H2.
+
+   This shifts the post body's Notion headings up so the shallowest one
+   used becomes H2, and the rest keep their relative depth. Visually
+   inert: heading styles key off the notion-h* classes, and the only
+   tag-qualified heading rules in charm_style_sheet.css target the post
+   title (.header-below-thumbnail h1) and Related Posts cards
+   (.blog-details h3), neither of which is touched here.
+
+   Scope: blog post pages only (.blog_main present; not /blog/tags/,
+   /blog/authors/ or the /blog/ index). Only .notion-h headings inside
+   the post body are moved — hand-written HTML embeds keep their own
+   markup, because their styles may be tag-qualified.
+   ======================================================================= */
+(function () {
+  var path = location.pathname;
+  if (!/^\/blog\/[^/]+\/?$/.test(path)) return;
+  if (/^\/blog\/(tags|authors)\//.test(path)) return;
+
+  var done = false;
+
+  function retag(el, tagName) {
+    var out = document.createElement(tagName);
+    for (var i = 0; i < el.attributes.length; i++) {
+      out.setAttribute(el.attributes[i].name, el.attributes[i].value);
+    }
+    while (el.firstChild) out.appendChild(el.firstChild);
+    el.parentNode.replaceChild(out, el);
+    return out;
+  }
+
+  function fixBodyHeadings() {
+    var main = document.querySelector('.blog_main');
+    if (!main) return false;
+    var body = main.querySelector('.notion-page-content-inner') || main;
+
+    var heads = Array.prototype.slice.call(
+      body.querySelectorAll('h2.notion-h, h3.notion-h, h4.notion-h, h5.notion-h, h6.notion-h')
+    ).filter(function (h) {
+      return !h.closest('.header-below-thumbnail, .blog-head-detail, .blog-details, .blog-section');
+    });
+    if (!heads.length) return false;
+
+    var level = function (h) { return parseInt(h.tagName.charAt(1), 10); };
+    var shallowest = Math.min.apply(null, heads.map(level));
+    var shift = shallowest - 2;
+    if (shift <= 0) return true;   // already starts at H2 — nothing to do
+
+    heads.forEach(function (h) {
+      retag(h, 'h' + Math.max(2, level(h) - shift));
+    });
+    return true;
+  }
+
+  function attempt() {
+    if (done) return;
+    if (fixBodyHeadings()) done = true;
+  }
+
+  document.addEventListener('DOMContentLoaded', attempt);
+  window.addEventListener('load', attempt);
+  attempt();
+
+  var observer = new MutationObserver(function () {
+    attempt();
+    if (done) observer.disconnect();
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  setTimeout(function () { observer.disconnect(); }, 8000);
+})();
+
+/* =======================================================================
    Filed Index — testimonial spotlight widget (/about-us/)
 
    Reads the Notion gallery cards Bullet renders under OUR CLIENTS and turns
