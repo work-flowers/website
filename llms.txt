@@ -1,0 +1,29 @@
+# workFlowers
+
+> workFlowers (Company Flow Pte. Ltd., UEN 202442050M) is a Singapore-based operations consultancy serving startups and lean teams across Asia Pacific. We design and build workflow automation, Notion workspaces, analytics and AI agent systems. We are a Zapier Platinum Solution Partner, an official Notion Solutions Partner, a Lovable Certified Partner and a Vanta MSP.
+
+Founded by Dennis Chiuten (CFA, NYU Stern MBA; previously finance and revenue operations at Twitter APAC, Barclays, DBS and ANZ). Engagements are scoped per project and start with a free scoping call. We write in UK English.
+
+## Services
+
+- [Zapier consulting in Singapore](https://www.work.flowers/zapier-consulting-singapore): Design, build and improve reliable Zapier automations, from CRM sync to AI-powered workflows, with a Platinum Solution Partner.
+- [Notion consulting in Singapore](https://www.work.flowers/notion-consulting-singapore): Notion workspace setup, CRM, migration from other tools, and Notion AI training for lean teams.
+- [The Zap Map](https://www.work.flowers/zap-map): Interactive map of the Zapier workflows we build, by category.
+
+## About
+
+- [About us](https://www.work.flowers/about-us): Our approach, team and client reviews.
+- [Contact](https://www.work.flowers/contact): Tell us about your workflow and book a scoping call.
+- [Security practices](https://www.work.flowers/security): How we protect client data and credentials.
+- [Inviting us to your Zapier account](https://www.work.flowers/inviting-us-to-zapier): How clients give us access to build in their Zapier account.
+
+## Writing
+
+- [Flow Statements](https://www.work.flowers/blog): Our blog and newsletter on workflow automation, AI tooling and operations for startups in Asia Pacific.
+
+## Optional
+
+- [Master Services Agreement](https://www.work.flowers/legal/msa)
+- [Data Processing Addendum](https://www.work.flowers/legal/dpa)
+- [Privacy statement](https://www.work.flowers/privacy)
+- [Customer support](https://www.work.flowers/support)
