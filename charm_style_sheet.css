@@ -2499,7 +2499,7 @@ body.home .notion-collection .notion-collection-card .notion-property-text {
    but differ in shape — Zapier and Lovable landscape, Notion portrait —
    so they share a fixed height and keep their own width. Bullet wraps
    each image in a div with an inline width; that is overridden so the
-   badge sits left-aligned with the heading under it. The caption is
+   badge sits centred in its column. The caption is
    the alt text, kept for screen readers and hidden visually.
    ================================================================ */
 body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout {
@@ -2517,11 +2517,11 @@ body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column
 body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > figure.notion-asset-wrapper-image {
   margin: 0 0 20px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
 }
 body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > figure.notion-asset-wrapper-image > div {
   width: auto !important;
-  align-self: flex-start !important;
+  align-self: center !important;
   /* A shared 112px slot keeps the headings below aligned while the
      badges differ in height: landscape badges sit centred at 72px, the
      portrait Notion badge fills the slot so it carries similar visual
