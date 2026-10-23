@@ -424,7 +424,7 @@ if (window.top === window.self && wfIsSite && !wfIsEditor) {
    ======================================================================= */
 (function () {
   var UNLAUNCHED = [
-    '/zapier-consulting-singapore'   // published for review 9 Sep 2026
+    // empty — /zapier-consulting-singapore launched; removed 23 Oct 2026 (TKT-867)
   ];
 
   var path = window.location.pathname.replace(/\/+$/, '');
