@@ -2522,6 +2522,15 @@ body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column
 body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > figure.notion-asset-wrapper-image > div {
   width: auto !important;
   align-self: flex-start !important;
+  /* A shared 112px slot keeps the headings below aligned while the
+     badges differ in height: landscape badges sit centred at 72px, the
+     portrait Notion badge fills the slot so it carries similar visual
+     weight instead of reading as a thumbnail at 72px. */
+  height: 112px;
+  justify-content: center !important;
+}
+body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > figure.notion-asset-wrapper-image img[src*="notion-partner-badge"] {
+  height: 112px !important;
 }
 body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > figure.notion-asset-wrapper-image img {
   height: 72px !important;
