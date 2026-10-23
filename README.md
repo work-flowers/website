@@ -149,15 +149,14 @@ comes from, and it is not visible from Pages List alone:
 | Posts | 83 | `/blog/<slug>` |
 | Supercut Recordings | 24 | `/supercut-recordings/<slug>` |
 | Customer Reviews | 10 | `/customer-reviews/<slug>` |
-| Contact Form | 1 | `/contact-form` |
 
 That is exactly the 130 URLs in `sitemap.xml`, with nothing unaccounted for — the check to
 re-run whenever this table looks stale.
 
-`/contact-form` is the one exception to the rule above: it is **not** a Pages List row, but a
-plain page sitting as a direct child of Our Website. So a child page of Our Website can publish
-on its own. Treat it as the known exception rather than evidence that nesting is what selects
-pages generally — the other 129 URLs all arrive through Pages List and its linked views.
+`/contact-form` used to be the one exception to the rule above: it was **not** a Pages List row,
+but a plain page sitting as a direct child of Our Website, so a child page of Our Website can
+publish on its own. It was deprecated and archived on 23 Oct 2026 (see *Decisions* below), and
+the table above no longer counts it.
 
 So publication is a **chain**, not a property of a page: a Pages List row with `Publish` ticked,
 the linked view sitting inside it, and the database row behind that view. Break any link and
@@ -204,3 +203,49 @@ Precedent in the redirect list: `/html-test`, `/test-post-1/`, `/newhome` and a 
 id `/1d991b0711ac80d1b9e2c741a04521bb/` all point at `/` — earlier orphans, cleared this way.
 `/webeeui-bullet-website-builder-kit/` and `/embed-test/` joined them on 6 Sep 2026, and both
 now return `302 → /` instead of `200`.
+
+## Decisions
+
+Standing calls made during the SEO remediation, recorded here so they are not re-raised. Ticket
+IDs are the Notion Tasks in the SEO Remediation project.
+
+**Tag slugs stay empty (TKT-857, won't fix).** Bullet derives each tag archive's URL from the tag
+Name when `Slug` is empty, so today's URLs are fine. The only exposure is a rename, which would
+silently move the archive. The rule instead: don't rename a live tag. `/blog/tags/zapier/` has
+inbound links.
+
+**Departed author archives stay (TKT-860).** `/blog/authors/ernest-choo/` and
+`/blog/authors/grace-tang/` keep their bylines and pages. They are covered by the archive
+`noindex`, so they cost nothing in search.
+
+**Footer year is Bullet text, not code (TKT-860).** The copyright line comes from Bullet's
+built-in Simple footer (Settings → Footer), so nothing in this repo sets it. It reads
+"2025–26" and has to be updated by hand each January.
+
+**One blog tree (TKT-856).** The unused `Blog` tree under Pages List (unpublished, one blank post,
+one junk tag, and a clashing `/blog` path) was moved to Notion Trash on 23 Oct 2026. **Flow
+Statements** is the only live blog tree.
+
+**llms.txt is served by redirect (TKT-853).** `llms.txt` lives in this repo and is reached through
+the Bullet redirect `/llms.txt → https://cdn.jsdelivr.net/gh/work-flowers/website@main/llms.txt`,
+so edits go live on merge with no head paste. jsDelivr caches `@main` for up to ~12 hours. RSS is
+Bullet's own; nothing here provides it.
+
+**Broken inbound links are fixed by redirect, not at source (TKT-852).** Added 23 Oct 2026:
+
+| Old path | Redirect to | Why |
+|---|---|---|
+| `/blog/slackgpt/` | `/blog/` | Post deleted, no successor (14 sessions) |
+| `/blog/slack-gpt/` | `/blog/` | Older rule chained into the slackgpt 404; repointed |
+| `/meet-dennis)` | `https://cal.com/dennis-chiuten/discovery` | Stray `)` from a manual post |
+| `/blog/knoxx-foods-ai-foundations)` | `/blog/knoxx-foods-ai-foundations/` | Stray `)` from a manual post |
+
+The stray brackets were one-off manual errors, not a pipeline fault. `/notion-builders](…`,
+`/shop` and `/deck/intro` are left as 404s (3 sessions or fewer each).
+
+**Retired pages go by redirect, and no robots.txt rules (TKT-854).** `/components/` and
+`/embed-test/` were deleted. `/contact-form/` (the deprecated Notion form page) and `/submitted/`
+(the thank-you page from the lead-gen ads experiment) were already noindexed. Both now redirect to
+`/contact`, and their Notion pages were archived. robots.txt keeps no `Disallow` rules on purpose:
+a disallowed page is never crawled, so Google would never read its `noindex`. robots.txt is
+editable under Bullet Settings → Files if that changes.
