@@ -2546,3 +2546,12 @@ body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* Case studies hub, service row (TKT-866): headings are plain text and
+   each column ends with an "Explore … →" link. Descriptions differ in
+   length, so pin the link to the bottom of its column so all three sit
+   on one line, matching the "Read the case study →" links above. */
+body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column:has(> figure.notion-asset-wrapper-image) > .notion-text:last-child {
+  margin-top: auto;
+  padding-top: 8px;
+}
