@@ -71,7 +71,8 @@
     'page-legal-msa': 'legal',
     'page-legal-dpa': 'legal',
     'page-privacy': 'legal',
-    'page-inviting-us-to-zapier': 'guide'
+    'page-inviting-us-to-zapier': 'guide',
+    'page-case-studies': 'case-studies'
   };
 
   var cls = BODY_CLASS[document.body.id];

@@ -2483,3 +2483,57 @@ body.home .notion-collection .notion-collection-card .notion-property-text {
 .notion-page-scroller:has(iframe[src*="supercut.ai"]) .notion-page-cover-wrapper {
   display: none !important;
 }
+
+/* ================================================================
+   25. CASE STUDIES HUB — /case-studies/ (TKT-866)
+   Scoped by body.case-studies, set by the shim in bullet_bundle.js.
+
+   Cards: Bullet lays a callout out as a row with align-items:center,
+   so in three equal-height cards each card's content floats to the
+   vertical middle and the "Read the … case study" links land at three
+   different heights. Top-align the content, make the text a column,
+   and push the last paragraph (the link) to the bottom of the card.
+
+   Badges: the "Looking for a specific platform?" row has one partner
+   badge per column. The files are cropped (no transparent padding)
+   but differ in shape — Zapier and Lovable landscape, Notion portrait —
+   so they share a fixed height and keep their own width. Bullet wraps
+   each image in a div with an inline width; that is overridden so the
+   badge sits left-aligned with the heading under it. The caption is
+   the alt text, kept for screen readers and hidden visually.
+   ================================================================ */
+body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout {
+  align-items: stretch;
+}
+body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout > .notion-callout-text {
+  display: flex;
+  flex-direction: column;
+}
+body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout > .notion-callout-text > .notion-text:last-child {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > figure.notion-asset-wrapper-image {
+  margin: 0 0 20px;
+  display: flex;
+  justify-content: flex-start;
+}
+body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > figure.notion-asset-wrapper-image > div {
+  width: auto !important;
+  align-self: flex-start !important;
+}
+body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > figure.notion-asset-wrapper-image img {
+  height: 72px !important;
+  width: auto !important;
+  max-width: 100%;
+  object-fit: contain !important;
+  border-radius: 0;
+}
+body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column > figure.notion-asset-wrapper-image figcaption {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
