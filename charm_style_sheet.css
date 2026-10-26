@@ -1276,6 +1276,10 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
 .bullet-blog-scroll {
   top: 88px;
 }
+/* The navbar shrinks to 70px at ≤600px (§ mobile overrides), so follow it. */
+@media (max-width: 600px) {
+  .bullet-blog-scroll { top: 70px; }
+}
 
 /* Sticky sidebar offset — Bullet defaults the navigator to top: 60px, which
    tucks it under our 88px navbar (§3). Match the navbar height plus a 16px
