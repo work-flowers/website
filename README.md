@@ -21,6 +21,7 @@ and JS that Bullet loads, plus the snippets that have to be pasted somewhere by 
 | `reviews-schema/` | `customer-reviews.json` plus `build_review_schema.py`, which rewrites the generated review-JSON-LD region of `bullet_bundle.js` in place |
 | `scripts/bullet-head.sh` | Prints (and copies) the head block for a given commit |
 | `scripts/verify-live.py` | Checks the live site actually matches a given commit |
+| `CALLOUT_COLOURS.md` | Which Notion callout background colour renders as which band or card, and how position changes it |
 | `deploy_explainer.html` | Interactive walkthrough of the deploy loop and the failures the verifier catches. Open it in a browser; it is self-contained |
 
 ## Deploying
