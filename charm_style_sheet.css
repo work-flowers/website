@@ -2565,46 +2565,54 @@ body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column
    Scoped by body.pricing, set by the shim in bullet_bundle.js.
 
    Screenshot: the Notion workspace image has a white main area, so on
-   a white page it has no edge. Full-width body images only; anything
-   inside a column keeps the site default.
+   a white page it has no edge. Every full-width body image gets the
+   same edge; anything inside a column keeps the site default.
+
+   Tier table: a Notion simple table (Tier | What it automates | If it
+   stops | From). Bullet emits no header-row marker, only
+   .notion-simple-table-header-column on each first cell, so the first
+   row is the header by position. Column widths are set on that row:
+   the table is table-layout: fixed, so the first row decides them, and
+   Bullet writes width:120px inline on every cell, hence !important.
+   Up to 800px each row restacks as a card: tier and price on one
+   line, then the two text cells. The "If it stops" and "From" labels
+   are lost with the header row, so they are written back with
+   ::before — rename a column in Notion and change them here too.
 
    Cards: every pricing card is a callout holding the same stack —
-   eyebrow, h4 title, h2 price, then body text. Titles wrap to two,
-   three or four lines, so each price landed at a different height and
-   the row read as ragged. Subgrid fixes it at the source: each card
-   spans six rows of its row's grid and passes them through to its
-   text, so every eyebrow, title and price in a row shares one track
-   and the prices sit on one line. Six tracks for five blocks leaves a
-   spare; a card that grows past six blocks needs the span raised, or
-   the extra blocks overlap in the last track.
+   eyebrow, h4 title, h2 price, then body text. Titles wrap to
+   different line counts, so prices landed at different heights.
+   Subgrid fixes it at the source: each card spans six rows of its
+   row's grid and passes them through to its text, so every eyebrow,
+   title and price in a row shares one track. Six tracks for five
+   blocks leaves a spare; a card that grows past six blocks needs the
+   span raised, or the extra blocks overlap in the last track.
 
-   The 2-col rows take the 2x2 from §9, with cards placed explicitly.
-   §9's column-first flow assumes two cards per column; the audit /
-   monitoring row has one, so both cards stacked in the left column
-   and the right one stood empty. Placing by column position covers
-   both shapes. The second card row is spaced by margin, not by a gap
-   track, so a one-row grid carries no trailing space.
+   §9 lays out a 2-col row of callouts as a column-first 2x2, which
+   with one card per column put both cards in the left column. Cards
+   are placed by column position instead.
 
-   The 3-col row gets the 2-col cards' treatment from §9 (padding,
-   white fill, hairline) instead of Bullet's 17px/12.75px, and stays
-   stacked up to 800px like the 2-col rows. Bullet puts it side by side
-   from 650px, where a card is ~200px wide and the prices overflow it.
+   Prices are --heading3 inside card rows, so the price informs rather
+   than dominates. Scoped to row callouts: the closing callout's h2 is
+   its headline, not a price. 3-col card titles come down to the 2-col
+   card title size (§9) so the title stays below the price.
 
-   Prices: Bullet sizes h2 off the viewport, not the card, so "From
-   S$300/month" — one unbreakable word — overflowed a half-width card
-   below ~1000px. While cards sit side by side the price is capped to
-   the card's text width, derived from the row (a size container): the
-   row width split into columns, less gaps and the card's 73px of
-   padding and inset, divided by the widest price word — 7em in 2-col
-   ("S$300/month"), 4.4em in 3-col ("S$8,000"), each with a little
-   headroom. The cap binds only below desktop; at 1440 every price is
-   the full 72px. A longer price word needs its divisor raised. The
-   container is the row, not the card: container-type brings layout
-   containment, which turns the card's subgrid back into a plain grid.
+   Before/after band: the 2-col row of blue callouts reads as one
+   indigo band, the hero's ground and dot texture. The ground is
+   painted on the row and clipped to its content box — exactly the
+   area the two cards cover, at every breakpoint — so the texture runs
+   unbroken across the seam; the callouts go transparent and a hairline
+   divides them. Eyebrow and price take the light accent (peach), as
+   accents do on the hero and closing callouts.
 
-   Embed: the bullet:html workflow diagram is a .notion-custom-code
-   block already stretched to the content width by §18, and .wfd
-   styles itself; nothing here touches it.
+   The 3-col row gets the 2-col cards' padding, white fill and hairline
+   instead of Bullet's 17px/12.75px, and stays stacked up to 800px like
+   the 2-col rows; Bullet puts it side by side from 650px, where cards
+   are ~200px wide.
+
+   Embeds: bullet:html blocks render as .notion-custom-code, stretched
+   to the content width by §18; .wfd and .wfp style themselves and
+   nothing here touches them.
    ================================================================ */
 body.pricing .notion-page-content-inner > figure.notion-asset-wrapper-image img {
   border: 1px solid var(--wf-rule);
@@ -2612,6 +2620,91 @@ body.pricing .notion-page-content-inner > figure.notion-asset-wrapper-image img 
   box-shadow: var(--wf-shadow-md);
 }
 
+/* ---- Tier table ---------------------------------------------------- */
+body.pricing .notion-table-container > .notion-simple-table {
+  width: 100%;
+  border: 0;
+  border-collapse: collapse;
+  margin: 32px 0 24px;
+}
+body.pricing .notion-simple-table td.notion-simple-table-data-cell {
+  border: 0;
+  border-bottom: 1px solid var(--wf-rule);
+  background: transparent;
+  padding: 22px 20px;
+  vertical-align: top;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--wf-ink);
+}
+body.pricing .notion-simple-table td.notion-simple-table-data-cell:first-child { padding-left: 0; }
+body.pricing .notion-simple-table td.notion-simple-table-data-cell:last-child { padding-right: 0; }
+body.pricing .notion-simple-table tr:first-child > td:nth-child(1) { width: 15% !important; }
+body.pricing .notion-simple-table tr:first-child > td:nth-child(2) { width: 45% !important; }
+body.pricing .notion-simple-table tr:first-child > td:nth-child(3) { width: 27% !important; }
+body.pricing .notion-simple-table tr:first-child > td:nth-child(4) { width: 13% !important; }
+
+body.pricing .notion-simple-table tr:first-child > td.notion-simple-table-data-cell {
+  padding-top: 0;
+  padding-bottom: 12px;
+  border-bottom-color: var(--wf-rule-strong);
+  font-family: var(--wf-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wf-fg-subtle);
+}
+body.pricing .notion-simple-table tr:not(:first-child) > td:nth-child(1) { font-weight: 700; }
+body.pricing .notion-simple-table tr:not(:first-child) > td:nth-child(3) { color: var(--wf-fg-muted); }
+body.pricing .notion-simple-table td:nth-child(4) {
+  text-align: right;
+  white-space: nowrap;
+}
+body.pricing .notion-simple-table tr:not(:first-child) > td:nth-child(4) {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media screen and (max-width: 800px) {
+  body.pricing .notion-table-container > .notion-simple-table,
+  body.pricing .notion-table-container > .notion-simple-table > tbody {
+    display: block;
+    width: 100%;
+  }
+  body.pricing .notion-simple-table tr.notion-simple-table-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 16px;
+    row-gap: 8px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--wf-rule);
+  }
+  body.pricing .notion-simple-table tr.notion-simple-table-row:first-child { display: none; }
+  body.pricing .notion-simple-table td.notion-simple-table-data-cell {
+    display: block;
+    width: auto !important;
+    padding: 0;
+    border: 0;
+  }
+  body.pricing .notion-simple-table td:nth-child(1) { grid-area: 1 / 1; }
+  body.pricing .notion-simple-table td:nth-child(4) { grid-area: 1 / 2; }
+  body.pricing .notion-simple-table td:nth-child(2),
+  body.pricing .notion-simple-table td:nth-child(3) { grid-column: 1 / -1; }
+  body.pricing .notion-simple-table tr:not(:first-child) > td:nth-child(3) > .notion-simple-table-cell::before {
+    content: "If it stops: ";
+    font-weight: 600;
+    color: var(--wf-ink);
+  }
+  body.pricing .notion-simple-table tr:not(:first-child) > td:nth-child(4) > .notion-simple-table-cell::before {
+    content: "From ";
+    font-weight: 400;
+    color: var(--wf-fg-muted);
+  }
+}
+
+/* ---- Cards ----------------------------------------------------------- */
 body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column) > .notion-column > .notion-callout > .notion-callout-text > .notion-callout-title:empty {
   display: none;
 }
@@ -2619,6 +2712,17 @@ body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column
    short title and its price share a line. One block each. */
 body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column) > .notion-column > .notion-callout .notion-h {
   display: block;
+}
+body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column) > .notion-column > .notion-callout .notion-h2 {
+  font-size: var(--heading3);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0.5em 0 0.6em;
+}
+body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout .notion-h3 {
+  font-size: 1.375rem;
+  margin-top: 0;
 }
 body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout {
   padding: 28px 32px !important;
@@ -2634,6 +2738,34 @@ body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .n
   border: 1px solid var(--wf-rule);
 }
 
+/* ---- Before/after band --------------------------------------------- */
+body.pricing .notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-blue_background_co) {
+  background:
+    radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+    var(--wf-indigo);
+  background-size: 20px 20px, auto;
+  background-origin: content-box;
+  background-clip: content-box;
+  column-gap: 0;
+  row-gap: 0;
+}
+body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-blue_background_co {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 44px 48px !important;
+}
+body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(3) > .notion-blue_background_co {
+  border-left: 1px solid var(--wf-rule-dark);
+}
+body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-blue_background_co .notion-h2 {
+  color: var(--wf-peach) !important;
+}
+body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-blue_background_co .notion-text:not(:has(> code)) {
+  color: rgba(255,255,255,0.88) !important;
+}
+
+/* ---- Side-by-side layout and subgrid --------------------------------- */
 @media screen and (min-width: 801px) {
   body.pricing .notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) {
     grid-template-rows: none;
@@ -2642,11 +2774,7 @@ body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .n
   }
   body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(1) > .notion-callout { grid-column: 1; }
   body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(3) > .notion-callout { grid-column: 2; }
-  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-callout:nth-child(1) { grid-row: 1 / span 6; }
-  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-callout:nth-child(2) {
-    grid-row: 7 / span 6;
-    margin-top: 28px !important;
-  }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-callout { grid-row: 1 / span 6; }
 
   body.pricing .notion-page-content-inner > .bullet-3-column:has(> .notion-column > .notion-callout) {
     display: grid !important;
@@ -2670,28 +2798,17 @@ body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .n
     grid-template-rows: subgrid;
     align-content: start;
   }
-
-  body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column):has(> .notion-column > .notion-callout) {
-    container-type: inline-size;
-  }
-  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-callout .notion-h2 {
-    font-size: min(clamp(2.5rem, 5vw, 4.5rem), calc((50cqi - 89px) / 7));
-  }
-  body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout .notion-h2 {
-    font-size: min(clamp(2.5rem, 5vw, 4.5rem), calc((33.333cqi - 94px) / 4.4));
-  }
 }
 
-/* Stacked, the tiers keep their desktop reading order. Notion stores
-   the 2x2 column by column (Simple, Advanced | Standard, Programme),
-   so plain stacking would put Advanced before Standard; read row by
-   row instead, as the desktop grid is read. */
 @media screen and (max-width: 800px) {
-  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(1) > .notion-callout:nth-child(1) { order: 1; }
-  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(3) > .notion-callout:nth-child(1) { order: 2; }
-  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(1) > .notion-callout:nth-child(2) { order: 3; }
-  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(3) > .notion-callout:nth-child(2) { order: 4; }
-
   body.pricing .notion-page-content-inner > .bullet-3-column { flex-direction: column; }
   body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column { width: 100% !important; }
+
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-blue_background_co {
+    padding: 32px 24px !important;
+  }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(3) > .notion-blue_background_co {
+    border-left: 0;
+    border-top: 1px solid var(--wf-rule-dark);
+  }
 }
