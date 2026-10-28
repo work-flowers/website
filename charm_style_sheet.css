@@ -2567,6 +2567,11 @@ body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column
    Screenshot: the Notion workspace image has a white main area, so on
    a white page it has no edge. Every full-width body image gets the
    same edge; anything inside a column keeps the site default.
+   Transparent device-frame images are excluded: a box edge around a
+   phone outline draws a rectangle round empty space. They are matched
+   by filename, which Bullet keeps in the image URL with hyphens intact
+   (dots and underscores are dropped), so a frame image needs
+   "mobile-pricing" in its filename.
 
    Tier table: a Notion simple table (Tier | What it automates | If it
    stops | From). Bullet emits no header-row marker, only
@@ -2614,7 +2619,7 @@ body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column
    to the content width by §18; .wfd and .wfp style themselves and
    nothing here touches them.
    ================================================================ */
-body.pricing .notion-page-content-inner > figure.notion-asset-wrapper-image img {
+body.pricing .notion-page-content-inner > figure.notion-asset-wrapper-image img:not([src*="mobile-pricing"]) {
   border: 1px solid var(--wf-rule);
   border-radius: 5px;
   box-shadow: var(--wf-shadow-md);
