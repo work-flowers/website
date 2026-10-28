@@ -112,6 +112,19 @@ as legal. Adding a page that needs one of these classes means adding a row there
 still exist, so a renamed Notion slug fails loudly instead of silently dropping a page's
 styling.
 
+| Body id | Class | Stylesheet section |
+|---------|-------|--------------------|
+| `page-index` | `home` | 22. Home — featured posts |
+| `page-about-us` | `about-us` | 19. About us |
+| `page-legal-msa`, `page-legal-dpa`, `page-privacy` | `legal` | 21. Legal / freestanding pages |
+| `page-inviting-us-to-zapier` | `guide` | 21. Legal / freestanding pages |
+| `page-case-studies` | `case-studies` | 25. Case studies hub (TKT-866) |
+| `page-pricing` | `pricing` | 26. Pricing page (TKT-1047) |
+
+A page parked behind a Bullet redirect before launch (as `/pricing` → `/` was while it was
+being reviewed) has no body id to read. The verifier reports that as a warning naming the
+redirect, not a failure, and checks the id once the redirect is gone.
+
 ## SEO audit and remediation
 
 Findings, status and deploy notes live in the Notion project **SEO Remediation** (WF-27),

@@ -2559,3 +2559,139 @@ body.case-studies .notion-page-content-inner > .bullet-3-column > .notion-column
   margin-top: auto;
   padding-top: 8px;
 }
+
+/* ================================================================
+   26. PRICING PAGE — /pricing/ (TKT-1047)
+   Scoped by body.pricing, set by the shim in bullet_bundle.js.
+
+   Screenshot: the Notion workspace image has a white main area, so on
+   a white page it has no edge. Full-width body images only; anything
+   inside a column keeps the site default.
+
+   Cards: every pricing card is a callout holding the same stack —
+   eyebrow, h4 title, h2 price, then body text. Titles wrap to two,
+   three or four lines, so each price landed at a different height and
+   the row read as ragged. Subgrid fixes it at the source: each card
+   spans six rows of its row's grid and passes them through to its
+   text, so every eyebrow, title and price in a row shares one track
+   and the prices sit on one line. Six tracks for five blocks leaves a
+   spare; a card that grows past six blocks needs the span raised, or
+   the extra blocks overlap in the last track.
+
+   The 2-col rows take the 2x2 from §9, with cards placed explicitly.
+   §9's column-first flow assumes two cards per column; the audit /
+   monitoring row has one, so both cards stacked in the left column
+   and the right one stood empty. Placing by column position covers
+   both shapes. The second card row is spaced by margin, not by a gap
+   track, so a one-row grid carries no trailing space.
+
+   The 3-col row gets the 2-col cards' treatment from §9 (padding,
+   white fill, hairline) instead of Bullet's 17px/12.75px, and stays
+   stacked up to 800px like the 2-col rows. Bullet puts it side by side
+   from 650px, where a card is ~200px wide and the prices overflow it.
+
+   Prices: Bullet sizes h2 off the viewport, not the card, so "From
+   S$300/month" — one unbreakable word — overflowed a half-width card
+   below ~1000px. While cards sit side by side the price is capped to
+   the card's text width, derived from the row (a size container): the
+   row width split into columns, less gaps and the card's 73px of
+   padding and inset, divided by the widest price word — 7em in 2-col
+   ("S$300/month"), 4.4em in 3-col ("S$8,000"), each with a little
+   headroom. The cap binds only below desktop; at 1440 every price is
+   the full 72px. A longer price word needs its divisor raised. The
+   container is the row, not the card: container-type brings layout
+   containment, which turns the card's subgrid back into a plain grid.
+
+   Embed: the bullet:html workflow diagram is a .notion-custom-code
+   block already stretched to the content width by §18, and .wfd
+   styles itself; nothing here touches it.
+   ================================================================ */
+body.pricing .notion-page-content-inner > figure.notion-asset-wrapper-image img {
+  border: 1px solid var(--wf-rule);
+  border-radius: 5px;
+  box-shadow: var(--wf-shadow-md);
+}
+
+body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column) > .notion-column > .notion-callout > .notion-callout-text > .notion-callout-title:empty {
+  display: none;
+}
+/* Bullet renders headings inline-block, so in a wide stacked card a
+   short title and its price share a line. One block each. */
+body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column) > .notion-column > .notion-callout .notion-h {
+  display: block;
+}
+body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout {
+  padding: 28px 32px !important;
+  margin: 0 !important;
+  box-shadow: var(--wf-shadow-sm);
+}
+body.pricing .notion-page-content-inner > .bullet-3-column:has(> .notion-column > .notion-callout) {
+  margin-top: 32px !important;
+  margin-bottom: 24px !important;
+}
+body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-default-callout {
+  background: var(--wf-paper);
+  border: 1px solid var(--wf-rule);
+}
+
+@media screen and (min-width: 801px) {
+  body.pricing .notion-page-content-inner > .bullet-2-column:has(> .notion-column > .notion-callout) {
+    grid-template-rows: none;
+    grid-auto-flow: row;
+    row-gap: 0;
+  }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(1) > .notion-callout { grid-column: 1; }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(3) > .notion-callout { grid-column: 2; }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-callout:nth-child(1) { grid-row: 1 / span 6; }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-callout:nth-child(2) {
+    grid-row: 7 / span 6;
+    margin-top: 28px !important;
+  }
+
+  body.pricing .notion-page-content-inner > .bullet-3-column:has(> .notion-column > .notion-callout) {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 32px;
+    align-items: stretch;
+  }
+  body.pricing .notion-page-content-inner > .bullet-3-column:has(> .notion-column > .notion-callout) > .notion-column { display: contents; }
+  body.pricing .notion-page-content-inner > .bullet-3-column:has(> .notion-column > .notion-callout) > .notion-spacer { display: none; }
+  body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout { grid-row: 1 / span 6; }
+
+  body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column) > .notion-column > .notion-callout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: subgrid;
+    height: auto;
+  }
+  body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column) > .notion-column > .notion-callout > .notion-callout-text {
+    grid-row: 1 / -1;
+    display: grid;
+    grid-template-rows: subgrid;
+    align-content: start;
+  }
+
+  body.pricing .notion-page-content-inner > :is(.bullet-2-column, .bullet-3-column):has(> .notion-column > .notion-callout) {
+    container-type: inline-size;
+  }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .notion-callout .notion-h2 {
+    font-size: min(clamp(2.5rem, 5vw, 4.5rem), calc((50cqi - 89px) / 7));
+  }
+  body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column > .notion-callout .notion-h2 {
+    font-size: min(clamp(2.5rem, 5vw, 4.5rem), calc((33.333cqi - 94px) / 4.4));
+  }
+}
+
+/* Stacked, the tiers keep their desktop reading order. Notion stores
+   the 2x2 column by column (Simple, Advanced | Standard, Programme),
+   so plain stacking would put Advanced before Standard; read row by
+   row instead, as the desktop grid is read. */
+@media screen and (max-width: 800px) {
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(1) > .notion-callout:nth-child(1) { order: 1; }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(3) > .notion-callout:nth-child(1) { order: 2; }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(1) > .notion-callout:nth-child(2) { order: 3; }
+  body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column:nth-child(3) > .notion-callout:nth-child(2) { order: 4; }
+
+  body.pricing .notion-page-content-inner > .bullet-3-column { flex-direction: column; }
+  body.pricing .notion-page-content-inner > .bullet-3-column > .notion-column { width: 100% !important; }
+}
