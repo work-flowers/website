@@ -46,6 +46,8 @@ PAGES = {
     "/privacy/": "page-privacy",
     "/inviting-us-to-zapier/": "page-inviting-us-to-zapier",
     "/blog/": "page-blog",
+    "/case-studies/": "page-case-studies",
+    "/pricing/": "page-pricing",
 }
 
 THEME_BASELINE = REPO / "bullet_theme_baseline.css"
@@ -108,6 +110,50 @@ def fetch(url, binary=False):
     except urllib.error.HTTPError as e:
         raise Missing(f"HTTP {e.code}") from None
     return raw if binary else raw.decode("utf-8", "replace")
+
+
+def redirect_of(url):
+    """Where a URL redirects to, or None if it does not answer with a 3xx.
+
+    Asked without following, so a Bullet Settings -> Redirects rule shows up as
+    itself rather than as whatever page it lands on.
+    """
+    if shutil.which("curl"):
+        r = subprocess.run(
+            ["curl", "-sS", "-o", "/dev/null", "--max-time", "30", "-A", UA,
+             "-w", "%{http_code} %{redirect_url}", url],
+            capture_output=True, text=True)
+        code, _, loc = r.stdout.partition(" ")
+        return (loc.strip() or "?") if code.startswith("3") else None
+
+    class NoFollow(urllib.request.HTTPRedirectHandler):
+        redirect_request = lambda *a, **k: None
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    try:
+        urllib.request.build_opener(NoFollow).open(req, timeout=30)
+    except urllib.error.HTTPError as e:
+        if 300 <= e.code < 400:
+            return e.headers.get("Location", "?")
+    except Exception:
+        pass
+    return None
+
+
+def unlaunched(path):
+    """The redirect target if `path` is parked behind a Bullet redirect.
+
+    A page can be ticked for publish in Pages List but held behind a redirect
+    until it is approved, as `/pricing -> /` was. Bullet matches the slashless
+    path, so `/pricing/` 404s and `/pricing` answers 302. Only a redirect somewhere
+    other than the page's own trailing-slash form counts; Bullet's normal
+    308 from `/x` to `/x/` is a live page, not a parked one.
+    """
+    bare = path.rstrip("/")
+    for url in (SITE + path, SITE + bare):
+        loc = redirect_of(url)
+        if loc and loc.rstrip("/") not in (bare, SITE + bare):
+            return loc
+    return None
 
 
 def git_show(sha, path):
@@ -187,10 +233,15 @@ def main():
     rep = Report()
 
     # ---- fetch ------------------------------------------------------------
-    pages = {}
+    pages, parked = {}, {}
     for path in PAGES:
         try:
             pages[path] = fetch(SITE + path)
+        except Missing as e:
+            if (loc := unlaunched(path)):
+                parked[path] = loc
+            else:
+                rep.fail(f"fetch {path}", str(e))
         except Exception as e:
             rep.fail(f"fetch {path}", str(e))
     if not pages:
@@ -365,6 +416,11 @@ def main():
                  "\ndrops that page's styling.")
     else:
         rep.ok("body ids match the class shim", f"{len(pages)} pages")
+    for path, loc in parked.items():
+        rep.warn(f"body id for {path} unchecked",
+                 f"{path.rstrip('/')} redirects to {loc}, so there is no page to read yet.\n"
+                 f"expected while it is parked behind a Bullet redirect before launch;\n"
+                 f"once the redirect is removed this must find id={PAGES[path]!r}.")
 
     # ---- 8. the jtbd widget still matches the repo copy ------------------
     widget = (REPO / "jtbd_widget.html").read_text(encoding="utf-8")

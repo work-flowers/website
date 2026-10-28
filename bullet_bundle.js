@@ -72,7 +72,8 @@
     'page-legal-dpa': 'legal',
     'page-privacy': 'legal',
     'page-inviting-us-to-zapier': 'guide',
-    'page-case-studies': 'case-studies'
+    'page-case-studies': 'case-studies',
+    'page-pricing': 'pricing'
   };
 
   var cls = BODY_CLASS[document.body.id];
