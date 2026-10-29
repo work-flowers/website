@@ -12,7 +12,7 @@ and JS that Bullet loads, plus the snippets that have to be pasted somewhere by 
 | File | Purpose |
 |------|---------|
 | `charm_style_sheet.css` | Main site stylesheet — CSS custom properties, Notion/Bullet class overrides, blog typography, responsive breakpoints |
-| `bullet_bundle.js` | Every piece of runtime behaviour on the site: body classes, GA4, JSON-LD, the `noindex` rules, the H1 retag, the blog-post heading shift (TKT-855), the `/about-us/` testimonial widget. Loaded once from the head, pinned by SHA |
+| `bullet_bundle.js` | Every piece of runtime behaviour on the site: body classes, GA4, JSON-LD, the `noindex` rules, the H1 retag, the blog-post heading shift (TKT-855), the `/about-us/` testimonial widget, the `/pricing/` service tabs. Loaded once from the head, pinned by SHA |
 | `head.html` | Template for the one block pasted into Bullet's custom **head** code. `{{SHA}}` is filled in by `scripts/bullet-head.sh` — do not paste this file directly |
 | `bullet_theme_baseline.css` | Snapshot of Bullet's `#bullet-theme` block, so the verifier can tell when someone changes a theme setting in the dashboard |
 | `jtbd_widget.html` | Auto-scrolling "pain points" chat-bubble widget. Pasted into a Notion custom-code block on the homepage, not deployed from here |

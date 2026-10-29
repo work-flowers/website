@@ -2817,3 +2817,88 @@ body.pricing .notion-page-content-inner > .bullet-2-column > .notion-column > .n
     border-top: 1px solid var(--wf-rule-dark);
   }
 }
+
+/* ---- Service tabs (TKT-1047) ---------------------------------------
+   Built by the "Pricing page service tabs" section of bullet_bundle.js,
+   which tags each service's blocks with data-wf-panel and sets
+   body[data-wf-tab]. Hiding is keyed off that body attribute, so with
+   no script the page shows every section as before.
+
+   Folder-divider look: the tabs sit on a rule, the selected one is
+   paper-white with an indigo cap and opens onto the section below; the
+   others are tinted and sit back. Each section's own "●" eyebrow is
+   hidden while tabs are active, since the tab already names it.
+   -------------------------------------------------------------------- */
+body.pricing[data-wf-tab="zapier"]  [data-wf-panel]:not([data-wf-panel="zapier"]),
+body.pricing[data-wf-tab="notion"]  [data-wf-panel]:not([data-wf-panel="notion"]),
+body.pricing[data-wf-tab="lovable"] [data-wf-panel]:not([data-wf-panel="lovable"]) { display: none !important; }
+body.pricing[data-wf-tab] .wf-panel-eyebrow { display: none !important; }
+
+body.pricing .wf-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 48px 0 40px;
+  padding: 0;
+  border-bottom: 2px solid var(--wf-indigo);
+  font-family: var(--wf-sans);
+}
+body.pricing .wf-tab {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  margin: 0 0 -2px;
+  padding: 18px 22px 20px;
+  text-align: left;
+  font: inherit;
+  color: var(--wf-ink);
+  background: var(--wf-paper-tint);
+  border: 1px solid var(--wf-rule);
+  border-bottom: 2px solid var(--wf-indigo);
+  border-top: 4px solid transparent;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+body.pricing .wf-tab:hover { background: #EAF4FD; }
+body.pricing .wf-tab:focus-visible { outline: 2px solid var(--wf-azure); outline-offset: 2px; }
+body.pricing .wf-tab[aria-selected="true"] {
+  background: var(--wf-paper);
+  border-color: var(--wf-indigo);
+  border-top-color: var(--wf-indigo);
+  border-bottom-color: var(--wf-paper);
+  cursor: default;
+}
+body.pricing .wf-tab-label {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--wf-ink);
+}
+body.pricing .wf-tab-line {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--wf-fg-muted);
+}
+body.pricing .wf-tab-price {
+  margin-top: 6px;
+  font-family: var(--wf-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wf-ochre-hover);
+}
+body.pricing .wf-tab[aria-selected="true"] .wf-tab-price { color: var(--wf-indigo); }
+
+/* Phones: three across stays (it reads as a switch), labels only. */
+@media screen and (max-width: 699px) {
+  body.pricing .wf-tabs { gap: 4px; margin: 32px 0 28px; }
+  body.pricing .wf-tab { padding: 12px 10px 14px; border-radius: 8px 8px 0 0; align-items: center; text-align: center; }
+  body.pricing .wf-tab-label { font-size: 0.875rem; }
+  body.pricing .wf-tab-line { display: none; }
+  body.pricing .wf-tab-price { margin-top: 2px; font-size: 10px; letter-spacing: 0.04em; }
+}

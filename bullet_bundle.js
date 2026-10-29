@@ -1114,3 +1114,159 @@ if (window.top === window.self && wfIsSite && !wfIsEditor) {
     start();
   }
 })();
+
+/* =======================================================================
+   Pricing page service tabs — /pricing/ (TKT-1047)
+
+   The page runs three services back to back (Zapier, Notion, Lovable),
+   each in its own format, and reads as one long scroll. This puts a tab
+   bar under the intro callout so a visitor picks a service and sees only
+   that section. The intro, FAQ and closing callout stay visible on every
+   tab.
+
+   Sections are found, not authored: each one starts at a top-level text
+   block whose text begins with "●" and names the service (the eyebrow,
+   e.g. "● NOTION"), and runs until the next "●" eyebrow (the FAQ's ends
+   the last one). Each block in a section gets data-wf-panel=<key>; the
+   CSS hides panels that do not match body[data-wf-tab]. Nothing is moved
+   or wrapped, so Bullet's hydrated DOM is left in place and reordering
+   blocks in Notion needs no change here, as long as each section keeps
+   its eyebrow.
+
+   Without this script, or if fewer than all three eyebrows are found,
+   no attribute is set and the page shows every section as before.
+
+   Deep links: /pricing/#zapier, #notion, #lovable open that tab.
+   ======================================================================= */
+(function () {
+  if (document.body.id !== 'page-pricing') return;
+
+  // Editorial, like BODY_CLASS: order here is the tab order.
+  var TABS = [
+    { key: 'zapier',  match: /ZAPIER/,  label: 'Zapier automation',      line: 'Connect the tools you already use', price: 'From S$1,000' },
+    { key: 'notion',  match: /NOTION/,  label: 'Notion workspaces',      line: 'Set up or sort out your workspace', price: 'From S$3,000' },
+    { key: 'lovable', match: /LOVABLE/, label: 'Custom apps on Lovable', line: 'An app built around your process',  price: 'Quoted per project' }
+  ];
+  var done = false;
+
+  function eyebrowText(el) {
+    if (!el.classList.contains('notion-text')) return null;
+    var t = el.textContent.trim();
+    return t.charAt(0) === '●' ? t.toUpperCase() : null;
+  }
+
+  function build() {
+    if (done) return true;
+    var inner = document.querySelector('.notion-page-content-inner');
+    if (!inner || inner.querySelector('.wf-tabs')) return false;
+
+    var kids = Array.prototype.slice.call(inner.children);
+    var current = null, first = null, found = {};
+    kids.forEach(function (el) {
+      var eb = eyebrowText(el);
+      if (eb) {
+        current = null;
+        TABS.forEach(function (t) { if (!current && t.match.test(eb)) current = t.key; });
+        if (current) {
+          found[current] = true;
+          el.classList.add('wf-panel-eyebrow');
+          if (!first) first = el;
+        }
+      }
+      if (current) el.setAttribute('data-wf-panel', current);
+    });
+
+    if (TABS.some(function (t) { return !found[t.key]; })) {
+      // Page shape changed; undo and leave the long page alone.
+      kids.forEach(function (el) { el.removeAttribute('data-wf-panel'); el.classList.remove('wf-panel-eyebrow'); });
+      return false;
+    }
+
+    var bar = document.createElement('div');
+    bar.className = 'wf-tabs';
+    bar.setAttribute('role', 'tablist');
+    bar.setAttribute('aria-label', 'Services');
+
+    var buttons = TABS.map(function (t) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'wf-tab';
+      b.id = 'wf-tab-' + t.key;
+      b.setAttribute('role', 'tab');
+      b.setAttribute('data-tab', t.key);
+      b.innerHTML =
+        '<span class="wf-tab-label"></span>' +
+        '<span class="wf-tab-line"></span>' +
+        '<span class="wf-tab-price"></span>';
+      b.querySelector('.wf-tab-label').textContent = t.label;
+      b.querySelector('.wf-tab-line').textContent = t.line;
+      b.querySelector('.wf-tab-price').textContent = t.price;
+      bar.appendChild(b);
+      return b;
+    });
+
+    inner.insertBefore(bar, first);
+
+    function select(key, opts) {
+      opts = opts || {};
+      document.body.setAttribute('data-wf-tab', key);
+      buttons.forEach(function (b) {
+        var on = b.getAttribute('data-tab') === key;
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+        b.tabIndex = on ? 0 : -1;
+        if (on && opts.focus) b.focus();
+      });
+      if (opts.hash && history.replaceState) {
+        history.replaceState(null, '', '#' + key);
+      }
+      if (opts.scroll && bar.getBoundingClientRect().top < 0) {
+        bar.scrollIntoView({ block: 'start' });
+      }
+    }
+
+    function keyFromHash() {
+      var h = (location.hash || '').replace('#', '').toLowerCase();
+      return TABS.some(function (t) { return t.key === h; }) ? h : null;
+    }
+
+    bar.addEventListener('click', function (e) {
+      var b = e.target.closest('.wf-tab');
+      if (b) select(b.getAttribute('data-tab'), { hash: true, scroll: true });
+    });
+
+    // Arrow keys move between tabs (WAI-ARIA tabs pattern).
+    bar.addEventListener('keydown', function (e) {
+      var i = buttons.indexOf(document.activeElement);
+      if (i < 0) return;
+      var n = null;
+      if (e.key === 'ArrowRight') n = (i + 1) % buttons.length;
+      else if (e.key === 'ArrowLeft') n = (i - 1 + buttons.length) % buttons.length;
+      else if (e.key === 'Home') n = 0;
+      else if (e.key === 'End') n = buttons.length - 1;
+      if (n === null) return;
+      e.preventDefault();
+      select(buttons[n].getAttribute('data-tab'), { focus: true, hash: true });
+    });
+
+    window.addEventListener('hashchange', function () {
+      var k = keyFromHash();
+      if (k) select(k);
+    });
+
+    var initial = keyFromHash();
+    select(initial || TABS[0].key);
+    if (initial) bar.scrollIntoView({ block: 'start' });
+    done = true;
+    return true;
+  }
+
+  // Same retry pattern as the H1 retag: Bullet may hydrate after we run.
+  if (!build()) {
+    var observer = new MutationObserver(function () {
+      if (build()) observer.disconnect();
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    document.addEventListener('DOMContentLoaded', build);
+    setTimeout(function () { observer.disconnect(); }, 8000);
+  }
+})();
