@@ -406,6 +406,17 @@ def main():
     else:
         rep.ok("page-level pastes are empty")
 
+    # The agent-embed chat widget was removed from the head paste. Bullet
+    # keeps whatever was last pasted, so a page still loading it means the
+    # new head block has not been pasted and published yet.
+    chat = [path for path, html in pages.items() if "agent-embed.work.flowers" in html]
+    if chat:
+        rep.fail("chat widget is gone", "\n".join(f"{p}: still loads agent-embed.work.flowers"
+                                                  for p in chat) +
+                 "\nre-paste the head block from scripts/bullet-head.sh and publish.")
+    else:
+        rep.ok("chat widget is gone")
+
     # ---- 7. the body ids the class shim keys off still exist -------------
     wrong = [f"{path}: expected id={want!r}, got {re.search(r'<body[^>]*>', html).group(0)!r}"
              for path, html in pages.items()

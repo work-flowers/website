@@ -1235,6 +1235,83 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   pointer-events: none;
 }
 
+/* Tables — editorial ledger: hairline rows, no vertical grid, mono
+   header row on an indigo rule. Bullet emits no header-row marker,
+   only .notion-simple-table-header-column on each first cell (see
+   §26), so the first row is the header by position, and the first
+   column takes the row-label treatment only when that class is
+   present: semibold, or, where the label opens with bold text, that
+   bold in indigo with the rest left as body copy. Bullet also writes
+   width:120px inline on every cell under table-layout: fixed, which
+   splits columns evenly whatever they hold; auto layout lets a long
+   label column take the room it needs.
+   Narrow screens scroll the container sideways rather than crushing
+   cells below a readable width. */
+.blog_main .blog_page_content .notion-table-container {
+  margin: 1.75em 0 2em;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.blog_main .blog_page_content .notion-simple-table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  border: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--wf-ink);
+}
+.blog_main .blog_page_content .notion-simple-table td.notion-simple-table-data-cell {
+  width: auto !important;
+  min-width: 9em;
+  padding: 14px 18px 14px 0;
+  border: 0;
+  border-bottom: 1px solid var(--wf-rule);
+  background: transparent;
+  vertical-align: top;
+  text-align: left;
+}
+.blog_main .blog_page_content .notion-simple-table td.notion-simple-table-data-cell:last-child {
+  padding-right: 0;
+}
+.blog_main .blog_page_content .notion-simple-table .notion-simple-table-cell {
+  padding: 0;
+  white-space: normal;
+}
+/* Header row */
+.blog_main .blog_page_content .notion-simple-table tr:first-child > td.notion-simple-table-data-cell {
+  padding-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--wf-indigo);
+  font-family: var(--wf-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wf-indigo);
+  vertical-align: bottom;
+}
+/* Row-label column */
+.blog_main .blog_page_content .notion-simple-table tr:not(:first-child) > td.notion-simple-table-header-column:not(:has(b, strong)) {
+  font-weight: 600;
+}
+.blog_main .blog_page_content .notion-simple-table tr:not(:first-child) > td.notion-simple-table-header-column b,
+.blog_main .blog_page_content .notion-simple-table tr:not(:first-child) > td.notion-simple-table-header-column strong {
+  font-weight: 700;
+  color: var(--wf-indigo);
+}
+@media screen and (max-width: 800px) {
+  .blog_main .blog_page_content .notion-simple-table { font-size: 14px; }
+  .blog_main .blog_page_content .notion-simple-table td.notion-simple-table-data-cell {
+    min-width: 6.5em;
+    padding: 12px 12px 12px 0;
+  }
+  .blog_main .blog_page_content .notion-simple-table tr:first-child > td.notion-simple-table-data-cell {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+}
+
 /* Lists */
 .blog_main .blog_page_content .notion-list-disc,
 .blog_main .blog_page_content .notion-list-numbered {
