@@ -333,7 +333,7 @@ scripts/bullet-head.sh <span class="k">&lt;ref|sha&gt;</span></pre>
       <span class="panel__who who--you">You</span>
       <h3>Paste into Bullet</h3>
       <p><strong>Settings &rarr; Custom Code &rarr; Head</strong>, replacing everything already there. Paste straight from the clipboard &mdash; do not route it through another editor and do not copy it back out of Bullet to check it. That round trip is what corrupts it.</p>
-      <p>The block carries both jsDelivr pins, the font links, the chat-widget script, and the sitewide Organization JSON-LD. The JSON-LD stays literal markup rather than moving into the bundle, so it is server-rendered: injecting the site&rsquo;s primary entity from JavaScript would make Google&rsquo;s view of it depend on a render pass that is delayed and not guaranteed.</p>
+      <p>The block carries both jsDelivr pins, the font links, and the sitewide Organization JSON-LD. The JSON-LD stays literal markup rather than moving into the bundle, so it is server-rendered: injecting the site&rsquo;s primary entity from JavaScript would make Google&rsquo;s view of it depend on a render pass that is delayed and not guaranteed.</p>
       <div class="note">Never hand-edit this in the dashboard. Edit <code class="inline">head.html</code>, merge, and re-run the generator &mdash; otherwise the repo stops being the source of truth and you are back to mirrors that drift.</div>
     </div>
 
