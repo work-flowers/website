@@ -1162,6 +1162,16 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   max-width: 70ch;
 }
 
+/* Text links wrap like text. Bullet's blogpost.min.css sets
+   .notion-link { display: inline-block; width: fit-content }, which makes
+   each link one unbreakable box: a long link near the end of a line
+   jumps whole to the next line and leaves a ragged gap. Bullet also puts
+   .notion-link on buttons, which must stay boxes, so they are excluded. */
+.blog_main .blog_page_content .notion-link:not(.bullet-btn) {
+  display: inline;
+  width: auto;
+}
+
 /* Inline code chips — quiet paper-tint with indigo text */
 .blog_main .blog_page_content .notion-text code,
 .blog_main .blog_page_content .notion-list-disc code,
