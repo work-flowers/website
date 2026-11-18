@@ -60,8 +60,12 @@ background and rule border so it matches its coloured neighbours.
   and gray.
 - **Dividers**: dashed indigo at 32% on light; dashed white at 30% on blue and
   gray.
-- **Blog posts**: blue and gray callouts lose their side margins and sit flush
-  with the text column.
+- **Blog posts**: every callout, whatever its colour, is a card with 28px/32px
+  padding (22px/20px under 800px), not the homepage band padding. Blog
+  blocks sit under `.notion-page` rather than `.notion-page-content-inner`,
+  so none of the position rules (hero, final CTA, plain band) apply there.
+  A heading that opens a callout loses its top margin so it lines up with
+  the icon.
 
 ## Caveat: gray
 

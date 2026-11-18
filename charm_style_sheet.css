@@ -1312,6 +1312,30 @@ iframe[src*="widgets.work.flowers/embed/workflowers"] {
   }
 }
 
+/* Callouts — one card padding for every colour. §7's indigo rule
+   (96px/100px) is sized for the homepage's full-bleed bands and
+   reached blog posts only because it is unscoped; other colours fell
+   back to Bullet's cramped 17px/12.75px. A heading that opens the
+   callout drops its 1.6em/1.8em blog top margin, which otherwise
+   pushes it below the icon so the icon reads as sitting above the
+   text. Bullet puts an empty .notion-callout-title span first, so the
+   heading is matched after it as well as as the first child. */
+.blog_main .blog_page_content .notion-callout {
+  padding: 28px 32px !important;
+}
+.blog_main .blog_page_content .notion-callout-text > .notion-h:first-child,
+.blog_main .blog_page_content .notion-callout-text > .notion-callout-title:empty + .notion-h {
+  margin-top: 0;
+}
+.blog_main .blog_page_content .notion-callout-text > :last-child {
+  margin-bottom: 0;
+}
+@media screen and (max-width: 800px) {
+  .blog_main .blog_page_content .notion-callout {
+    padding: 22px 20px !important;
+  }
+}
+
 /* Lists */
 .blog_main .blog_page_content .notion-list-disc,
 .blog_main .blog_page_content .notion-list-numbered {
