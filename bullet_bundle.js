@@ -1270,3 +1270,109 @@ if (window.top === window.self && wfIsSite && !wfIsEditor) {
     setTimeout(function () { observer.disconnect(); }, 8000);
   }
 })();
+
+/* =======================================================================
+   Video gallery — play in place (/videos/)
+   =======================================================================
+   The YouTube Videos database is embedded on /videos/ as a gallery.
+   Bullet renders each row as an <a class="notion-collection-card"> to the
+   row's own page (/youtube-videos/<slug>/), with the YouTube thumbnail
+   as the cover. Clicking the cover now swaps it for the player and starts
+   the video, in place. The title still links to the row's page, so those
+   pages stay linked and crawlable; Cmd/Ctrl/Shift/middle-click on the
+   cover also still navigate as normal.
+
+   WHERE THE VIDEO ID COMES FROM. Not the card: the URL property renders
+   only as the display text "youtube.com", and the cover's image-proxy
+   path lowercases the ID (case matters in YouTube IDs). The row page does
+   carry the real embed (youtube-nocookie.com/embed/<id>), so the ID is
+   read from that page — fetched on hover/focus so it is usually ready by
+   the click, and cached per URL.
+
+   One capture-phase listener on document, keyed off the collection's own
+   scoping class (.coll-youtube-videos), so wherever the view is placed it
+   works, it runs before Bullet's client-side router sees the click, and
+   nothing needs re-binding after Bullet's in-place navigation replaces
+   the page. Styling lives in charm_style_sheet.css §27.
+   ======================================================================= */
+(function () {
+  var SCOPE = '.coll-youtube-videos';
+  var ID_RE = /youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)([\w-]{11})|youtu\.be\/([\w-]{11})/;
+  var ids = {};      // href -> Promise<string|null>
+  var playing = null; // { cover, html }
+
+  function coverOf(target) {
+    var cover = target.closest && target.closest(SCOPE + ' .notion-collection-card-cover');
+    return cover && cover.closest('a.notion-collection-card') ? cover : null;
+  }
+
+  function videoId(href) {
+    if (!ids[href]) {
+      ids[href] = fetch(href, { credentials: 'same-origin' })
+        .then(function (r) { return r.ok ? r.text() : ''; })
+        .then(function (html) { var m = html.match(ID_RE); return m ? (m[1] || m[2]) : null; })
+        .catch(function () { return null; });
+    }
+    return ids[href];
+  }
+
+  function stop() {
+    if (!playing) return;
+    if (playing.cover.isConnected) {
+      playing.cover.innerHTML = playing.html;
+      playing.cover.classList.remove('wf-playing');
+    }
+    playing = null;
+  }
+
+  function play(cover, id, title) {
+    stop();
+    playing = { cover: cover, html: cover.innerHTML };
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+    f.title = title || 'YouTube video';
+    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    f.allowFullscreen = true;
+    f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+    cover.innerHTML = '';
+    cover.appendChild(f);
+    cover.classList.add('wf-playing');
+  }
+
+  // Warm the ID cache before the click lands.
+  function warm(e) {
+    var cover = coverOf(e.target);
+    if (cover) videoId(cover.closest('a').getAttribute('href'));
+  }
+  document.addEventListener('pointerover', warm, { passive: true });
+  document.addEventListener('focusin', warm);
+
+  document.addEventListener('click', function (e) {
+    var cover = coverOf(e.target);
+    if (!cover || cover.classList.contains('wf-playing')) return;
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var card = cover.closest('a');
+    var href = card.getAttribute('href');
+    e.preventDefault();
+    e.stopPropagation();
+    cover.classList.add('wf-loading');
+    var titleEl = card.querySelector('.notion-page-title-text');
+    videoId(href).then(function (id) {
+      cover.classList.remove('wf-loading');
+      if (id) play(cover, id, titleEl && titleEl.textContent);
+      else window.location.href = href; // no embed found: fall back to the page
+    });
+  }, true);
+
+  // Keyboard: the card is a single link, so Enter on it plays rather than
+  // navigates, matching a pointer click on the cover.
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var card = e.target.closest && e.target.closest(SCOPE + ' a.notion-collection-card');
+    if (!card) return;
+    var cover = card.querySelector('.notion-collection-card-cover');
+    if (!cover || cover.classList.contains('wf-playing')) return;
+    e.preventDefault();
+    cover.click();
+  }, true);
+})();

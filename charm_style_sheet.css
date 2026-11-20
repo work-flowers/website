@@ -3013,3 +3013,175 @@ body.pricing .wf-tab[aria-selected="true"] .wf-tab-price { color: var(--wf-indig
   body.pricing .wf-tab-line { display: none; }
   body.pricing .wf-tab-price { margin-top: 2px; font-size: 10px; letter-spacing: 0.04em; }
 }
+
+/* ================================================================
+   27. VIDEO GALLERY — /videos/
+   The YouTube Videos database embedded as a gallery. Bullet scopes it
+   with .coll-youtube-videos, so no body-class hook is needed and the
+   styling survives client-side navigation and works wherever the view
+   is placed. Cards follow §22 (home featured posts): no box, the cover
+   carries the weight, bold title underneath.
+
+   Covers: YouTube thumbnails are 16:9, but Bullet's default card cover
+   is a fixed 190px strip that crops them. A true 16:9 box shows the whole
+   frame. A play badge marks them as playable; bullet_bundle.js ("Video
+   gallery — play in place") swaps the cover for the player on click and
+   sets .wf-loading / .wf-playing on the cover.
+
+   The URL property only renders as the text "youtube.com", so it is
+   hidden rather than removed from the view — keep it shown in Notion if
+   it is ever useful elsewhere; hiding it here costs nothing.
+   ================================================================ */
+
+/* Bullet chrome: view title / type switcher and the rule under it */
+.coll-youtube-videos .notion-collection-header,
+.coll-youtube-videos .notion-collection-view-tabs,
+.coll-youtube-videos .notion-gallery-load-more {
+  display: none !important;
+}
+
+.coll-youtube-videos .notion-gallery-grid,
+.coll-youtube-videos .notion-gallery-view {
+  border-top: none !important;
+  padding-top: 0 !important;
+}
+.coll-youtube-videos .notion-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 56px 32px;
+}
+
+/* Card — no box. min-width: 0 so long titles never widen a track */
+.coll-youtube-videos .notion-collection-card {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0;
+  box-shadow: none !important;
+  overflow: visible;
+  text-decoration: none !important;
+  min-width: 0;
+}
+
+/* Cover — full 16:9 frame, soft shadow, hover lift */
+.coll-youtube-videos .notion-collection-card-cover {
+  position: relative;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--wf-ink);
+  box-shadow: var(--wf-shadow-sm);
+  border: none !important;
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.coll-youtube-videos .notion-collection-card-cover img {
+  width: 100%;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+  transition: transform 300ms ease, filter 200ms ease;
+}
+.coll-youtube-videos .notion-collection-card:hover .notion-collection-card-cover:not(.wf-playing) {
+  transform: translateY(-2px);
+  box-shadow: var(--wf-shadow-md);
+}
+.coll-youtube-videos .notion-collection-card:hover .notion-collection-card-cover:not(.wf-playing) img {
+  transform: scale(1.02);
+  filter: brightness(0.92);
+}
+
+/* Play badge — ochre disc, white triangle; drawn in CSS so it needs no
+   markup and disappears once the player replaces the image */
+.coll-youtube-videos .notion-collection-card-cover:not(.wf-playing)::before,
+.coll-youtube-videos .notion-collection-card-cover:not(.wf-playing)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  transition: transform 200ms ease, background-color 200ms ease;
+}
+.coll-youtube-videos .notion-collection-card-cover:not(.wf-playing)::before {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-radius: 50%;
+  background: var(--wf-ochre);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+.coll-youtube-videos .notion-collection-card-cover:not(.wf-playing)::after {
+  width: 0;
+  height: 0;
+  margin: -11px 0 0 -6px;
+  border-style: solid;
+  border-width: 11px 0 11px 18px;
+  border-color: transparent transparent transparent #FFFFFF;
+}
+.coll-youtube-videos .notion-collection-card:hover .notion-collection-card-cover:not(.wf-playing)::before {
+  background: var(--wf-ochre-hover);
+  transform: scale(1.08);
+}
+
+/* Fetching the video id — pulse the badge */
+.coll-youtube-videos .notion-collection-card-cover.wf-loading::before {
+  animation: wf-video-pulse 900ms ease-in-out infinite;
+}
+@keyframes wf-video-pulse {
+  50% { transform: scale(0.88); opacity: 0.75; }
+}
+
+/* The player itself */
+.coll-youtube-videos .notion-collection-card-cover.wf-playing {
+  cursor: auto;
+  box-shadow: var(--wf-shadow-md);
+}
+.coll-youtube-videos .notion-collection-card-cover iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Body — title only (URL chip hidden) */
+.coll-youtube-videos .notion-collection-card-body {
+  padding: 16px 0 0 !important;
+}
+.coll-youtube-videos .notion-collection-card .notion-property-url,
+.coll-youtube-videos .notion-collection-card-property:has(.notion-property-url) {
+  display: none !important;
+}
+.coll-youtube-videos .notion-collection-card .notion-page-title-icon {
+  display: none !important;
+}
+.coll-youtube-videos .notion-collection-card .notion-page-title-text {
+  font-family: var(--wf-sans);
+  font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--wf-ink);
+  text-wrap: balance;
+  white-space: normal;
+  border-bottom: none;
+}
+.coll-youtube-videos .notion-collection-card:hover .notion-page-title-text {
+  color: var(--wf-indigo);
+}
+
+@media screen and (max-width: 1024px) {
+  .coll-youtube-videos .notion-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px 28px;
+  }
+}
+@media screen and (max-width: 640px) {
+  .coll-youtube-videos .notion-gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .coll-youtube-videos .notion-collection-card-cover:not(.wf-playing)::before {
+    width: 56px; height: 56px; margin: -28px 0 0 -28px;
+  }
+}
