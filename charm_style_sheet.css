@@ -3024,7 +3024,7 @@ body.pricing .wf-tab[aria-selected="true"] .wf-tab-price { color: var(--wf-indig
 
    Covers: YouTube thumbnails are 16:9, but Bullet's default card cover
    is a fixed 190px strip that crops them. A true 16:9 box shows the whole
-   frame. A play badge marks them as playable; bullet_bundle.js ("Video
+   frame. A play badge (dark glass, ochre on hover) marks them as playable; bullet_bundle.js ("Video
    gallery — play in place") swaps the cover for the player on click and
    sets .wf-loading / .wf-playing on the cover.
 
@@ -3091,24 +3091,34 @@ body.pricing .wf-tab[aria-selected="true"] .wf-tab-price { color: var(--wf-indig
   filter: brightness(0.92);
 }
 
-/* Play badge — ochre disc, white triangle; drawn in CSS so it needs no
-   markup and disappears once the player replaces the image */
+/* Play badge — dark glass disc, white triangle; turns ochre on hover.
+   Ochre at rest made fourteen discs compete with the site's CTA colour;
+   glass keeps the grid calm and reads on light and dark thumbnails alike.
+   Drawn in CSS so it needs no markup and disappears once the player
+   replaces the image.
+   z-index: 1 is load-bearing. The hover zoom puts a transform on the
+   <img>, which lifts it into its own stacking layer; ::before comes
+   earlier in tree order, so without this the image paints over the disc
+   on hover and only the white triangle is left. */
 .coll-youtube-videos .notion-collection-card-cover:not(.wf-playing)::before,
 .coll-youtube-videos .notion-collection-card-cover:not(.wf-playing)::after {
   content: "";
   position: absolute;
   left: 50%;
   top: 50%;
+  z-index: 1;
   pointer-events: none;
-  transition: transform 200ms ease, background-color 200ms ease;
+  transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
 }
 .coll-youtube-videos .notion-collection-card-cover:not(.wf-playing)::before {
   width: 64px;
   height: 64px;
   margin: -32px 0 0 -32px;
   border-radius: 50%;
-  background: var(--wf-ochre);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  background: rgba(20, 20, 24, 0.55);
+  -webkit-backdrop-filter: blur(6px) saturate(140%);
+  backdrop-filter: blur(6px) saturate(140%);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18), 0 6px 20px rgba(0,0,0,0.25);
 }
 .coll-youtube-videos .notion-collection-card-cover:not(.wf-playing)::after {
   width: 0;
@@ -3119,7 +3129,8 @@ body.pricing .wf-tab[aria-selected="true"] .wf-tab-price { color: var(--wf-indig
   border-color: transparent transparent transparent #FFFFFF;
 }
 .coll-youtube-videos .notion-collection-card:hover .notion-collection-card-cover:not(.wf-playing)::before {
-  background: var(--wf-ochre-hover);
+  background: var(--wf-ochre);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
   transform: scale(1.08);
 }
 
